@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary Main Page</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            color: #102a43;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+        }
+        .subtitle {
+            font-size: 1.15rem;
+            color: #627d98;
+            margin-bottom: 28px;
+        }
+        .endpoints {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .endpoint-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .endpoint-link:hover {
+            background-color: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+        }
+        .badge {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Temporary Main Page</h1>
+        <p class="subtitle">temporary one main page</p>
+
+        <div class="endpoints">
+            <a href="/about" class="endpoint-link">
+                <span>About Sayfası</span>
+                <span class="badge">/about</span>
+            </a>
+            <a href="/ok" class="endpoint-link">
+                <span>OK Yanıtı</span>
+                <span class="badge">/ok</span>
+            </a>
+            <a href="/hello" class="endpoint-link">
+                <span>Hello World</span>
+                <span class="badge">/hello</span>
+            </a>
+            <a href="/hello/zehra" class="endpoint-link">
+                <span>Hello Zehra</span>
+                <span class="badge">/hello/zehra</span>
+            </a>
+            <a href="/sum/5/9" class="endpoint-link">
+                <span>Toplam (5 + 9)</span>
+                <span class="badge">/sum/5/9</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
