@@ -1,7 +1,12 @@
 # Sadece proje kodlarini takip et
 *
+!main.py
 !server.py
 !index.html
 !about.html
 !.gitignore
 !README.md
+
+# Python cache
+__pycache__/
+*.pyc
