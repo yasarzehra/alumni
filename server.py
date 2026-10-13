@@ -1,4 +1,4 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import unquote
 import os
 
@@ -15,27 +15,28 @@ def get_html_content(filename):
     return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>About</title></head><body><h1>About Page</h1><p>temporary about page</p></body></html>"
 
 class SimpleHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        # 1. Ana Sayfa (Gerçek HTML Sayfası): GET / -> index.html
-        if self.path in ['/', '', '/main', '/index.html']:
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(get_html_content('index.html'))
+    def _send(self, status, content_type, data):
+        if isinstance(data, str):
+            data = data.encode('utf-8')
+        self.send_response(status)
+        self.send_header('Content-Type', f'{content_type}; charset=utf-8')
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Connection', 'close')
+        self.end_headers()
+        self.wfile.write(data)
 
-        # 5. About Sayfası (Gerçek HTML Sayfası): GET /about -> about.html
-        elif self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(get_html_content('about.html'))
+    def do_GET(self):
+        # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
+        if self.path in ['/', '', '/main', '/index.html']:
+            self._send(200, 'text/html', get_html_content('index.html'))
 
         # 'ok' endpointi: GET /ok veya GET /alumni -> 'ok'
         elif self.path in ['/ok', '/ok/', '/alumni', '/alumni/']:
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(b'ok')
+            self._send(200, 'text/plain', b'ok')
+
+        # 5. About Sayfası: GET /about -> about.html
+        elif self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
+            self._send(200, 'text/html', get_html_content('about.html'))
 
         # 4. Task: GET /sum/{nm1}/{nm2} -> nm1 + nm2 toplamı
         elif self.path.startswith('/sum/'):
@@ -45,60 +46,44 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     n1 = float(parts[1])
                     n2 = float(parts[2])
                     total = int(n1 + n2) if (n1 + n2).is_integer() else (n1 + n2)
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                    self.end_headers()
-                    self.wfile.write(str(total).encode('utf-8'))
+                    self._send(200, 'text/plain', str(total))
                 except ValueError:
-                    self.send_response(400)
-                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                    self.end_headers()
-                    self.wfile.write(b'Lutfen gecerli sayilar girin')
+                    self._send(400, 'text/plain', 'Lutfen gecerli sayilar girin')
             else:
-                self.send_response(400)
-                self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(b'Kullanim: /sum/{sayi1}/{sayi2}')
+                self._send(400, 'text/plain', 'Kullanim: /sum/{sayi1}/{sayi2}')
 
-        # 3. Task: GET /hello/{name} -> 'hello {name}'
+        # 2. Task: GET /hello -> 'hello world!'
+        elif self.path in ['/hello', '/hello/']:
+            self._send(200, 'text/plain', 'hello world!')
+
+        # 3. Task: GET /hello/{name} -> 'hello, {name}'
         elif self.path.startswith('/hello/'):
             name = unquote(self.path[len('/hello/'):].strip('/'))
             if name:
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(f"hello {name}".encode('utf-8'))
+                self._send(200, 'text/plain', f"hello, {name}")
             else:
-                self.send_response(200)
-                self.send_header('Content-Type', 'text/plain; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(b'hello world')
+                self._send(200, 'text/plain', 'hello world!')
 
-        # 2. Task: GET /hello -> 'hello world'
-        elif self.path == '/hello':
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(b'hello world')
+        elif self.path == '/favicon.ico':
+            self._send(204, 'text/plain', b'')
 
         else:
-            self.send_response(404)
-            self.send_header('Content-Type', 'text/plain; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(b'404 Not Found')
+            self._send(404, 'text/plain', '404 Not Found')
 
 if __name__ == '__main__':
+    port = 80
     try:
-        server = HTTPServer(('localhost', 80), SimpleHandler)
+        server = ThreadingHTTPServer(('0.0.0.0', 80), SimpleHandler)
         print("Sunucu calisiyor: http://localhost")
-        print("-> GET /                       -> index.html (Gercek Web Sayfasi)")
-        print("-> GET /about                  -> about.html (Gercek Web Sayfasi)")
-        print("-> GET /ok                     -> ok")
-        print("-> GET /hello                  -> hello world")
-        print("-> GET /hello/zehra            -> hello zehra")
-        print("-> GET /sum/5/9                -> 14")
-        server.serve_forever()
-    except Exception as e:
-        server = HTTPServer(('localhost', 8000), SimpleHandler)
+    except Exception:
+        port = 8000
+        server = ThreadingHTTPServer(('0.0.0.0', 8000), SimpleHandler)
         print("Sunucu calisiyor: http://localhost:8000")
-        server.serve_forever()
+
+    print("-> GET /                       -> index.html (Temporary Main Page)")
+    print("-> GET /about                  -> about.html (Gercek Web Sayfasi)")
+    print("-> GET /ok                     -> ok")
+    print("-> GET /hello                  -> hello world!")
+    print("-> GET /hello/zehra            -> hello, zehra")
+    print("-> GET /sum/5/9                -> 14")
+    server.serve_forever()

@@ -254,6 +254,72 @@ class SimpleAPIHandler(BaseHTTPRequestHandler):
             self._send_json_response(200, OPENAPI_SPEC)
             return
 
+        # 1. Task: GET / -> 'ok'
+        if self.path in ('/', '', '/ok'):
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.send_header('Content-Length', '2')
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            self.wfile.write(b'ok')
+            self.wfile.flush()
+            return
+
+        # 2. Task: GET /hello -> 'hello world!'
+        if self.path in ('/hello', '/hello/'):
+            msg = b'hello world!'
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.send_header('Content-Length', str(len(msg)))
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            self.wfile.write(msg)
+            self.wfile.flush()
+            return
+
+        # 3. Task: GET /hello/{name} -> 'hello, {name}'
+        if self.path.startswith('/hello/'):
+            from urllib.parse import unquote
+            name = unquote(self.path[len('/hello/'):].strip('/'))
+            msg = f"hello, {name}".encode('utf-8') if name else b'hello world!'
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.send_header('Content-Length', str(len(msg)))
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            self.wfile.write(msg)
+            self.wfile.flush()
+            return
+
+        # 4. Task: GET /sum/{nm1}/{nm2} -> nm1 + nm2
+        if self.path.startswith('/sum/'):
+            from urllib.parse import unquote
+            parts = [p for p in unquote(self.path).strip('/').split('/') if p]
+            if len(parts) == 3:
+                try:
+                    n1 = float(parts[1])
+                    n2 = float(parts[2])
+                    total = int(n1 + n2) if (n1 + n2).is_integer() else (n1 + n2)
+                    msg = str(total).encode('utf-8')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                    self.send_header('Content-Length', str(len(msg)))
+                    self.send_header('Connection', 'close')
+                    self.end_headers()
+                    self.wfile.write(msg)
+                    self.wfile.flush()
+                    return
+                except ValueError:
+                    msg = b'Lutfen gecerli sayilar girin'
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'text/plain; charset=utf-8')
+                    self.send_header('Content-Length', str(len(msg)))
+                    self.send_header('Connection', 'close')
+                    self.end_headers()
+                    self.wfile.write(msg)
+                    self.wfile.flush()
+                    return
+
         if self.path == '/api/health':
             self._send_json_response(200, {
                 "status": "UP",
