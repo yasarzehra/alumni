@@ -1,8 +1,15 @@
 from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import unquote
+from datetime import datetime, timezone
+import json
 import os
+from main import OPENAPI_SPEC, SWAGGER_HTML_TEMPLATE
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Bellekte tutulacak veri listesi (in-memory, veritabanı yok)
+users_db = []
+current_user_id = 1
 
 def get_html_content(filename):
     file_path = os.path.join(BASE_DIR, filename)
@@ -21,9 +28,20 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header('Content-Type', f'{content_type}; charset=utf-8')
         self.send_header('Content-Length', str(len(data)))
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Connection', 'close')
         self.end_headers()
         self.wfile.write(data)
+
+    def _read_json_body(self):
+        content_length = int(self.headers.get('Content-Length', 0))
+        if content_length == 0:
+            return None, "İstek gövdesi (body) boş olamaz"
+        try:
+            body = self.rfile.read(content_length).decode('utf-8')
+            return json.loads(body), None
+        except Exception:
+            return None, "Geçersiz JSON formatı"
 
     def do_GET(self):
         # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
@@ -64,11 +82,257 @@ class SimpleHandler(BaseHTTPRequestHandler):
             else:
                 self._send(200, 'text/plain', 'hello world!')
 
+        # Swagger UI Dokümantasyon Arayüzü: GET /api/swagger
+        elif self.path in ['/api/swagger', '/api/swagger/']:
+            self._send(200, 'text/html', SWAGGER_HTML_TEMPLATE)
+
+        # Swagger / OpenAPI JSON Spesifikasyonu: GET /api/swagger.json veya /api/openapi.json
+        elif self.path in ['/api/swagger.json', '/api/openapi.json']:
+            self._send(200, 'application/json', json.dumps(OPENAPI_SPEC, ensure_ascii=False, indent=2))
+
+        # 6. Task: GET /api/health -> JSON
+        elif self.path in ['/api/health', '/api/health/', '/health', '/health/']:
+            health_response = json.dumps({
+                "status": "UP",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }, ensure_ascii=False, indent=2)
+            self._send(200, 'application/json', health_response)
+
+        # GET /api/users -> In-memory kullanıcı listesi
+        elif self.path in ['/api/users', '/api/users/']:
+            self._send(200, 'application/json', json.dumps({
+                "success": True,
+                "count": len(users_db),
+                "data": users_db
+            }, ensure_ascii=False, indent=2))
+
+        # GET /api/users/{id} -> Tekil kullanıcı
+        elif self.path.startswith('/api/users/'):
+            import re
+            match = re.match(r'^/api/users/(\d+)$', self.path)
+            if not match:
+                self._send(400, 'application/json', json.dumps({
+                    "error": "BadRequest",
+                    "message": "Geçerli bir kullanıcı ID giriniz (örn: /api/users/1)"
+                }, ensure_ascii=False, indent=2))
+                return
+            user_id = int(match.group(1))
+            user = next((u for u in users_db if u["id"] == user_id), None)
+            if not user:
+                self._send(404, 'application/json', json.dumps({
+                    "error": "NotFound",
+                    "message": f"{user_id} ID'li kullanıcı bulunamadı"
+                }, ensure_ascii=False, indent=2))
+            else:
+                self._send(200, 'application/json', json.dumps({
+                    "success": True,
+                    "data": user
+                }, ensure_ascii=False, indent=2))
+
         elif self.path == '/favicon.ico':
             self._send(204, 'text/plain', b'')
 
         else:
             self._send(404, 'text/plain', '404 Not Found')
+
+    def do_POST(self):
+        global current_user_id
+        # POST /api/users -> Yeni kullanıcı oluştur (In-Memory, veritabanı yok)
+        if self.path in ['/api/users', '/api/users/']:
+            data, err = self._read_json_body()
+            if err:
+                self._send(400, 'application/json', json.dumps({
+                    "error": "BadRequest",
+                    "message": err
+                }, ensure_ascii=False, indent=2))
+                return
+
+            name = data.get("name")
+            email = data.get("email")
+
+            if not name or not email:
+                self._send(400, 'application/json', json.dumps({
+                    "error": "BadRequest",
+                    "message": "name ve email alanları zorunludur"
+                }, ensure_ascii=False, indent=2))
+                return
+
+            if any(u.get("email", "").lower() == email.lower() for u in users_db):
+                self._send(409, 'application/json', json.dumps({
+                    "error": "Conflict",
+                    "message": "Bu e-posta adresiyle kayıtlı bir kullanıcı zaten var"
+                }, ensure_ascii=False, indent=2))
+                return
+
+            new_user = {
+                "id": current_user_id,
+                "name": name,
+                "email": email,
+                "createdAt": datetime.now(timezone.utc).isoformat()
+            }
+            # Varsa diğer alanları da ekleyelim (örn. password)
+            for k, v in data.items():
+                if k not in new_user:
+                    new_user[k] = v
+
+            current_user_id += 1
+            users_db.append(new_user)
+
+            self._send(201, 'application/json', json.dumps({
+                "success": True,
+                "message": "Kullanıcı başarıyla oluşturuldu",
+                "data": new_user
+            }, ensure_ascii=False, indent=2))
+            return
+
+        self._send(404, 'application/json', json.dumps({
+            "error": "NotFound",
+            "message": "Endpoint bulunamadı"
+        }, ensure_ascii=False, indent=2))
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
+    def do_PUT(self):
+        import re
+        match = re.match(r'^/api/users/(\d+)$', self.path)
+        if not match:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: PUT /api/users/{id}"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        user_id = int(match.group(1))
+        user = next((u for u in users_db if u["id"] == user_id), None)
+        if not user:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        data, err = self._read_json_body()
+        if err:
+            self._send(400, 'application/json', json.dumps({
+                "error": "BadRequest",
+                "message": err
+            }, ensure_ascii=False, indent=2))
+            return
+
+        name = data.get("name")
+        email = data.get("email")
+
+        if not name or not email:
+            self._send(400, 'application/json', json.dumps({
+                "error": "BadRequest",
+                "message": "PUT isteğinde name ve email alanları zorunludur"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        if any(u["email"].lower() == email.lower() and u["id"] != user_id for u in users_db):
+            self._send(409, 'application/json', json.dumps({
+                "error": "Conflict",
+                "message": "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        user["name"] = name
+        user["email"] = email
+        user["updatedAt"] = datetime.now(timezone.utc).isoformat()
+
+        self._send(200, 'application/json', json.dumps({
+            "success": True,
+            "message": "Kullanıcı başarıyla güncellendi",
+            "data": user
+        }, ensure_ascii=False, indent=2))
+
+    def do_PATCH(self):
+        import re
+        match = re.match(r'^/api/users/(\d+)$', self.path)
+        if not match:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: PATCH /api/users/{id}"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        user_id = int(match.group(1))
+        user = next((u for u in users_db if u["id"] == user_id), None)
+        if not user:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        data, err = self._read_json_body()
+        if err:
+            self._send(400, 'application/json', json.dumps({
+                "error": "BadRequest",
+                "message": err
+            }, ensure_ascii=False, indent=2))
+            return
+
+        if not data:
+            self._send(400, 'application/json', json.dumps({
+                "error": "BadRequest",
+                "message": "Güncellenecek en az bir alan gönderilmelidir"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        # Sadece gönderilen alanları güncelle
+        if "name" in data:
+            user["name"] = data["name"]
+
+        if "email" in data:
+            new_email = data["email"]
+            if any(u["email"].lower() == new_email.lower() and u["id"] != user_id for u in users_db):
+                self._send(409, 'application/json', json.dumps({
+                    "error": "Conflict",
+                    "message": "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor"
+                }, ensure_ascii=False, indent=2))
+                return
+            user["email"] = new_email
+
+        user["updatedAt"] = datetime.now(timezone.utc).isoformat()
+
+        self._send(200, 'application/json', json.dumps({
+            "success": True,
+            "message": "Kullanıcı başarıyla kısmen güncellendi",
+            "data": user
+        }, ensure_ascii=False, indent=2))
+
+    def do_DELETE(self):
+        global users_db
+        import re
+        match = re.match(r'^/api/users/(\d+)$', self.path)
+        if not match:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: DELETE /api/users/{id}"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        user_id = int(match.group(1))
+        user = next((u for u in users_db if u["id"] == user_id), None)
+        if not user:
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }, ensure_ascii=False, indent=2))
+            return
+
+        users_db = [u for u in users_db if u["id"] != user_id]
+
+        self._send(200, 'application/json', json.dumps({
+            "success": True,
+            "message": f"{user_id} ID'li kullanıcı başarıyla silindi"
+        }, ensure_ascii=False, indent=2))
 
 if __name__ == '__main__':
     port = 80
@@ -86,4 +350,8 @@ if __name__ == '__main__':
     print("-> GET /hello                  -> hello world!")
     print("-> GET /hello/zehra            -> hello, zehra")
     print("-> GET /sum/5/9                -> 14")
+    print("-> GET /api/health             -> JSON {\"status\": \"UP\", ...}")
+    print("-> GET /api/swagger            -> Swagger UI Dokümantasyon")
+    print("-> POST /api/users             -> JSON (Yeni kullanıcı ekleme)")
+    print("-> GET /api/users              -> JSON (Kullanıcı listesi)")
     server.serve_forever()
