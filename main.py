@@ -39,8 +39,8 @@ OPENAPI_SPEC = {
         },
         "/api/users": {
             "get": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Tüm Kullanıcıları Listele",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Tüm Kullanıcıları Listele (ApiUserController.index)",
                 "responses": {
                     "200": {
                         "description": "Kullanıcı listesi başarıyla getirildi",
@@ -65,19 +65,18 @@ OPENAPI_SPEC = {
                 }
             },
             "post": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Yeni Kullanıcı Oluştur",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Yeni Kullanıcı Oluştur (ApiUserController.store)",
                 "requestBody": {
                     "required": True,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "type": "object",
-                                "required": ["name", "email", "password"],
+                                "required": ["name", "email"],
                                 "properties": {
                                     "name": {"type": "string", "example": "Zehra Yasar"},
-                                    "email": {"type": "string", "example": "zehra@example.com"},
-                                    "password": {"type": "string", "example": "GucluSifre123!"}
+                                    "email": {"type": "string", "example": "zehra@example.com"}
                                 }
                             }
                         }
@@ -102,28 +101,27 @@ OPENAPI_SPEC = {
                 }
             ],
             "get": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Tekil Kullanıcı Bilgisi Getir",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Tekil Kullanıcı Bilgisi Getir (ApiUserController.show)",
                 "responses": {
                     "200": {"description": "Kullanıcı bulundu"},
                     "404": {"description": "Kullanıcı bulunamadı"}
                 }
             },
             "put": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Kullanıcıyı Tam Güncelle (PUT)",
-                "description": "Kullanıcının tüm alanlarını (name, email, password) günceller.",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Kullanıcıyı Tam Güncelle (ApiUserController.update)",
+                "description": "Kullanıcının name ve email alanlarını günceller.",
                 "requestBody": {
                     "required": True,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "type": "object",
-                                "required": ["name", "email", "password"],
+                                "required": ["name", "email"],
                                 "properties": {
                                     "name": {"type": "string", "example": "Zehra Yasar (Guncellendi)"},
-                                    "email": {"type": "string", "example": "zehra.yeni@example.com"},
-                                    "password": {"type": "string", "example": "YeniSifre2026!"}
+                                    "email": {"type": "string", "example": "zehra.yeni@example.com"}
                                 }
                             }
                         }
@@ -137,8 +135,8 @@ OPENAPI_SPEC = {
                 }
             },
             "patch": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Kullanıcıyı Kısmen Güncelle (PATCH)",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Kullanıcıyı Kısmen Güncelle (ApiUserController.update partial)",
                 "description": "Yalnızca gönderilen alanları günceller.",
                 "requestBody": {
                     "required": True,
@@ -162,10 +160,114 @@ OPENAPI_SPEC = {
                 }
             },
             "delete": {
-                "tags": ["Kullanıcılar"],
-                "summary": "Kullanıcıyı Sil (DELETE)",
+                "tags": ["API Users (/api/users)"],
+                "summary": "Kullanıcıyı Sil (ApiUserController.destroy)",
                 "responses": {
                     "200": {"description": "Kullanıcı başarıyla silindi"},
+                    "404": {"description": "Kullanıcı bulunamadı"}
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Tüm Kullanıcıları Listele (UserController.index)",
+                "description": "UserController.index() tarafından işlenir. Kullanıcıları HTML listesi olarak sunar.",
+                "responses": {
+                    "200": {
+                        "description": "HTML web arayüzü"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Yeni Kullanıcı Oluştur (UserController.store)",
+                "description": "UserController.store() tarafından işlenir. Web formundan kullanıcı kaydı oluşturur.",
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name", "email"],
+                                "properties": {
+                                    "name": {"type": "string", "example": "Web User"},
+                                    "email": {"type": "string", "example": "webuser@example.com"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {"description": "Kullanıcı başarıyla oluşturuldu"},
+                    "400": {"description": "Eksik alanlar"}
+                }
+            }
+        },
+        "/users/create": {
+            "get": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Yeni Kullanıcı Oluşturma Formu (UserController.create)",
+                "description": "HTML kullanıcı kayıt formunu döner [Create (C)].",
+                "responses": {
+                    "200": {"description": "HTML Kullanıcı Oluşturma Sayfası"}
+                }
+            }
+        },
+        "/users/{id}/edit": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": True,
+                    "schema": {"type": "integer"},
+                    "description": "Kullanıcı ID'si",
+                    "example": 1
+                }
+            ],
+            "get": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Kullanıcı Düzenleme Formu (UserController.edit)",
+                "description": "Mevcut kullanıcı bilgileriyle doldurulmuş düzenleme formunu döner [Update (U)].",
+                "responses": {
+                    "200": {"description": "HTML Kullanıcı Düzenleme Sayfası"},
+                    "404": {"description": "Kullanıcı bulunamadı"}
+                }
+            }
+        },
+        "/users/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": True,
+                    "schema": {"type": "integer"},
+                    "description": "Kullanıcı ID'si",
+                    "example": 1
+                }
+            ],
+            "get": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Tekil Kullanıcı Detayı (UserController.show)",
+                "description": "UserController.show() tarafından işlenir.",
+                "responses": {
+                    "200": {"description": "HTML Kullanıcı Profil Sayfası"},
+                    "404": {"description": "Kullanıcı bulunamadı"}
+                }
+            },
+            "put": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Kullanıcı Güncelle (UserController.update)",
+                "responses": {
+                    "200": {"description": "Kullanıcı güncellendi"},
+                    "404": {"description": "Kullanıcı bulunamadı"}
+                }
+            },
+            "delete": {
+                "tags": ["Web Users (/users)"],
+                "summary": "Kullanıcıyı Sil (UserController.destroy)",
+                "responses": {
+                    "200": {"description": "Kullanıcı silindi"},
                     "404": {"description": "Kullanıcı bulunamadı"}
                 }
             }

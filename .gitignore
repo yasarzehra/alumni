@@ -6,6 +6,16 @@
 !about.html
 !.gitignore
 !README.md
+!models/
+!models/**
+!controllers/
+!controllers/**
+!routes/
+!routes/**
+!src/
+!src/**
+!views/
+!views/**
 
 # Python cache
 __pycache__/

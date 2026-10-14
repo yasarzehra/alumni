@@ -1,25 +1,28 @@
-from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import unquote
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from urllib.parse import unquote, parse_qs
 from datetime import datetime, timezone
 import json
 import os
 from main import OPENAPI_SPEC, SWAGGER_HTML_TEMPLATE
+from models.user import User
+from views.view import View
+from routes import get_configured_router
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Bellekte tutulacak veri listesi (in-memory, veritabanı yok)
-users_db = []
-current_user_id = 1
+# Configure Unified MVC Router (Web & API routes)
+router = get_configured_router()
+
 
 def get_html_content(filename):
     file_path = os.path.join(BASE_DIR, filename)
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read().encode('utf-8')
-    # Dosya bulunamazsa yedek HTML
     if filename == 'index.html':
         return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>Main</title></head><body><h1>Temporary Main Page</h1><p>temporary one main page</p></body></html>"
     return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>About</title></head><body><h1>About Page</h1><p>temporary about page</p></body></html>"
+
 
 class SimpleHandler(BaseHTTPRequestHandler):
     def _send(self, status, content_type, data):
@@ -33,31 +36,48 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _read_json_body(self):
+    def _read_body(self):
+        """Reads body supporting both application/json and application/x-www-form-urlencoded."""
         content_length = int(self.headers.get('Content-Length', 0))
         if content_length == 0:
-            return None, "İstek gövdesi (body) boş olamaz"
+            return {}, None
         try:
-            body = self.rfile.read(content_length).decode('utf-8')
-            return json.loads(body), None
-        except Exception:
-            return None, "Geçersiz JSON formatı"
+            raw_body = self.rfile.read(content_length).decode('utf-8')
+            content_type = self.headers.get('Content-Type', '')
+            if 'application/json' in content_type:
+                return json.loads(raw_body), None
+            elif 'application/x-www-form-urlencoded' in content_type:
+                parsed = parse_qs(raw_body)
+                return {k: v[0] if len(v) == 1 else v for k, v in parsed.items()}, None
+            else:
+                try:
+                    return json.loads(raw_body), None
+                except Exception:
+                    parsed = parse_qs(raw_body)
+                    if parsed:
+                        return {k: v[0] if len(v) == 1 else v for k, v in parsed.items()}, None
+                    return {}, None
+        except Exception as e:
+            return None, f"İstek gövdesi okunamadı: {str(e)}"
 
     def do_GET(self):
         # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
         if self.path in ['/', '', '/main', '/index.html']:
             self._send(200, 'text/html', get_html_content('index.html'))
+            return
 
         # 'ok' endpointi: GET /ok veya GET /alumni -> 'ok'
-        elif self.path in ['/ok', '/ok/', '/alumni', '/alumni/']:
+        if self.path in ['/ok', '/ok/', '/alumni', '/alumni/']:
             self._send(200, 'text/plain', b'ok')
+            return
 
         # 5. About Sayfası: GET /about -> about.html
-        elif self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
+        if self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
             self._send(200, 'text/html', get_html_content('about.html'))
+            return
 
         # 4. Task: GET /sum/{nm1}/{nm2} -> nm1 + nm2 toplamı
-        elif self.path.startswith('/sum/'):
+        if self.path.startswith('/sum/'):
             parts = [p for p in unquote(self.path).strip('/').split('/') if p]
             if len(parts) == 3:
                 try:
@@ -69,272 +89,205 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     self._send(400, 'text/plain', 'Lutfen gecerli sayilar girin')
             else:
                 self._send(400, 'text/plain', 'Kullanim: /sum/{sayi1}/{sayi2}')
+            return
 
         # 2. Task: GET /hello -> 'hello world!'
-        elif self.path in ['/hello', '/hello/']:
+        if self.path in ['/hello', '/hello/']:
             self._send(200, 'text/plain', 'hello world!')
+            return
 
         # 3. Task: GET /hello/{name} -> 'hello, {name}'
-        elif self.path.startswith('/hello/'):
+        if self.path.startswith('/hello/'):
             name = unquote(self.path[len('/hello/'):].strip('/'))
             if name:
                 self._send(200, 'text/plain', f"hello, {name}")
             else:
                 self._send(200, 'text/plain', 'hello world!')
+            return
 
         # Swagger UI Dokümantasyon Arayüzü: GET /api/swagger
-        elif self.path in ['/api/swagger', '/api/swagger/']:
+        if self.path in ['/api/swagger', '/api/swagger/']:
             self._send(200, 'text/html', SWAGGER_HTML_TEMPLATE)
+            return
 
         # Swagger / OpenAPI JSON Spesifikasyonu: GET /api/swagger.json veya /api/openapi.json
-        elif self.path in ['/api/swagger.json', '/api/openapi.json']:
+        if self.path in ['/api/swagger.json', '/api/openapi.json']:
             self._send(200, 'application/json', json.dumps(OPENAPI_SPEC, ensure_ascii=False, indent=2))
+            return
 
         # 6. Task: GET /api/health -> JSON
-        elif self.path in ['/api/health', '/api/health/', '/health', '/health/']:
+        if self.path in ['/api/health', '/api/health/', '/health', '/health/']:
             health_response = json.dumps({
                 "status": "UP",
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }, ensure_ascii=False, indent=2)
             self._send(200, 'application/json', health_response)
+            return
 
-        # GET /api/users -> In-memory kullanıcı listesi
-        elif self.path in ['/api/users', '/api/users/']:
-            self._send(200, 'application/json', json.dumps({
-                "success": True,
-                "count": len(users_db),
-                "data": users_db
-            }, ensure_ascii=False, indent=2))
-
-        # GET /api/users/{id} -> Tekil kullanıcı
-        elif self.path.startswith('/api/users/'):
-            import re
-            match = re.match(r'^/api/users/(\d+)$', self.path)
-            if not match:
-                self._send(400, 'application/json', json.dumps({
-                    "error": "BadRequest",
-                    "message": "Geçerli bir kullanıcı ID giriniz (örn: /api/users/1)"
-                }, ensure_ascii=False, indent=2))
-                return
-            user_id = int(match.group(1))
-            user = next((u for u in users_db if u["id"] == user_id), None)
-            if not user:
-                self._send(404, 'application/json', json.dumps({
-                    "error": "NotFound",
-                    "message": f"{user_id} ID'li kullanıcı bulunamadı"
-                }, ensure_ascii=False, indent=2))
-            else:
-                self._send(200, 'application/json', json.dumps({
-                    "success": True,
-                    "data": user
-                }, ensure_ascii=False, indent=2))
-
-        elif self.path == '/favicon.ico':
+        if self.path == '/favicon.ico':
             self._send(204, 'text/plain', b'')
+            return
 
-        else:
-            self._send(404, 'text/plain', '404 Not Found')
+        # Dispatch through MVC Router:
+        # Route 1: GET /users -> listing (R) -> UserController.index() -> View.render_users_index()
+        # Route 2: GET /users/{id} -> detail -> UserController.show() -> View.render_users_show()
+        # API Routes: GET /api/users, GET /api/users/{id}
+        route_match = router.dispatch("GET", self.path)
+        if route_match:
+            handler, params = route_match
+            result = handler(params)
+            # View Layer returns HTML string directly
+            if isinstance(result, str):
+                self._send(200, 'text/html', result)
+                return
+            # ApiUserController returns (status_code, dict)
+            elif isinstance(result, tuple) and len(result) == 2:
+                status, data = result
+                self._send(status, 'application/json', json.dumps(data, ensure_ascii=False, indent=2))
+                return
+            elif isinstance(result, dict):
+                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                return
+
+        self._send(404, 'text/plain', '404 Not Found')
 
     def do_POST(self):
-        global current_user_id
-        # POST /api/users -> Yeni kullanıcı oluştur (In-Memory, veritabanı yok)
-        if self.path in ['/api/users', '/api/users/']:
-            data, err = self._read_json_body()
-            if err:
+        # Dispatch through MVC Router:
+        # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
+        # Route: POST /api/users -> ApiUserController.store(data)
+        route_match = router.dispatch("POST", self.path)
+        if route_match:
+            handler, params = route_match
+            data, err = self._read_body()
+            if err and self.path.startswith('/api/'):
                 self._send(400, 'application/json', json.dumps({
                     "error": "BadRequest",
                     "message": err
                 }, ensure_ascii=False, indent=2))
                 return
 
-            name = data.get("name")
-            email = data.get("email")
-
-            if not name or not email:
-                self._send(400, 'application/json', json.dumps({
-                    "error": "BadRequest",
-                    "message": "name ve email alanları zorunludur"
-                }, ensure_ascii=False, indent=2))
+            result = handler(params, data or {})
+            # View Layer returns HTML string directly
+            if isinstance(result, str):
+                self._send(200, 'text/html', result)
                 return
-
-            if any(u.get("email", "").lower() == email.lower() for u in users_db):
-                self._send(409, 'application/json', json.dumps({
-                    "error": "Conflict",
-                    "message": "Bu e-posta adresiyle kayıtlı bir kullanıcı zaten var"
-                }, ensure_ascii=False, indent=2))
+            elif isinstance(result, tuple) and len(result) == 2:
+                status, res = result
+                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
                 return
-
-            new_user = {
-                "id": current_user_id,
-                "name": name,
-                "email": email,
-                "createdAt": datetime.now(timezone.utc).isoformat()
-            }
-            # Varsa diğer alanları da ekleyelim (örn. password)
-            for k, v in data.items():
-                if k not in new_user:
-                    new_user[k] = v
-
-            current_user_id += 1
-            users_db.append(new_user)
-
-            self._send(201, 'application/json', json.dumps({
-                "success": True,
-                "message": "Kullanıcı başarıyla oluşturuldu",
-                "data": new_user
-            }, ensure_ascii=False, indent=2))
-            return
+            elif isinstance(result, dict):
+                if "redirect" in result:
+                    self.send_response(302)
+                    self.send_header('Location', result['redirect'])
+                    self.send_header('Connection', 'close')
+                    self.end_headers()
+                    return
+                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                return
 
         self._send(404, 'application/json', json.dumps({
             "error": "NotFound",
             "message": "Endpoint bulunamadı"
         }, ensure_ascii=False, indent=2))
 
-    def do_OPTIONS(self):
-        self.send_response(204)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
-
     def do_PUT(self):
-        import re
-        match = re.match(r'^/api/users/(\d+)$', self.path)
-        if not match:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": "Endpoint bulunamadı. Kullanım: PUT /api/users/{id}"
-            }, ensure_ascii=False, indent=2))
-            return
+        # Dispatch through MVC Router
+        route_match = router.dispatch("PUT", self.path)
+        if route_match:
+            handler, params = route_match
+            data, err = self._read_body()
+            if err and self.path.startswith('/api/'):
+                self._send(400, 'application/json', json.dumps({
+                    "error": "BadRequest",
+                    "message": err
+                }, ensure_ascii=False, indent=2))
+                return
 
-        user_id = int(match.group(1))
-        user = next((u for u in users_db if u["id"] == user_id), None)
-        if not user:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": f"{user_id} ID'li kullanıcı bulunamadı"
-            }, ensure_ascii=False, indent=2))
-            return
+            result = handler(params, data or {})
+            if isinstance(result, str):
+                self._send(200, 'text/html', result)
+                return
+            elif isinstance(result, tuple) and len(result) == 2:
+                status, res = result
+                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                return
+            elif isinstance(result, dict):
+                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                return
 
-        data, err = self._read_json_body()
-        if err:
-            self._send(400, 'application/json', json.dumps({
-                "error": "BadRequest",
-                "message": err
-            }, ensure_ascii=False, indent=2))
-            return
-
-        name = data.get("name")
-        email = data.get("email")
-
-        if not name or not email:
-            self._send(400, 'application/json', json.dumps({
-                "error": "BadRequest",
-                "message": "PUT isteğinde name ve email alanları zorunludur"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        if any(u["email"].lower() == email.lower() and u["id"] != user_id for u in users_db):
-            self._send(409, 'application/json', json.dumps({
-                "error": "Conflict",
-                "message": "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        user["name"] = name
-        user["email"] = email
-        user["updatedAt"] = datetime.now(timezone.utc).isoformat()
-
-        self._send(200, 'application/json', json.dumps({
-            "success": True,
-            "message": "Kullanıcı başarıyla güncellendi",
-            "data": user
+        self._send(404, 'application/json', json.dumps({
+            "error": "NotFound",
+            "message": "Endpoint bulunamadı. Kullanım: PUT /api/users/{id} veya PUT /users/{id}"
         }, ensure_ascii=False, indent=2))
 
     def do_PATCH(self):
-        import re
-        match = re.match(r'^/api/users/(\d+)$', self.path)
-        if not match:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": "Endpoint bulunamadı. Kullanım: PATCH /api/users/{id}"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        user_id = int(match.group(1))
-        user = next((u for u in users_db if u["id"] == user_id), None)
-        if not user:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": f"{user_id} ID'li kullanıcı bulunamadı"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        data, err = self._read_json_body()
-        if err:
-            self._send(400, 'application/json', json.dumps({
-                "error": "BadRequest",
-                "message": err
-            }, ensure_ascii=False, indent=2))
-            return
-
-        if not data:
-            self._send(400, 'application/json', json.dumps({
-                "error": "BadRequest",
-                "message": "Güncellenecek en az bir alan gönderilmelidir"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        # Sadece gönderilen alanları güncelle
-        if "name" in data:
-            user["name"] = data["name"]
-
-        if "email" in data:
-            new_email = data["email"]
-            if any(u["email"].lower() == new_email.lower() and u["id"] != user_id for u in users_db):
-                self._send(409, 'application/json', json.dumps({
-                    "error": "Conflict",
-                    "message": "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor"
+        # Dispatch through MVC Router
+        route_match = router.dispatch("PATCH", self.path)
+        if route_match:
+            handler, params = route_match
+            data, err = self._read_body()
+            if err and self.path.startswith('/api/'):
+                self._send(400, 'application/json', json.dumps({
+                    "error": "BadRequest",
+                    "message": err
                 }, ensure_ascii=False, indent=2))
                 return
-            user["email"] = new_email
 
-        user["updatedAt"] = datetime.now(timezone.utc).isoformat()
+            result = handler(params, data or {})
+            if isinstance(result, str):
+                self._send(200, 'text/html', result)
+                return
+            elif isinstance(result, tuple) and len(result) == 2:
+                status, res = result
+                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                return
+            elif isinstance(result, dict):
+                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                return
 
-        self._send(200, 'application/json', json.dumps({
-            "success": True,
-            "message": "Kullanıcı başarıyla kısmen güncellendi",
-            "data": user
+        self._send(404, 'application/json', json.dumps({
+            "error": "NotFound",
+            "message": "Endpoint bulunamadı. Kullanım: PATCH /api/users/{id} veya PATCH /users/{id}"
         }, ensure_ascii=False, indent=2))
 
     def do_DELETE(self):
-        global users_db
-        import re
-        match = re.match(r'^/api/users/(\d+)$', self.path)
-        if not match:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": "Endpoint bulunamadı. Kullanım: DELETE /api/users/{id}"
-            }, ensure_ascii=False, indent=2))
-            return
+        # Dispatch through MVC Router
+        route_match = router.dispatch("DELETE", self.path)
+        if route_match:
+            handler, params = route_match
+            result = handler(params)
+            if isinstance(result, str):
+                self._send(200, 'text/html', result)
+                return
+            elif isinstance(result, tuple) and len(result) == 2:
+                status, res = result
+                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                return
+            elif isinstance(result, dict):
+                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                return
 
-        user_id = int(match.group(1))
-        user = next((u for u in users_db if u["id"] == user_id), None)
-        if not user:
-            self._send(404, 'application/json', json.dumps({
-                "error": "NotFound",
-                "message": f"{user_id} ID'li kullanıcı bulunamadı"
-            }, ensure_ascii=False, indent=2))
-            return
-
-        users_db = [u for u in users_db if u["id"] != user_id]
-
-        self._send(200, 'application/json', json.dumps({
-            "success": True,
-            "message": f"{user_id} ID'li kullanıcı başarıyla silindi"
+        self._send(404, 'application/json', json.dumps({
+            "error": "NotFound",
+            "message": "Endpoint bulunamadı. Kullanım: DELETE /api/users/{id} veya DELETE /users/{id}"
         }, ensure_ascii=False, indent=2))
 
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
+
 if __name__ == '__main__':
+    # Initialize sample seed user if in-memory DB is empty
+    if not User.find_all():
+        User.create({
+            "name": "Zehra Yaşar",
+            "email": "zehra@example.com"
+        })
+
     port = 80
     try:
         server = ThreadingHTTPServer(('0.0.0.0', 80), SimpleHandler)
@@ -352,6 +305,13 @@ if __name__ == '__main__':
     print("-> GET /sum/5/9                -> 14")
     print("-> GET /api/health             -> JSON {\"status\": \"UP\", ...}")
     print("-> GET /api/swagger            -> Swagger UI Dokümantasyon")
-    print("-> POST /api/users             -> JSON (Yeni kullanıcı ekleme)")
-    print("-> GET /api/users              -> JSON (Kullanıcı listesi)")
+    print("-> GET /users                  -> Web HTML Kullanıcı Listesi [Listing (R)] (UserController.index)")
+    print("-> POST /users                 -> Web HTML Kullanıcı Ekleme [Creating (C)] (UserController.store)")
+    print("-> GET /users/1                -> Web HTML Kullanıcı Profili (UserController.show)")
+    print("-> GET /api/users              -> REST API Kullanıcı Listesi (ApiUserController.index)")
+    print("-> GET /api/users/1            -> REST API Kullanıcı Detayı (ApiUserController.show)")
+    print("-> POST /api/users             -> REST API Kullanıcı Oluştur (ApiUserController.store)")
+    print("-> PUT /api/users/1            -> REST API Kullanıcı Güncelle (ApiUserController.update)")
+    print("-> PATCH /api/users/1          -> REST API Kısmi Güncelle (ApiUserController.update)")
+    print("-> DELETE /api/users/1         -> REST API Kullanıcı Sil (ApiUserController.destroy)")
     server.serve_forever()

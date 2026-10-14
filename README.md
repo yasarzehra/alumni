@@ -61,22 +61,157 @@ events (id, title, description, event_date, location, created_by)
 event_attendees (id, event_id, user_id, rsvp_status)
 job_posts (id, alumni_id, title, company_name, description, application_url, created_at)
 mentorship_requests (id, student_id, alumni_id, message, status, updated_at)
+```
+
+---
+
+## 🏛️ 4. MVC Architecture Overview
+
+The Alumni platform follows the **Model-View-Controller (MVC)** architectural pattern to maintain strict separation of concerns, high maintainability, testability, and clean code organization.
+
+```text
+       HTTP Request
+Client -------------> [Router / Front Controller] (public/index.php or server.py)
+                              |
+                              v
+                       [ Controller ] <---- Input validation, routing & orchestration
+                         /          \
+                        /            \
+                       v              v
+                  [ Model ]        [ View ]
+             (Data & DB Queries)  (HTML Templates / JSON Serializers)
+                       \              /
+                        \            /
+                         v          v
+                       HTTP Response (JSON / HTML)
+Client <----------------------'
+```
+
+### Core Components & Responsibilities
+
+| Component | Responsibility | Project Implementation |
+| :--- | :--- | :--- |
+| **Model** (`M`) | Encapsulates business logic, data rules, entity representations, and database access layers. Ensures data validation and transactional consistency. | `User.php`, `Profile.php`, `JobPost.php`, `Event.php` (In-memory: `users_db`) |
+| **View** (`V`) | Manages the presentation layer. Formats and renders output for end users, serving either responsive HTML pages or standardized JSON API responses. | `index.html`, `about.html`, `JsonResponse.php`, Swagger UI template |
+| **Controller** (`C`) | Acts as the orchestrator. Receives HTTP requests (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), validates input, calls Model methods, and returns Views. | `UserController.php`, `AuthController.php`, `SimpleHandler` in `server.py` |
+
+---
+
+## 📂 5. Directory, Folder & File Structure
+
+```text
 alumni/
-├── docker/                 # Nginx, PHP-FPM, MySQL service definitions
-├── public/                 # Front controller (index.php) and static assets
-│   └── index.php           # Global application entry point
-├── src/
-│   ├── Config/             # Environment, Database, and App configurations
-│   ├── Controllers/        # HTTP Request handlers (Auth, Profile, Admin)
-│   ├── Models/             # Database access layers & Business Logic
-│   └── Views/              # UI templates / JSON API serializers
-├── docker-compose.yml      # Multi-container orchestration specification
-├── Dockerfile              # PHP runtime build recipe
-├── README.md               # Architecture documentation
-└── AGENTS.md               # AI tooling guidelines and prompt engineering specs
+├── docker/                             # Multi-container service definitions
+│   ├── nginx/
+│   │   └── default.conf                # Nginx reverse proxy & virtual host configuration
+│   ├── php/
+│   │   └── local.ini                   # PHP runtime configuration overrides
+│   └── mysql/
+│       └── init.sql                    # Database initialization scripts and seed schemas
+├── public/                             # Public web root (directly exposed to web server)
+│   ├── index.php                       # Front controller & single application entry point
+│   ├── css/                            # Global stylesheets and design tokens
+│   ├── js/                             # Client-side JavaScript interactions
+│   └── assets/                         # Static media assets (logos, icons, illustrations)
+├── src/                                # Core application source code (MVC structure)
+│   ├── Config/                         # Configuration and environment loaders
+│   │   ├── Database.php                # Database connection manager (PDO with connection pooling)
+│   │   └── App.php                     # Application settings and environment variables
+│   ├── Controllers/                    # HTTP Request Handlers (Controller Layer)
+│   │   ├── BaseController.php          # Shared controller abstractions (JSON response, status codes)
+│   │   ├── AuthController.php          # Login, registration, token issuance, logout
+│   │   ├── UserController.php          # User profile management and CRUD operations
+│   │   ├── JobController.php           # Job & internship postings
+│   │   └── EventController.php         # Event creation, RSVPs, and attendee listing
+│   ├── Models/                         # Business Logic & Database Layer (Model Layer)
+│   │   ├── BaseModel.php               # Base model with shared query builders and CRUD helpers
+│   │   ├── User.php                    # User identity, authentication, and role checking
+│   │   ├── Profile.php                 # Extended profile, alumni details, student data
+│   │   ├── JobPost.php                 # Job vacancies and application relationships
+│   │   └── Event.php                   # Event scheduling and attendee mappings
+│   ├── Views/                          # Presentation Layer (View Layer)
+│   │   ├── layouts/                    # Shared layout templates (header, footer, navigation)
+│   │   │   ├── main.php                # Main HTML layout wrapper
+│   │   │   └── auth.php                # Authentication pages layout
+│   │   ├── pages/                      # Specific view templates
+│   │   │   ├── home.php                # Landing page view
+│   │   │   ├── about.php               # About platform view
+│   │   │   ├── users/                  # User directory and profile detail views
+│   │   │   └── jobs/                   # Job board views
+│   │   └── responses/                  # API response serializers (JSON payload formatters)
+│   │       └── JsonResponse.php        # Standardized JSON response envelope
+│   ├── Routes/                         # Routing definitions and dispatchers
+│   │   ├── api.php                     # RESTful API route declarations (/api/*)
+│   │   └── web.php                     # Web browser route declarations (/, /about, etc.)
+│   └── Middleware/                     # Request lifecycle filters
+│       ├── AuthMiddleware.php          # Authentication verification (session / JWT)
+│       ├── RoleMiddleware.php          # Role-based access control (RBAC) guard
+│       └── CorsMiddleware.php          # Cross-Origin Resource Sharing headers
+├── index.html                          # Prototype landing page (Temporary Main Page)
+├── about.html                          # Prototype about page (Temporary About Page)
+├── server.py                           # Python development HTTP server (interactive demo)
+├── main.py                             # Python in-memory RESTful CRUD API & Swagger server
+├── docker-compose.yml                  # Multi-container orchestration (PHP-FPM, Nginx, MySQL)
+├── Dockerfile                          # PHP runtime container build recipe
+├── .gitignore                          # Git file exclusion rules
+└── README.md                           # Project documentation & architectural blueprints
+```
+
+### Detailed Breakdown of Directories & Roles
+
+1. **`public/` (Web Document Root)**
+   - The only directory exposed to the public internet by the web server (Nginx/Apache).
+   - Houses the **Front Controller** (`index.php`), which intercepts all incoming requests, bootstraps the environment, applies middleware, and routes to appropriate controllers.
+
+2. **`src/Controllers/` (Controller Layer)**
+   - Acts as the orchestrator of application workflows.
+   - Extracts payload data from requests (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), validates input, calls Model methods, and formats outgoing responses.
+
+3. **`src/Models/` (Model Layer)**
+   - Encapsulates database tables, relationships, and business integrity rules.
+   - Interacts with MySQL through PDO prepared statements to guard against SQL injection, managing operations across `users`, `profiles`, `events`, and `job_posts`.
+
+4. **`src/Views/` (View Layer)**
+   - Strictly reserved for rendering presentation logic.
+   - Separates HTML templates for web visitors from standardized JSON API responses consumed by mobile clients, Postman, or third-party integrations.
+
+5. **`src/Config/` & `src/Middleware/` (Infrastructure & Security)**
+   - Houses database connection pools, environment configurations, and security filters (JWT verification, RBAC permissions, and CORS).
+
+6. **`docker/` (Containerization Environment)**
+   - Defines reproducible isolated runtimes for PHP-FPM, Nginx, and MySQL, ensuring zero configuration discrepancies between development and production.
+
+---
+
+## 🚀 6. Quick Start & Running the Project
+
+### Option A: Local Python Prototype Server (Current Development Server)
+```bash
+# Run the threaded HTTP server (port 80 / 8000 fallback)
+python server.py
+
+# Available Endpoints:
+# - GET    /                  -> Main landing page (index.html)
+# - GET    /about             -> About page (about.html)
+# - GET    /hello             -> Plaintext "hello world!"
+# - GET    /hello/{name}      -> Plaintext "hello, {name}"
+# - GET    /sum/{n1}/{n2}     -> Sum calculation
+# - GET    /api/health        -> JSON health status
+# - GET    /api/swagger       -> Interactive Swagger UI documentation
+# - GET    /api/users         -> List all users (JSON)
+# - POST   /api/users         -> Create new user (JSON)
+# - GET    /api/users/{id}    -> Fetch single user (JSON)
+# - PUT    /api/users/{id}    -> Update full user (JSON)
+# - PATCH  /api/users/{id}    -> Partially update user (JSON)
+# - DELETE /api/users/{id}    -> Remove user (JSON)
+```
+
+### Option B: Docker Containerized Stack (Production Deployment)
+```bash
 # 1. Clone repository
 git clone https://github.com/yasarzehra/alumni.git
 cd alumni
 
-# 2. Spin up containers (PHP-FPM, Web Server, MySQL)
+# 2. Spin up containers (PHP-FPM, Nginx, MySQL)
 docker compose up --build
+```
