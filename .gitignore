@@ -2,6 +2,7 @@
 *
 !main.py
 !server.py
+!migrate.py
 !index.html
 !about.html
 !.gitignore
@@ -18,6 +19,8 @@
 .env.*.local
 !.env.example
 !.example.env
+!database/
+!database/**
 !models/
 !models/**
 !controllers/
@@ -29,6 +32,9 @@
 !views/
 !views/**
 
-# Python cache
+# Python cache & local db files
 __pycache__/
 *.pyc
+*.sqlite
+*.sqlite3
+*.db
