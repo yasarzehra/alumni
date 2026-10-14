@@ -6,6 +6,8 @@
 !about.html
 !.gitignore
 !README.md
+!Dockerfile
+!docker-compose.yml
 !models/
 !models/**
 !controllers/
