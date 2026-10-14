@@ -11,6 +11,13 @@
 !docker-compose.yml
 !docker/
 !docker/**
+
+# Environment files (Never commit .env, keep examples)
+.env
+.env.local
+.env.*.local
+!.env.example
+!.example.env
 !models/
 !models/**
 !controllers/
