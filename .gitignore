@@ -3,6 +3,7 @@
 !main.py
 !server.py
 !migrate.py
+!seed.py
 !index.html
 !about.html
 !.gitignore

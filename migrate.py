@@ -193,28 +193,30 @@ def run_status():
 
 
 def run_seed():
-    """Runs seeders."""
+    """Runs seeders and factory generators."""
     conn = get_connection()
-    if not os.path.exists(SEEDERS_DIR):
-        print("No seeders directory found.")
-        return
+    if os.path.exists(SEEDERS_DIR):
+        files = [f for f in os.listdir(SEEDERS_DIR) if f.endswith(".sql")]
+        files.sort()
+        print(f"\n[SEED] Running {len(files)} SQL seeder(s)...")
+        for filename in files:
+            path = os.path.join(SEEDERS_DIR, filename)
+            with open(path, "r", encoding="utf-8") as f:
+                sql = f.read()
+            try:
+                conn.executescript(sql)
+                conn.commit()
+                print(f"  [+] Seeded SQL: {filename}")
+            except Exception as e:
+                conn.rollback()
+                print(f"  [ERROR] Seeding {filename}: {e}")
 
-    files = [f for f in os.listdir(SEEDERS_DIR) if f.endswith(".sql")]
-    files.sort()
-
-    print(f"\n[SEED] Running {len(files)} seeder(s)...")
-    for filename in files:
-        path = os.path.join(SEEDERS_DIR, filename)
-        with open(path, "r", encoding="utf-8") as f:
-            sql = f.read()
-        try:
-            conn.executescript(sql)
-            conn.commit()
-            print(f"  [+] Seeded: {filename}")
-        except Exception as e:
-            conn.rollback()
-            print(f"  [ERROR] Seeding {filename}: {e}")
-            sys.exit(1)
+    # Run Factory-based Seeder
+    try:
+        from database.seeders.database_seeder import DatabaseSeeder
+        DatabaseSeeder.run(db_conn=conn, user_count=10, announcement_count=5, event_count=3, job_count=4)
+    except Exception as e:
+        print(f"  [ERROR] Running factory seeder: {e}")
 
     print("\n[SUCCESS] Seeding completed successfully!")
 
