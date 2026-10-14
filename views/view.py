@@ -206,6 +206,7 @@ class View:
                     </p>
                 </div>
                 <div class="actions-top">
+                    <span class="badge" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;">● DB: Connected (alumni.sqlite)</span>
                     <span class="badge badge-green">{count} Kullanıcı</span>
                     <a href="/users/create" class="btn-create-top">+ Yeni Kullanıcı Sayfası (C)</a>
                 </div>

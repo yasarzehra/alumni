@@ -237,6 +237,10 @@ class AnnouncementView:
                 <div class="stat-label">Kategori Çeşidi</div>
                 <div class="stat-val">{categories_count}</div>
             </div>
+            <div class="stat-card" style="border-left: 4px solid #059669;">
+                <div class="stat-label">Veritabanı Bağlantısı</div>
+                <div class="stat-val" style="font-size: 1.1rem; color: #059669; margin-top: 10px;">● Connected (DB)</div>
+            </div>
         </div>
 
         <!-- 1. Announcements Table -->

@@ -1,157 +1,182 @@
 """
 User Model - MVC Architecture
-Encapsulates in-memory CRUD operations for User entities without requiring a database connection.
+Backed by Persistent Database Connection (SQLite / MySQL).
+Replaces ephemeral in-memory storage with ACID-compliant relational persistence.
 """
 from datetime import datetime, timezone
 from typing import List, Dict, Optional, Any
+from database.connection import Database
 
 
 class User:
     """
-    User Model representing the User entity.
-    Maintains an in-memory repository with full CRUD operations.
+    User Model representing the User entity and its Profile relationship.
+    Directly connected to the persistent database.
     """
-    _db: List[Dict[str, Any]] = []
-    _current_id: int = 1
 
-    def __init__(self, name: str, email: str, id: Optional[int] = None, **extra_fields):
-        self.id = id
-        self.name = name
-        self.email = email
-        self.created_at = extra_fields.get("createdAt") or datetime.now(timezone.utc).isoformat()
-        self.updated_at = extra_fields.get("updatedAt")
-        self.extra_fields = extra_fields
+    @staticmethod
+    def _format_row(row: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """Formats raw database row to match model attributes."""
+        if not row:
+            return None
+        first = row.get("first_name") or ""
+        last = row.get("last_name") or ""
+        name = f"{first} {last}".strip() if (first or last) else row.get("email", "").split("@")[0]
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert the User model instance to a dictionary representation."""
         data = {
-            "id": self.id,
-            "name": self.name,
-            "email": self.email,
-            "createdAt": self.created_at,
-        }
-        if self.updated_at:
-            data["updatedAt"] = self.updated_at
-        for k, v in self.extra_fields.items():
-            if k not in data:
-                data[k] = v
-        return data
-
-    # =========================================================================
-    # CRUD Operations (In-Memory, No Database Connection Required)
-    # =========================================================================
-
-    @classmethod
-    def create(cls, data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        [C]reate: Adds a new user to the in-memory repository.
-        Validates required fields and checks for unique email constraints.
-        """
-        name = data.get("name")
-        email = data.get("email")
-
-        if not name or not email:
-            raise ValueError("name and email fields are required")
-
-        if cls.find_by_email(email):
-            raise ValueError(f"Email '{email}' is already registered")
-
-        user_id = cls._current_id
-        cls._current_id += 1
-
-        now = datetime.now(timezone.utc).isoformat()
-        user_record = {
-            "id": user_id,
+            "id": row.get("id"),
             "name": name,
-            "email": email,
-            "createdAt": now,
+            "first_name": first,
+            "last_name": last,
+            "email": row.get("email"),
+            "role": row.get("role", "alumni"),
+            "status": row.get("status", "active"),
+            "createdAt": row.get("created_at"),
+            "updatedAt": row.get("updated_at"),
+            "phone": row.get("phone"),
+            "bio": row.get("bio"),
+            "linkedin_url": row.get("linkedin_url"),
+            "company": row.get("current_company"),
+            "title": row.get("current_title"),
+            "graduation_year": row.get("graduation_year")
         }
-
-        # Store any additional fields (e.g. password, role)
-        for key, val in data.items():
-            if key not in user_record:
-                user_record[key] = val
-
-        cls._db.append(user_record)
-        return dict(user_record)
+        return data
 
     @classmethod
     def find_all(cls) -> List[Dict[str, Any]]:
         """
-        [R]ead: Retrieves all users stored in memory.
+        [R]ead: Retrieves all users stored in the database.
         """
-        return [dict(u) for u in cls._db]
+        query = """
+            SELECT u.id, u.email, u.role, u.status, u.created_at, u.updated_at,
+                   p.first_name, p.last_name, p.phone, p.bio, p.linkedin_url,
+                   a.current_company, a.current_title, a.graduation_year
+            FROM users u
+            LEFT JOIN profiles p ON u.id = p.user_id
+            LEFT JOIN alumni_details a ON p.id = a.profile_id
+            ORDER BY u.id ASC
+        """
+        rows = Database.fetch_all(query)
+        return [cls._format_row(r) for r in rows if r]
 
     @classmethod
     def find_by_id(cls, user_id: int) -> Optional[Dict[str, Any]]:
         """
-        [R]ead: Retrieves a single user record by its unique identifier.
+        [R]ead: Retrieves a single user record by ID.
         """
-        user = next((u for u in cls._db if u["id"] == user_id), None)
-        return dict(user) if user else None
+        query = """
+            SELECT u.id, u.email, u.role, u.status, u.created_at, u.updated_at,
+                   p.first_name, p.last_name, p.phone, p.bio, p.linkedin_url,
+                   a.current_company, a.current_title, a.graduation_year
+            FROM users u
+            LEFT JOIN profiles p ON u.id = p.user_id
+            LEFT JOIN alumni_details a ON p.id = a.profile_id
+            WHERE u.id = ?
+        """
+        row = Database.fetch_one(query, (user_id,))
+        return cls._format_row(row)
 
     @classmethod
     def find_by_email(cls, email: str) -> Optional[Dict[str, Any]]:
         """
-        [R]ead: Retrieves a user record by email (case-insensitive).
+        [R]ead: Retrieves a user record by email.
         """
-        user = next((u for u in cls._db if u.get("email", "").lower() == email.lower()), None)
-        return dict(user) if user else None
+        query = """
+            SELECT u.id, u.email, u.role, u.status, u.created_at, u.updated_at,
+                   p.first_name, p.last_name, p.phone, p.bio, p.linkedin_url,
+                   a.current_company, a.current_title, a.graduation_year
+            FROM users u
+            LEFT JOIN profiles p ON u.id = p.user_id
+            LEFT JOIN alumni_details a ON p.id = a.profile_id
+            WHERE LOWER(u.email) = LOWER(?)
+        """
+        row = Database.fetch_one(query, (email.strip(),))
+        return cls._format_row(row)
+
+    @classmethod
+    def create(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        [C]reate: Inserts a new user record into the database.
+        Validates required fields and checks for unique email constraint.
+        """
+        name = data.get("name") or f"{data.get('first_name', '')} {data.get('last_name', '')}".strip()
+        email = data.get("email")
+
+        if not name or not str(name).strip():
+            raise ValueError("name (ad soyad) alanı zorunludur")
+        if not email or not str(email).strip():
+            raise ValueError("email alanı zorunludur")
+
+        email_clean = str(email).strip().lower()
+        if cls.find_by_email(email_clean):
+            raise ValueError(f"Email '{email}' is already registered")
+
+        # Split name into first and last name
+        name_parts = str(name).strip().split(maxsplit=1)
+        first_name = data.get("first_name") or name_parts[0]
+        last_name = data.get("last_name") or (name_parts[1] if len(name_parts) > 1 else "")
+
+        role = data.get("role", "alumni")
+        status = data.get("status", "active")
+        pwd_hash = data.get("password_hash") or "$2b$12$e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce"
+        now = datetime.now(timezone.utc).isoformat()
+
+        # Insert user
+        user_id = Database.insert("""
+            INSERT INTO users (email, password_hash, role, status, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (email_clean, pwd_hash, role, status, now))
+
+        # Insert profile
+        Database.insert("""
+            INSERT INTO profiles (user_id, first_name, last_name, phone, bio, linkedin_url)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (user_id, first_name, last_name, data.get("phone"), data.get("bio"), data.get("linkedin_url")))
+
+        return cls.find_by_id(user_id)
 
     @classmethod
     def update(cls, user_id: int, data: Dict[str, Any], partial: bool = False) -> Optional[Dict[str, Any]]:
         """
-        [U]pdate: Updates an existing user record.
-        - partial=False: Full update (PUT style, requires name and email).
-        - partial=True: Partial update (PATCH style, updates only provided fields).
+        [U]pdate: Updates existing user record in the database.
         """
-        user = next((u for u in cls._db if u["id"] == user_id), None)
-        if not user:
+        existing = cls.find_by_id(user_id)
+        if not existing:
             return None
 
-        # Check for unique email conflict
-        if "email" in data:
-            new_email = data["email"]
-            if new_email.lower() != user["email"].lower():
+        # Check email uniqueness
+        if "email" in data and str(data["email"]).strip():
+            new_email = str(data["email"]).strip().lower()
+            if new_email != existing["email"].lower():
                 conflict = cls.find_by_email(new_email)
                 if conflict and conflict["id"] != user_id:
                     raise ValueError(f"Email '{new_email}' is already in use by another user")
+                Database.execute("UPDATE users SET email = ? WHERE id = ?", (new_email, user_id))
 
-        if not partial:
-            # Full update (PUT)
-            name = data.get("name")
-            email = data.get("email")
-            if not name or not email:
-                raise ValueError("name and email fields are required for a full update")
-            user["name"] = name
-            user["email"] = email
-        else:
-            # Partial update (PATCH)
-            if "name" in data:
-                user["name"] = data["name"]
-            if "email" in data:
-                user["email"] = data["email"]
+        if not partial and (not data.get("name") or not data.get("email")):
+            raise ValueError("PUT isteğinde name ve email alanları zorunludur")
 
-        # Update any other custom fields provided
-        for key, val in data.items():
-            if key not in ("id", "createdAt"):
-                user[key] = val
+        # Update name in profiles
+        if "name" in data and str(data["name"]).strip():
+            parts = str(data["name"]).strip().split(maxsplit=1)
+            first_name = parts[0]
+            last_name = parts[1] if len(parts) > 1 else ""
+            Database.execute("""
+                UPDATE profiles SET first_name = ?, last_name = ? WHERE user_id = ?
+            """, (first_name, last_name, user_id))
 
-        user["updatedAt"] = datetime.now(timezone.utc).isoformat()
-        return dict(user)
+        now = datetime.now(timezone.utc).isoformat()
+        Database.execute("UPDATE users SET updated_at = ? WHERE id = ?", (now, user_id))
+
+        return cls.find_by_id(user_id)
 
     @classmethod
     def delete(cls, user_id: int) -> bool:
         """
-        [D]elete: Removes a user from the in-memory repository by ID.
-        Returns True if deleted, False if user does not exist.
+        [D]elete: Removes user record from database (cascades to profile).
         """
-        initial_count = len(cls._db)
-        cls._db = [u for u in cls._db if u["id"] != user_id]
-        return len(cls._db) < initial_count
-
-    @classmethod
-    def clear(cls):
-        """Helper method to reset the in-memory database (useful for testing)."""
-        cls._db = []
-        cls._current_id = 1
+        existing = cls.find_by_id(user_id)
+        if not existing:
+            return False
+        Database.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        return True

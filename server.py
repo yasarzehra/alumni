@@ -282,13 +282,14 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    # Initialize sample seed data
-    if not User.find_all():
-        User.create({
-            "name": "Zehra Yaşar",
-            "email": "zehra@example.com"
-        })
-    Announcement.seed_defaults()
+    # Ensure database connection & verify users exist
+    try:
+        user_count = len(User.find_all())
+        announcement_count = len(Announcement.find_all())
+        print(f"[DB] Baglanti saglandi. Mevcut kayitlar: {user_count} Kullanici, {announcement_count} Duyuru.")
+    except Exception as e:
+        print(f"[DB] Uyari: Veritabani baglantisi sirasinda hata: {e}")
+
 
     port = 80
     try:
