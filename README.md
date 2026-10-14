@@ -48,20 +48,27 @@ This platform solves this by offering a centralized directory, career tracking, 
 
 ---
 
-## 🗄️ 3. Proposed Database Schema (Core Tables)
+## 🗄️ 3. Data Design & Database Schema
+
+> 📖 **Full Specification:** For complete Entity-Relationship Diagrams (ERD), full data dictionary, column types, indexing heuristics, and 3NF normalization analysis, see the dedicated **[Data Design Documentation (ddd.md)](ddd.md)**.
+
+### Core Relational Schema Overview
 
 ```text
 users (id, email, password_hash, role, status, created_at)
-  └── profiles (id, user_id, first_name, last_name, bio, avatar_url)
-        ├── alumni_details (id, profile_id, graduation_year, department_id, current_company, title)
-        └── student_details (id, profile_id, student_number, current_semester)
+  ├── profiles (id, user_id, first_name, last_name, bio, avatar_url)
+  │     ├── alumni_details (id, profile_id, graduation_year, department_id, current_company, title)
+  │     └── student_details (id, profile_id, student_number, current_semester)
+  ├── announcements (id, author_id, title, content, category, status, created_at)
+  ├── events (id, title, description, event_date, location, created_by)
+  │     └── event_attendees (id, event_id, user_id, rsvp_status)
+  ├── job_posts (id, alumni_id, title, company_name, description, application_url, created_at)
+  └── mentorship_requests (id, student_id, alumni_id, message, status, updated_at)
 
-departments (id, faculty_name, department_name)
-events (id, title, description, event_date, location, created_by)
-event_attendees (id, event_id, user_id, rsvp_status)
-job_posts (id, alumni_id, title, company_name, description, application_url, created_at)
-mentorship_requests (id, student_id, alumni_id, message, status, updated_at)
+departments (id, faculty_name, department_name, code)
 ```
+
+The data layer is engineered to transition from in-memory prototypes to production-grade persistent MySQL/PostgreSQL storage backed by named Docker volumes (solving the transient data loss demonstrated in *The Forgetting Test*). For detailed table constraints and Mermaid ERD visualizer, refer to **[ddd.md](ddd.md)**.
 
 ---
 
@@ -152,8 +159,9 @@ alumni/
 ├── server.py                           # Python development HTTP server (interactive demo)
 ├── main.py                             # Python in-memory RESTful CRUD API & Swagger server
 ├── docker-compose.yml                  # Multi-container orchestration (PHP-FPM, Nginx, MySQL)
-├── Dockerfile                          # PHP runtime container build recipe
+├── Dockerfile                          # Application runtime container recipe
 ├── .gitignore                          # Git file exclusion rules
+├── ddd.md                              # Data Design Documentation (ERD, Schema, Indexing)
 └── README.md                           # Project documentation & architectural blueprints
 ```
 
