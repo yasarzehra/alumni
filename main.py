@@ -271,6 +271,187 @@ OPENAPI_SPEC = {
                     "404": {"description": "Kullanıcı bulunamadı"}
                 }
             }
+        },
+        "/api/announcements": {
+            "get": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Tüm Duyuruları Listele (ApiAnnouncementController.index)",
+                "responses": {
+                    "200": {
+                        "description": "Duyuru listesi başarıyla getirildi",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "success": True,
+                                    "count": 1,
+                                    "data": [
+                                        {
+                                            "id": 1,
+                                            "title": "2026 Mezunlar Buluşması",
+                                            "content": "Mezunlar buluşması ana kampüste gerçekleşecektir.",
+                                            "category": "Etkinlik",
+                                            "author": "Alumni Ofisi",
+                                            "status": "Aktif",
+                                            "createdAt": "2026-10-15T00:00:00Z"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Yeni Duyuru Yayınla (ApiAnnouncementController.store)",
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["title", "content"],
+                                "properties": {
+                                    "title": {"type": "string", "example": "Kariyer Günleri Başlıyor"},
+                                    "content": {"type": "string", "example": "Tüm mezun ve öğrencilerimiz davetlidir."},
+                                    "category": {"type": "string", "example": "Kariyer"},
+                                    "author": {"type": "string", "example": "Kariyer Merkezi"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {"description": "Duyuru başarıyla oluşturuldu"},
+                    "400": {"description": "Eksik veya geçersiz alanlar"}
+                }
+            }
+        },
+        "/api/announcements/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": True,
+                    "schema": {"type": "integer"},
+                    "description": "Duyuru ID'si",
+                    "example": 1
+                }
+            ],
+            "get": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Duyuru Detayı Getir (ApiAnnouncementController.show)",
+                "responses": {
+                    "200": {"description": "Duyuru detayı"},
+                    "404": {"description": "Duyuru bulunamadı"}
+                }
+            },
+            "put": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Duyuru Tam Güncelle (ApiAnnouncementController.update)",
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["title", "content"],
+                                "properties": {
+                                    "title": {"type": "string"},
+                                    "content": {"type": "string"},
+                                    "category": {"type": "string"},
+                                    "author": {"type": "string"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {"description": "Duyuru güncellendi"},
+                    "404": {"description": "Duyuru bulunamadı"}
+                }
+            },
+            "patch": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Duyuru Kısmi Güncelle (ApiAnnouncementController.update)",
+                "responses": {
+                    "200": {"description": "Duyuru kısmen güncellendi"},
+                    "404": {"description": "Duyuru bulunamadı"}
+                }
+            },
+            "delete": {
+                "tags": ["API Announcements (/api/announcements)"],
+                "summary": "Duyuru Sil (ApiAnnouncementController.destroy)",
+                "responses": {
+                    "200": {"description": "Duyuru silindi"},
+                    "404": {"description": "Duyuru bulunamadı"}
+                }
+            }
+        },
+        "/announcements": {
+            "get": {
+                "tags": ["Web Announcements (/announcements)"],
+                "summary": "Duyuru Yönetim Paneli (AnnouncementController.index)",
+                "description": "HTML duyuru listeleme ve yönetim arayüzü.",
+                "responses": {
+                    "200": {"description": "HTML Duyuru Yönetim Arayüzü"}
+                }
+            },
+            "post": {
+                "tags": ["Web Announcements (/announcements)"],
+                "summary": "Duyuru Oluştur (AnnouncementController.store)",
+                "responses": {
+                    "200": {"description": "Duyuru oluşturuldu ve liste güncellendi"}
+                }
+            }
+        },
+        "/announcements/create": {
+            "get": {
+                "tags": ["Web Announcements (/announcements)"],
+                "summary": "Duyuru Oluşturma Sayfası (AnnouncementController.create)",
+                "responses": {
+                    "200": {"description": "HTML Duyuru Oluşturma Formu"}
+                }
+            }
+        },
+        "/announcements/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": True,
+                    "schema": {"type": "integer"},
+                    "description": "Duyuru ID'si",
+                    "example": 1
+                }
+            ],
+            "get": {
+                "tags": ["Web Announcements (/announcements)"],
+                "summary": "Duyuru Detay Sayfası (AnnouncementController.show)",
+                "responses": {
+                    "200": {"description": "HTML Duyuru Detay Sayfası"},
+                    "404": {"description": "Duyuru bulunamadı"}
+                }
+            }
+        },
+        "/announcements/{id}/edit": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": True,
+                    "schema": {"type": "integer"},
+                    "description": "Duyuru ID'si",
+                    "example": 1
+                }
+            ],
+            "get": {
+                "tags": ["Web Announcements (/announcements)"],
+                "summary": "Duyuru Düzenleme Formu (AnnouncementController.edit)",
+                "responses": {
+                    "200": {"description": "HTML Duyuru Düzenleme Formu"}
+                }
+            }
         }
     }
 }

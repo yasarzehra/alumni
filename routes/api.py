@@ -1,29 +1,37 @@
 """
-API Routes - /api/users
-Maps API requests to ApiUserController methods.
+API Routes - RESTful API
+Maps API requests to REST Controllers returning JSON payloads.
+
+Includes:
+1. User API Routes (/api/users)
+2. Announcement API Routes (/api/announcements)
 """
 from routes.router import Router
 from controllers.api_user_controller import ApiUserController
+from controllers.api_announcement_controller import ApiAnnouncementController
 
 
 def register_api_routes(router: Router) -> Router:
     """Register all RESTful API routes on the provided router."""
-    # List all users
+
+    # =========================================================================
+    # User API Routes (/api/users)
+    # =========================================================================
     router.get('/api/users', lambda params, body=None: ApiUserController.index())
-    
-    # Get single user by ID
     router.get('/api/users/{id}', lambda params, body=None: ApiUserController.show(params['id']))
-    
-    # Create new user
     router.post('/api/users', lambda params, body=None: ApiUserController.store(body or {}))
-    
-    # Full update user (PUT)
     router.put('/api/users/{id}', lambda params, body=None: ApiUserController.update(params['id'], body or {}, partial=False))
-    
-    # Partial update user (PATCH)
     router.patch('/api/users/{id}', lambda params, body=None: ApiUserController.update(params['id'], body or {}, partial=True))
-    
-    # Delete user
     router.delete('/api/users/{id}', lambda params, body=None: ApiUserController.destroy(params['id']))
-    
+
+    # =========================================================================
+    # Announcement API Routes (/api/announcements)
+    # =========================================================================
+    router.get('/api/announcements', lambda params, body=None: ApiAnnouncementController.index())
+    router.get('/api/announcements/{id}', lambda params, body=None: ApiAnnouncementController.show(params['id']))
+    router.post('/api/announcements', lambda params, body=None: ApiAnnouncementController.store(body or {}))
+    router.put('/api/announcements/{id}', lambda params, body=None: ApiAnnouncementController.update(params['id'], body or {}, partial=False))
+    router.patch('/api/announcements/{id}', lambda params, body=None: ApiAnnouncementController.update(params['id'], body or {}, partial=True))
+    router.delete('/api/announcements/{id}', lambda params, body=None: ApiAnnouncementController.destroy(params['id']))
+
     return router

@@ -5,6 +5,7 @@ import json
 import os
 from main import OPENAPI_SPEC, SWAGGER_HTML_TEMPLATE
 from models.user import User
+from models.announcement import Announcement
 from views.view import View
 from routes import get_configured_router
 
@@ -281,12 +282,13 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    # Initialize sample seed user if in-memory DB is empty
+    # Initialize sample seed data
     if not User.find_all():
         User.create({
             "name": "Zehra Yaşar",
             "email": "zehra@example.com"
         })
+    Announcement.seed_defaults()
 
     port = 80
     try:
@@ -305,13 +307,11 @@ if __name__ == '__main__':
     print("-> GET /sum/5/9                -> 14")
     print("-> GET /api/health             -> JSON {\"status\": \"UP\", ...}")
     print("-> GET /api/swagger            -> Swagger UI Dokümantasyon")
-    print("-> GET /users                  -> Web HTML Kullanıcı Listesi [Listing (R)] (UserController.index)")
-    print("-> POST /users                 -> Web HTML Kullanıcı Ekleme [Creating (C)] (UserController.store)")
-    print("-> GET /users/1                -> Web HTML Kullanıcı Profili (UserController.show)")
-    print("-> GET /api/users              -> REST API Kullanıcı Listesi (ApiUserController.index)")
-    print("-> GET /api/users/1            -> REST API Kullanıcı Detayı (ApiUserController.show)")
-    print("-> POST /api/users             -> REST API Kullanıcı Oluştur (ApiUserController.store)")
-    print("-> PUT /api/users/1            -> REST API Kullanıcı Güncelle (ApiUserController.update)")
-    print("-> PATCH /api/users/1          -> REST API Kısmi Güncelle (ApiUserController.update)")
-    print("-> DELETE /api/users/1         -> REST API Kullanıcı Sil (ApiUserController.destroy)")
+    print("-> GET /users                  -> Web HTML Kullanıcı Listesi [Listing (R)]")
+    print("-> GET /announcements          -> Web HTML Duyuru Yönetim Paneli [Management Interface]")
+    print("-> GET /announcements/create   -> Web HTML Duyuru Oluşturma Formu [Create (C)]")
+    print("-> GET /announcements/1        -> Web HTML Duyuru Detay Sayfası [Show (R)]")
+    print("-> GET /announcements/1/edit   -> Web HTML Duyuru Düzenleme Formu [Edit (U)]")
+    print("-> GET /api/announcements      -> REST API Duyuru Listesi (JSON)")
+    print("-> POST /api/announcements     -> REST API Duyuru Oluştur (JSON)")
     server.serve_forever()
