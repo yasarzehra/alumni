@@ -9,6 +9,8 @@
 !ddd.md
 !Dockerfile
 !docker-compose.yml
+!docker/
+!docker/**
 !models/
 !models/**
 !controllers/

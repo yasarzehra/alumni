@@ -2,7 +2,40 @@ services:
   web:
     build: .
     container_name: alumni_app
+    restart: unless-stopped
     ports:
       - "80:80"
     environment:
       - PYTHONUNBUFFERED=1
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=alumni_db
+      - DB_USER=alumni_user
+      - DB_PASSWORD=alumni_secure_password
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: alumni_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: alumni_db
+      MYSQL_USER: alumni_user
+      MYSQL_PASSWORD: alumni_secure_password
+      MYSQL_ROOT_PASSWORD: root_master_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - alumni_db_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_master_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  alumni_db_data:
+    driver: local
