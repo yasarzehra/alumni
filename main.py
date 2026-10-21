@@ -452,6 +452,88 @@ OPENAPI_SPEC = {
                     "200": {"description": "HTML Duyuru Düzenleme Formu"}
                 }
             }
+        },
+        "/api/jobs": {
+            "get": {
+                "tags": ["API Job Postings (Direct: /api/jobs)"],
+                "summary": "Tüm İş İlanlarını Listele (ApiJobController.index)",
+                "responses": {"200": {"description": "İş ilanları listesi"}}
+            },
+            "post": {
+                "tags": ["API Job Postings (Direct: /api/jobs)"],
+                "summary": "Yeni İş İlanı Oluştur (ApiJobController.store)",
+                "responses": {"201": {"description": "İş ilanı oluşturuldu"}}
+            }
+        },
+        "/api/jobs/{id}": {
+            "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["API Job Postings (Direct: /api/jobs)"],
+                "summary": "Tekil İş İlanı Detayı (ApiJobController.show)",
+                "responses": {"200": {"description": "İlan detayı"}, "404": {"description": "Bulunamadı"}}
+            },
+            "put": {
+                "tags": ["API Job Postings (Direct: /api/jobs)"],
+                "summary": "İş İlanını Güncelle (ApiJobController.update)",
+                "responses": {"200": {"description": "İlan güncellendi"}}
+            },
+            "delete": {
+                "tags": ["API Job Postings (Direct: /api/jobs)"],
+                "summary": "İş İlanını Sil (ApiJobController.destroy)",
+                "responses": {"200": {"description": "İlan silindi"}}
+            }
+        },
+        "/api/users/{user_id}/jobs": {
+            "parameters": [{"name": "user_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (/users/{id}/...)"],
+                "summary": "Kullanıcının Yayınladığı İş İlanları (ApiUserController.job_postings)",
+                "responses": {"200": {"description": "Kullanıcı ilanları"}}
+            },
+            "post": {
+                "tags": ["Nested Routes (/users/{id}/...)"],
+                "summary": "Kullanıcı Adına İş İlanı Ekle (ApiUserController.store_job_posting)",
+                "responses": {"201": {"description": "İlan oluşturuldu"}}
+            }
+        },
+        "/api/users/{user_id}/announcements": {
+            "parameters": [{"name": "user_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (/users/{id}/...)"],
+                "summary": "Kullanıcının Yayınladığı Duyurular (ApiUserController.announcements)",
+                "responses": {"200": {"description": "Kullanıcı duyuruları"}}
+            }
+        },
+        "/api/users/{user_id}/profile": {
+            "parameters": [{"name": "user_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (/users/{id}/...)"],
+                "summary": "Kullanıcı Genişletilmiş Profili (ApiUserController.profile)",
+                "responses": {"200": {"description": "Kullanıcı profili"}}
+            }
+        },
+        "/api/jobs/{id}/author": {
+            "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (/jobs/{id}/...)"],
+                "summary": "İlanı Yayınlayan Mezunun Profili (ApiJobController.author)",
+                "responses": {"200": {"description": "Yayınlayan mezun profili"}}
+            }
+        },
+        "/jobs": {
+            "get": {
+                "tags": ["Web Job Board (/jobs)"],
+                "summary": "İş İlanları Yönetim Paneli (JobController.index)",
+                "responses": {"200": {"description": "HTML İş İlanları Tablosu"}}
+            }
+        },
+        "/users/{user_id}/jobs": {
+            "parameters": [{"name": "user_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Web Job Board (/jobs)"],
+                "summary": "Kullanıcının İlanları Web Sayfası (JobController.index)",
+                "responses": {"200": {"description": "HTML Kullanıcı İlanları Tablosu"}}
+            }
         }
     }
 }

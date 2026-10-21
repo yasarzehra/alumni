@@ -1,7 +1,9 @@
 """
 Views Package
-Exposes View class for presentation layer rendering.
+Exposes View classes for presentation layer rendering.
 """
 from .view import View
+from .announcement_view import AnnouncementView
+from .job_view import JobView
 
-__all__ = ["View"]
+__all__ = ["View", "AnnouncementView", "JobView"]

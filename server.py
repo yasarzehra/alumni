@@ -6,6 +6,7 @@ import os
 from main import OPENAPI_SPEC, SWAGGER_HTML_TEMPLATE
 from models.user import User
 from models.announcement import Announcement
+from models.job_posting import JobPosting
 from views.view import View
 from routes import get_configured_router
 
@@ -133,7 +134,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
         # Route 1: GET /users -> listing (R) -> UserController.index() -> View.render_users_index()
         # Route 2: GET /users/{id} -> detail -> UserController.show() -> View.render_users_show()
         # API Routes: GET /api/users, GET /api/users/{id}
-        route_match = router.dispatch("GET", self.path)
+        clean_path = self.path.split('?')[0]
+        route_match = router.dispatch("GET", clean_path)
         if route_match:
             handler, params = route_match
             result = handler(params)
@@ -156,7 +158,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
         # Dispatch through MVC Router:
         # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
         # Route: POST /api/users -> ApiUserController.store(data)
-        route_match = router.dispatch("POST", self.path)
+        clean_path = self.path.split('?')[0]
+        route_match = router.dispatch("POST", clean_path)
         if route_match:
             handler, params = route_match
             data, err = self._read_body()
@@ -193,7 +196,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         # Dispatch through MVC Router
-        route_match = router.dispatch("PUT", self.path)
+        clean_path = self.path.split('?')[0]
+        route_match = router.dispatch("PUT", clean_path)
         if route_match:
             handler, params = route_match
             data, err = self._read_body()
@@ -223,7 +227,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
     def do_PATCH(self):
         # Dispatch through MVC Router
-        route_match = router.dispatch("PATCH", self.path)
+        clean_path = self.path.split('?')[0]
+        route_match = router.dispatch("PATCH", clean_path)
         if route_match:
             handler, params = route_match
             data, err = self._read_body()
@@ -253,7 +258,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         # Dispatch through MVC Router
-        route_match = router.dispatch("DELETE", self.path)
+        clean_path = self.path.split('?')[0]
+        route_match = router.dispatch("DELETE", clean_path)
         if route_match:
             handler, params = route_match
             result = handler(params)
@@ -282,14 +288,14 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    # Ensure database connection & verify users exist
+    # Ensure database connection & verify entities exist
     try:
         user_count = len(User.find_all())
         announcement_count = len(Announcement.find_all())
-        print(f"[DB] Baglanti saglandi. Mevcut kayitlar: {user_count} Kullanici, {announcement_count} Duyuru.")
+        job_count = len(JobPosting.find_all())
+        print(f"[DB] Baglanti saglandi. Mevcut kayitlar: {user_count} Kullanici, {announcement_count} Duyuru, {job_count} Is Ilani.")
     except Exception as e:
         print(f"[DB] Uyari: Veritabani baglantisi sirasinda hata: {e}")
-
 
     port = 80
     try:
@@ -300,19 +306,19 @@ if __name__ == '__main__':
         server = ThreadingHTTPServer(('0.0.0.0', 8000), SimpleHandler)
         print("Sunucu calisiyor: http://localhost:8000")
 
-    print("-> GET /                       -> index.html (Temporary Main Page)")
-    print("-> GET /about                  -> about.html (Gercek Web Sayfasi)")
-    print("-> GET /ok                     -> ok")
-    print("-> GET /hello                  -> hello world!")
-    print("-> GET /hello/zehra            -> hello, zehra")
-    print("-> GET /sum/5/9                -> 14")
-    print("-> GET /api/health             -> JSON {\"status\": \"UP\", ...}")
-    print("-> GET /api/swagger            -> Swagger UI Dokümantasyon")
-    print("-> GET /users                  -> Web HTML Kullanıcı Listesi [Listing (R)]")
-    print("-> GET /announcements          -> Web HTML Duyuru Yönetim Paneli [Management Interface]")
-    print("-> GET /announcements/create   -> Web HTML Duyuru Oluşturma Formu [Create (C)]")
-    print("-> GET /announcements/1        -> Web HTML Duyuru Detay Sayfası [Show (R)]")
-    print("-> GET /announcements/1/edit   -> Web HTML Duyuru Düzenleme Formu [Edit (U)]")
-    print("-> GET /api/announcements      -> REST API Duyuru Listesi (JSON)")
-    print("-> POST /api/announcements     -> REST API Duyuru Oluştur (JSON)")
+    print("\n--- DIRECT ROUTES (Resource-Level) ---")
+    print("-> GET /users                          -> Web HTML Kullanici Listesi")
+    print("-> GET /announcements                  -> Web HTML Duyuru Yonetim Paneli")
+    print("-> GET /jobs                           -> Web HTML Is & Staj Ilanlari Paneli")
+    print("-> GET /api/users                      -> REST API Kullanicilar Listesi")
+    print("-> GET /api/announcements              -> REST API Duyurular Listesi")
+    print("-> GET /api/jobs                       -> REST API Is Ilanlari Listesi")
+    print("-> GET /api/swagger                    -> Swagger UI Dokümantasyon")
+    print("\n--- NESTED ROUTES (Hierarchical Relations) ---")
+    print("-> GET /users/{id}/jobs                -> Web HTML Belirli Kullanicinin Ilanlari")
+    print("-> GET /api/users/{id}/jobs            -> REST API Belirli Kullanicinin Ilanlari")
+    print("-> POST /api/users/{id}/jobs           -> REST API Kullaniciya Bagli Ilan Ekle")
+    print("-> GET /api/users/{id}/announcements   -> REST API Kullaniciya Bagli Duyurular")
+    print("-> GET /api/users/{id}/profile         -> REST API Kullanici Detay Profili")
+    print("-> GET /api/jobs/{id}/author           -> REST API Ilani Yayinlayan Mezun Profili\n")
     server.serve_forever()

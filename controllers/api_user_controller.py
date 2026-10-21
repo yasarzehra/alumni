@@ -127,3 +127,84 @@ class ApiUserController:
             "success": True,
             "message": f"{user_id} ID'li kullanıcı başarıyla silindi"
         }
+
+    # =========================================================================
+    # Nested Relational Actions
+    # =========================================================================
+
+    @staticmethod
+    def job_postings(user_id: int) -> Tuple[int, Dict[str, Any]]:
+        """
+        GET /api/users/{user_id}/jobs
+        [Nested Relation]: Returns all job postings published by this user.
+        """
+        user = User.find_by_id(user_id)
+        if not user:
+            return 404, {
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }
+        jobs = User.get_job_postings(user_id)
+        return 200, {
+            "success": True,
+            "user_id": user_id,
+            "user_name": user["name"],
+            "count": len(jobs),
+            "data": jobs
+        }
+
+    @staticmethod
+    def store_job_posting(user_id: int, data: Dict[str, Any]) -> Tuple[int, Dict[str, Any]]:
+        """
+        POST /api/users/{user_id}/jobs
+        [Nested Relation]: Creates a new job posting scoped to this user.
+        """
+        user = User.find_by_id(user_id)
+        if not user:
+            return 404, {
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }
+        data["alumni_id"] = user_id
+        from controllers.api_job_controller import ApiJobController
+        return ApiJobController.store(data)
+
+    @staticmethod
+    def announcements(user_id: int) -> Tuple[int, Dict[str, Any]]:
+        """
+        GET /api/users/{user_id}/announcements
+        [Nested Relation]: Returns all announcements published by this user.
+        """
+        user = User.find_by_id(user_id)
+        if not user:
+            return 404, {
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }
+        items = User.get_announcements(user_id)
+        return 200, {
+            "success": True,
+            "user_id": user_id,
+            "user_name": user["name"],
+            "count": len(items),
+            "data": items
+        }
+
+    @staticmethod
+    def profile(user_id: int) -> Tuple[int, Dict[str, Any]]:
+        """
+        GET /api/users/{user_id}/profile
+        [Nested Relation]: Returns full profile and career details of this user.
+        """
+        user = User.find_by_id(user_id)
+        if not user:
+            return 404, {
+                "error": "NotFound",
+                "message": f"{user_id} ID'li kullanıcı bulunamadı"
+            }
+        profile_data = User.get_profile(user_id)
+        return 200, {
+            "success": True,
+            "user_id": user_id,
+            "data": profile_data or user
+        }
