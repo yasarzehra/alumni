@@ -8,6 +8,8 @@ from .announcement_controller import AnnouncementController
 from .api_announcement_controller import ApiAnnouncementController
 from .job_controller import JobController
 from .api_job_controller import ApiJobController
+from .application_controller import ApplicationController
+from .api_application_controller import ApiApplicationController
 
 __all__ = [
     "UserController",
@@ -15,5 +17,7 @@ __all__ = [
     "AnnouncementController",
     "ApiAnnouncementController",
     "JobController",
-    "ApiJobController"
+    "ApiJobController",
+    "ApplicationController",
+    "ApiApplicationController"
 ]

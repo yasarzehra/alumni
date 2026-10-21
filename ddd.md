@@ -43,6 +43,7 @@ erDiagram
     USERS ||--o{ EVENTS : "organizes (1:N)"
     USERS ||--o{ EVENT_ATTENDEES : "registers (1:N)"
     USERS ||--o{ JOB_POSTINGS : "posts (1:N)"
+    USERS ||--o{ JOB_APPLICATIONS : "submits (1:N)"
     USERS ||--o{ MENTORSHIP_REQUESTS : "initiates/receives (1:N)"
     
     PROFILES ||--o| ALUMNI_DETAILS : "extends as alumni (1:0..1)"
@@ -52,6 +53,7 @@ erDiagram
     DEPARTMENTS ||--o{ STUDENT_DETAILS : "enrolled in (1:N)"
     
     EVENTS ||--o{ EVENT_ATTENDEES : "contains (1:N)"
+    JOB_POSTINGS ||--o{ JOB_APPLICATIONS : "receives (1:N)"
 
     USERS {
         bigint id PK
@@ -145,6 +147,17 @@ erDiagram
         string application_url
         string status "active | expired | closed | draft"
         datetime expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    JOB_APPLICATIONS {
+        bigint id PK
+        bigint job_id FK
+        bigint applicant_id FK
+        string resume_url
+        text cover_letter
+        string status "pending | reviewed | shortlisted | accepted | rejected"
         timestamp created_at
         timestamp updated_at
     }
@@ -255,6 +268,25 @@ Directly powers the **Job & Internship Board** where alumni, corporate recruiter
 2. **Access Control & RBAC:** Posting privileges are restricted to users with `role = 'alumni'`, `'coordinator'`, or `'admin'`. Students have read and apply permissions.
 3. **Lifecycle Management:** Queries filter by `status = 'active'` and `(expires_at IS NULL OR expires_at > NOW())` to ensure only open opportunities are surfaced to applicants.
 
+### 4.6. `job_applications` / `applications` (Job Application Lifecycle)
+Connects candidates (`users` with role `student` or `alumni`) to published job opportunities (`job_postings`). Tracks application progress, cover letters, resume attachments, and review states.
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `BIGINT UNSIGNED` | `AUTO_INCREMENT, PRIMARY KEY` | Unique application integer identifier |
+| `job_id` | `BIGINT UNSIGNED` | `NOT NULL, FK -> job_postings(id) ON DELETE CASCADE` | Applied job posting reference |
+| `applicant_id` | `BIGINT UNSIGNED` | `NOT NULL, FK -> users(id) ON DELETE CASCADE` | Applying candidate user account |
+| `resume_url` | `VARCHAR(512)` | `NULL` | Candidate resume/portfolio PDF URL or path |
+| `cover_letter` | `TEXT` | `NULL` | Applicant motivation letter and personal statement |
+| `status` | `ENUM(...)` | `NOT NULL, DEFAULT 'pending'` | `'pending', 'reviewed', 'shortlisted', 'accepted', 'rejected'` |
+| `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | Submission timestamp |
+| `updated_at` | `TIMESTAMP` | `ON UPDATE CURRENT_TIMESTAMP` | Last status modification timestamp |
+
+#### Relational Rules & Referential Integrity:
+1. **Uniqueness (`UNIQUE(job_id, applicant_id)`):** A candidate cannot apply multiple times to the same job posting, avoiding duplicate submissions.
+2. **Cascade Integrity:** If either the job posting or the candidate's account is deleted, foreign key cascades (`ON DELETE CASCADE`) automatically remove associated applications.
+3. **Bidirectional Navigation:** Supports retrieval of all applications under a job (`jobs/{id}/applications`) as well as all applications by a candidate (`users/{id}/applications`).
+
 ---
 
 ## ⚡ 5. Indexing & Query Performance Strategy
@@ -270,6 +302,9 @@ To ensure sub-millisecond query execution under high concurrency, indexes are de
 | `job_posts` | `idx_job_posts_alumni` | `BTREE` | `alumni_id` | Fast lookup of postings published by a specific user |
 | `job_posts` | `idx_job_posts_status_date`| `COMPOSITE` | `status, created_at DESC` | High-throughput feed sorting for active postings |
 | `job_posts` | `idx_job_posts_type_location`| `COMPOSITE` | `employment_type, location` | Faceted search and job catalog filtering |
+| `job_applications`| `idx_job_applications_job` | `BTREE` | `job_id` | Fast retrieval of candidates applying to a specific job |
+| `job_applications`| `idx_job_applications_applicant` | `BTREE` | `applicant_id` | Quick applicant history retrieval in profile view |
+| `job_applications`| `idx_job_applications_status_date`| `COMPOSITE`| `status, created_at DESC` | Recruiter review queue sorting by progress status |
 
 ---
 
@@ -318,3 +353,4 @@ volumes:
 - 📋 **OpenAPI / Swagger Spec:** [`main.py`](main.py)
 - 👥 **User MVC Components:** [`models/user.py`](models/user.py) &bull; [`controllers/user_controller.py`](controllers/user_controller.py) &bull; [`routes/web.py`](routes/web.py)
 - 📢 **Announcement MVC Components:** [`models/announcement.py`](models/announcement.py) &bull; [`controllers/announcement_controller.py`](controllers/announcement_controller.py) &bull; [`views/announcement_view.py`](views/announcement_view.py)
+- 💼 **Job Board & Applications:** [`models/job_posting.py`](models/job_posting.py) &bull; [`models/job_application.py`](models/job_application.py) &bull; [`controllers/job_controller.py`](controllers/job_controller.py) &bull; [`controllers/api_job_controller.py`](controllers/api_job_controller.py)

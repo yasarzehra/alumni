@@ -252,6 +252,14 @@ class JobPosting:
         from models.user import User
         return User.find_by_id(job["alumni_id"])
 
+    @classmethod
+    def get_applications(cls, job_id: int) -> List[Dict[str, Any]]:
+        """
+        [Relation (1:N)]: Returns all candidate applications submitted for this job posting.
+        """
+        from models.job_application import JobApplication
+        return JobApplication.find_by_job(job_id)
+
 
 # Backward-compatible alias
 JobPost = JobPosting

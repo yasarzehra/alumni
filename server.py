@@ -7,6 +7,7 @@ from main import OPENAPI_SPEC, SWAGGER_HTML_TEMPLATE
 from models.user import User
 from models.announcement import Announcement
 from models.job_posting import JobPosting
+from models.job_application import JobApplication
 from views.view import View
 from routes import get_configured_router
 
@@ -27,6 +28,12 @@ def get_html_content(filename):
 
 
 class SimpleHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        try:
+            print(f"[{self.log_date_time_string()}] {self.command} {self.path} - {format % args}", flush=True)
+        except Exception:
+            pass
+
     def _send(self, status, content_type, data):
         if isinstance(data, str):
             data = data.encode('utf-8')
@@ -63,96 +70,98 @@ class SimpleHandler(BaseHTTPRequestHandler):
             return None, f"İstek gövdesi okunamadı: {str(e)}"
 
     def do_GET(self):
-        # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
-        if self.path in ['/', '', '/main', '/index.html']:
-            self._send(200, 'text/html', get_html_content('index.html'))
-            return
+        try:
+            # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
+            if self.path in ['/', '', '/main', '/index.html']:
+                self._send(200, 'text/html', get_html_content('index.html'))
+                return
 
-        # 'ok' endpointi: GET /ok veya GET /alumni -> 'ok'
-        if self.path in ['/ok', '/ok/', '/alumni', '/alumni/']:
-            self._send(200, 'text/plain', b'ok')
-            return
+            # 'ok' endpointi: GET /ok veya GET /alumni -> 'ok'
+            if self.path in ['/ok', '/ok/', '/alumni', '/alumni/']:
+                self._send(200, 'text/plain', b'ok')
+                return
 
-        # 5. About Sayfası: GET /about -> about.html
-        if self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
-            self._send(200, 'text/html', get_html_content('about.html'))
-            return
+            # 5. About Sayfası: GET /about -> about.html
+            if self.path in ['/about', '/about/', '/aout', '/aout/', '/about.html']:
+                self._send(200, 'text/html', get_html_content('about.html'))
+                return
 
-        # 4. Task: GET /sum/{nm1}/{nm2} -> nm1 + nm2 toplamı
-        if self.path.startswith('/sum/'):
-            parts = [p for p in unquote(self.path).strip('/').split('/') if p]
-            if len(parts) == 3:
-                try:
-                    n1 = float(parts[1])
-                    n2 = float(parts[2])
-                    total = int(n1 + n2) if (n1 + n2).is_integer() else (n1 + n2)
-                    self._send(200, 'text/plain', str(total))
-                except ValueError:
-                    self._send(400, 'text/plain', 'Lutfen gecerli sayilar girin')
-            else:
-                self._send(400, 'text/plain', 'Kullanim: /sum/{sayi1}/{sayi2}')
-            return
+            # 4. Task: GET /sum/{nm1}/{nm2} -> nm1 + nm2 toplamı
+            if self.path.startswith('/sum/'):
+                parts = [p for p in unquote(self.path).strip('/').split('/') if p]
+                if len(parts) == 3:
+                    try:
+                        n1 = float(parts[1])
+                        n2 = float(parts[2])
+                        total = int(n1 + n2) if (n1 + n2).is_integer() else (n1 + n2)
+                        self._send(200, 'text/plain', str(total))
+                    except ValueError:
+                        self._send(400, 'text/plain', 'Lutfen gecerli sayilar girin')
+                else:
+                    self._send(400, 'text/plain', 'Kullanim: /sum/{sayi1}/{sayi2}')
+                return
 
-        # 2. Task: GET /hello -> 'hello world!'
-        if self.path in ['/hello', '/hello/']:
-            self._send(200, 'text/plain', 'hello world!')
-            return
-
-        # 3. Task: GET /hello/{name} -> 'hello, {name}'
-        if self.path.startswith('/hello/'):
-            name = unquote(self.path[len('/hello/'):].strip('/'))
-            if name:
-                self._send(200, 'text/plain', f"hello, {name}")
-            else:
+            # 2. Task: GET /hello -> 'hello world!'
+            if self.path in ['/hello', '/hello/']:
                 self._send(200, 'text/plain', 'hello world!')
-            return
-
-        # Swagger UI Dokümantasyon Arayüzü: GET /api/swagger
-        if self.path in ['/api/swagger', '/api/swagger/']:
-            self._send(200, 'text/html', SWAGGER_HTML_TEMPLATE)
-            return
-
-        # Swagger / OpenAPI JSON Spesifikasyonu: GET /api/swagger.json veya /api/openapi.json
-        if self.path in ['/api/swagger.json', '/api/openapi.json']:
-            self._send(200, 'application/json', json.dumps(OPENAPI_SPEC, ensure_ascii=False, indent=2))
-            return
-
-        # 6. Task: GET /api/health -> JSON
-        if self.path in ['/api/health', '/api/health/', '/health', '/health/']:
-            health_response = json.dumps({
-                "status": "UP",
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }, ensure_ascii=False, indent=2)
-            self._send(200, 'application/json', health_response)
-            return
-
-        if self.path == '/favicon.ico':
-            self._send(204, 'text/plain', b'')
-            return
-
-        # Dispatch through MVC Router:
-        # Route 1: GET /users -> listing (R) -> UserController.index() -> View.render_users_index()
-        # Route 2: GET /users/{id} -> detail -> UserController.show() -> View.render_users_show()
-        # API Routes: GET /api/users, GET /api/users/{id}
-        clean_path = self.path.split('?')[0]
-        route_match = router.dispatch("GET", clean_path)
-        if route_match:
-            handler, params = route_match
-            result = handler(params)
-            # View Layer returns HTML string directly
-            if isinstance(result, str):
-                self._send(200, 'text/html', result)
-                return
-            # ApiUserController returns (status_code, dict)
-            elif isinstance(result, tuple) and len(result) == 2:
-                status, data = result
-                self._send(status, 'application/json', json.dumps(data, ensure_ascii=False, indent=2))
-                return
-            elif isinstance(result, dict):
-                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
                 return
 
-        self._send(404, 'text/plain', '404 Not Found')
+            # 3. Task: GET /hello/{name} -> 'hello, {name}'
+            if self.path.startswith('/hello/'):
+                name = unquote(self.path[len('/hello/'):].strip('/'))
+                if name:
+                    self._send(200, 'text/plain', f"hello, {name}")
+                else:
+                    self._send(200, 'text/plain', 'hello world!')
+                return
+
+            # Swagger UI Dokümantasyon Arayüzü: GET /api/swagger
+            if self.path in ['/api/swagger', '/api/swagger/']:
+                self._send(200, 'text/html', SWAGGER_HTML_TEMPLATE)
+                return
+
+            # Swagger / OpenAPI JSON Spesifikasyonu: GET /api/swagger.json veya /api/openapi.json
+            if self.path in ['/api/swagger.json', '/api/openapi.json']:
+                self._send(200, 'application/json', json.dumps(OPENAPI_SPEC, ensure_ascii=False, indent=2))
+                return
+
+            # 6. Task: GET /api/health -> JSON
+            if self.path in ['/api/health', '/api/health/', '/health', '/health/']:
+                health_response = json.dumps({
+                    "status": "UP",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }, ensure_ascii=False, indent=2)
+                self._send(200, 'application/json', health_response)
+                return
+
+            if self.path == '/favicon.ico':
+                self._send(204, 'text/plain', b'')
+                return
+
+            # Dispatch through MVC Router:
+            clean_path = self.path.split('?')[0]
+            route_match = router.dispatch("GET", clean_path)
+            if route_match:
+                handler, params = route_match
+                result = handler(params)
+                # View Layer returns HTML string directly
+                if isinstance(result, str):
+                    self._send(200, 'text/html', result)
+                    return
+                # ApiUserController returns (status_code, dict)
+                elif isinstance(result, tuple) and len(result) == 2:
+                    status, data = result
+                    self._send(status, 'application/json', json.dumps(data, ensure_ascii=False, indent=2))
+                    return
+                elif isinstance(result, dict):
+                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                    return
+
+            self._send(404, 'text/plain', '404 Not Found')
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}))
 
     def do_POST(self):
         # Dispatch through MVC Router:
@@ -293,7 +302,8 @@ if __name__ == '__main__':
         user_count = len(User.find_all())
         announcement_count = len(Announcement.find_all())
         job_count = len(JobPosting.find_all())
-        print(f"[DB] Baglanti saglandi. Mevcut kayitlar: {user_count} Kullanici, {announcement_count} Duyuru, {job_count} Is Ilani.")
+        app_count = len(JobApplication.find_all())
+        print(f"[DB] Baglanti saglandi. Mevcut kayitlar: {user_count} Kullanici, {announcement_count} Duyuru, {job_count} Is Ilani, {app_count} Basvuru.")
     except Exception as e:
         print(f"[DB] Uyari: Veritabani baglantisi sirasinda hata: {e}")
 
@@ -310,15 +320,23 @@ if __name__ == '__main__':
     print("-> GET /users                          -> Web HTML Kullanici Listesi")
     print("-> GET /announcements                  -> Web HTML Duyuru Yonetim Paneli")
     print("-> GET /jobs                           -> Web HTML Is & Staj Ilanlari Paneli")
+    print("-> GET /applications                   -> Web HTML Is Basvurulari Paneli")
     print("-> GET /api/users                      -> REST API Kullanicilar Listesi")
     print("-> GET /api/announcements              -> REST API Duyurular Listesi")
     print("-> GET /api/jobs                       -> REST API Is Ilanlari Listesi")
+    print("-> GET /api/applications               -> REST API Is Basvurulari Listesi")
     print("-> GET /api/swagger                    -> Swagger UI Dokümantasyon")
     print("\n--- NESTED ROUTES (Hierarchical Relations) ---")
     print("-> GET /users/{id}/jobs                -> Web HTML Belirli Kullanicinin Ilanlari")
+    print("-> GET /users/{id}/applications        -> Web HTML Belirli Kullanicinin Basvurulari")
+    print("-> GET /jobs/{id}/applications         -> Web HTML Belirli Ilanin Basvurulari")
+    print("-> GET /jobs/{id}/apply                -> Web HTML Ilan Basvuru Formu")
     print("-> GET /api/users/{id}/jobs            -> REST API Belirli Kullanicinin Ilanlari")
     print("-> POST /api/users/{id}/jobs           -> REST API Kullaniciya Bagli Ilan Ekle")
-    print("-> GET /api/users/{id}/announcements   -> REST API Kullaniciya Bagli Duyurular")
-    print("-> GET /api/users/{id}/profile         -> REST API Kullanici Detay Profili")
-    print("-> GET /api/jobs/{id}/author           -> REST API Ilani Yayinlayan Mezun Profili\n")
+    print("-> GET /api/users/{id}/applications    -> REST API Kullanicinin Yaptigi Basvurular")
+    print("-> GET /api/jobs/{id}/applications     -> REST API Ilana Gelen Basvurular")
+    print("-> POST /api/jobs/{id}/applications    -> REST API Ilana Yeni Basvuru Yap")
+    print("-> GET /api/jobs/{id}/author           -> REST API Ilani Yayinlayan Mezun Profili")
+    print("-> GET /api/applications/{id}/job      -> REST API Basvurulan Ilan Detayi")
+    print("-> GET /api/applications/{id}/applicant-> REST API Basvuran Aday Profili\n")
     server.serve_forever()

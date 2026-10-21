@@ -143,6 +143,24 @@ CREATE TABLE IF NOT EXISTS job_postings (
     INDEX idx_job_postings_type_location (employment_type, location)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 9.2 Job Applications (Candidate Submissions)
+CREATE TABLE IF NOT EXISTS job_applications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    job_id BIGINT UNSIGNED NOT NULL,
+    applicant_id BIGINT UNSIGNED NOT NULL,
+    resume_url VARCHAR(512) NULL,
+    cover_letter TEXT NULL,
+    status ENUM('pending', 'reviewed', 'shortlisted', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_app_job FOREIGN KEY (job_id) REFERENCES job_postings(id) ON DELETE CASCADE,
+    CONSTRAINT fk_app_applicant FOREIGN KEY (applicant_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_job_applicant (job_id, applicant_id),
+    INDEX idx_app_job (job_id),
+    INDEX idx_app_applicant (applicant_id),
+    INDEX idx_app_status (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 10. Mentorship Requests
 CREATE TABLE IF NOT EXISTS mentorship_requests (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

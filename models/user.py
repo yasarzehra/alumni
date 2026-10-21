@@ -217,3 +217,11 @@ class User:
             WHERE p.user_id = ?
         """
         return Database.fetch_one(query, (int(user_id),))
+
+    @classmethod
+    def get_applications(cls, user_id: int) -> List[Dict[str, Any]]:
+        """
+        [Relation (1:N)]: Returns all job applications submitted by this user.
+        """
+        from models.job_application import JobApplication
+        return JobApplication.find_by_applicant(user_id)

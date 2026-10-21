@@ -8,14 +8,19 @@ Includes:
    - Users: /users
    - Announcements: /announcements
    - Job Postings: /jobs & /job-postings
+   - Applications: /applications
 2. Nested Relational Routes:
    - User Jobs: /users/{user_id}/jobs
    - User Announcements: /users/{user_id}/announcements
+   - User Applications: /users/{user_id}/applications
+   - Job Applications: /jobs/{job_id}/applications
+   - Job Apply Form: /jobs/{job_id}/apply
 """
 from routes.router import Router
 from controllers.user_controller import UserController
 from controllers.announcement_controller import AnnouncementController
 from controllers.job_controller import JobController
+from controllers.application_controller import ApplicationController
 
 
 def register_web_routes(router: Router) -> Router:
@@ -62,6 +67,11 @@ def register_web_routes(router: Router) -> Router:
         router.post(f'{prefix}/{{id}}/delete', lambda params, body=None: JobController.destroy(params['id']))
         router.delete(f'{prefix}/{{id}}', lambda params, body=None: JobController.destroy(params['id']))
 
+    # 1.4 Applications Web Routes (/applications)
+    router.get('/applications', lambda params, body=None: ApplicationController.index())
+    router.post('/applications/{id}/delete', lambda params, body=None: ApplicationController.destroy(params['id']))
+    router.delete('/applications/{id}', lambda params, body=None: ApplicationController.destroy(params['id']))
+
     # =========================================================================
     # 2. NESTED ROUTES (Hierarchical Parent-Child Relationships)
     # =========================================================================
@@ -71,5 +81,15 @@ def register_web_routes(router: Router) -> Router:
 
     # 2.2 User's Announcements: GET /users/{user_id}/announcements
     router.get('/users/{user_id}/announcements', lambda params, body=None: AnnouncementController.index())
+
+    # 2.3 User's Job Applications: GET /users/{user_id}/applications
+    router.get('/users/{user_id}/applications', lambda params, body=None: ApplicationController.index(filter_user_id=params['user_id']))
+
+    # 2.4 Job's Candidate Applications: GET /jobs/{job_id}/applications
+    router.get('/jobs/{job_id}/applications', lambda params, body=None: ApplicationController.index(filter_job_id=params['job_id']))
+
+    # 2.5 Job's Application Form & Submission: GET/POST /jobs/{job_id}/apply
+    router.get('/jobs/{job_id}/apply', lambda params, body=None: ApplicationController.apply_form(params['job_id']))
+    router.post('/jobs/{job_id}/apply', lambda params, body=None: ApplicationController.submit_application(params['job_id'], body or {}))
 
     return router

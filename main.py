@@ -534,6 +534,93 @@ OPENAPI_SPEC = {
                 "summary": "Kullanıcının İlanları Web Sayfası (JobController.index)",
                 "responses": {"200": {"description": "HTML Kullanıcı İlanları Tablosu"}}
             }
+        },
+        "/api/applications": {
+            "get": {
+                "tags": ["API Applications (Direct: /api/applications)"],
+                "summary": "Tüm Başvuruları Listele (ApiApplicationController.index)",
+                "responses": {"200": {"description": "Başvuru listesi"}}
+            },
+            "post": {
+                "tags": ["API Applications (Direct: /api/applications)"],
+                "summary": "Yeni Başvuru Gönder (ApiApplicationController.store)",
+                "responses": {"201": {"description": "Başvuru oluşturuldu"}}
+            }
+        },
+        "/api/applications/{id}": {
+            "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["API Applications (Direct: /api/applications)"],
+                "summary": "Tekil Başvuru Detayı (ApiApplicationController.show)",
+                "responses": {"200": {"description": "Başvuru detayı"}}
+            },
+            "put": {
+                "tags": ["API Applications (Direct: /api/applications)"],
+                "summary": "Başvuru Güncelle (ApiApplicationController.update)",
+                "responses": {"200": {"description": "Başvuru güncellendi"}}
+            },
+            "delete": {
+                "tags": ["API Applications (Direct: /api/applications)"],
+                "summary": "Başvuruyu Geri Çek / Sil (ApiApplicationController.destroy)",
+                "responses": {"200": {"description": "Başvuru silindi"}}
+            }
+        },
+        "/api/jobs/{job_id}/applications": {
+            "parameters": [{"name": "job_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (Job Applications: /jobs/{id}/...)"],
+                "summary": "İlana Gelen Başvuruları Listele (ApiApplicationController.by_job)",
+                "responses": {"200": {"description": "İlan başvuruları"}}
+            },
+            "post": {
+                "tags": ["Nested Routes (Job Applications: /jobs/{id}/...)"],
+                "summary": "İlana Yeni Başvuru Yap (ApiApplicationController.store_for_job)",
+                "responses": {"201": {"description": "Başvuru alındı"}}
+            }
+        },
+        "/api/users/{user_id}/applications": {
+            "parameters": [{"name": "user_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (User Applications: /users/{id}/...)"],
+                "summary": "Kullanıcının Yaptığı Başvuruları Listele (ApiApplicationController.by_user)",
+                "responses": {"200": {"description": "Kullanıcı başvuruları"}}
+            }
+        },
+        "/api/applications/{id}/job": {
+            "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (Application Relations)"],
+                "summary": "Başvurulan İlanın Detayı (ApiApplicationController.get_job_rel)",
+                "responses": {"200": {"description": "İlan detayları"}}
+            }
+        },
+        "/api/applications/{id}/applicant": {
+            "parameters": [{"name": "id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Nested Routes (Application Relations)"],
+                "summary": "Başvuran Adayın Profili (ApiApplicationController.get_applicant_rel)",
+                "responses": {"200": {"description": "Aday profili"}}
+            }
+        },
+        "/applications": {
+            "get": {
+                "tags": ["Web Applications (/applications)"],
+                "summary": "Tüm Başvurular Web Paneli (ApplicationController.index)",
+                "responses": {"200": {"description": "HTML Başvuru Tablosu"}}
+            }
+        },
+        "/jobs/{job_id}/apply": {
+            "parameters": [{"name": "job_id", "in": "path", "required": True, "schema": {"type": "integer"}, "example": 1}],
+            "get": {
+                "tags": ["Web Applications (/applications)"],
+                "summary": "İş İlanı Başvuru Formu (ApplicationController.apply_form)",
+                "responses": {"200": {"description": "HTML Başvuru Formu"}}
+            },
+            "post": {
+                "tags": ["Web Applications (/applications)"],
+                "summary": "İş İlanına Başvuru Gönder (ApplicationController.submit_application)",
+                "responses": {"200": {"description": "Başvuru kaydedildi"}}
+            }
         }
     }
 }
