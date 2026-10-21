@@ -180,3 +180,40 @@ class User:
             return False
         Database.execute("DELETE FROM users WHERE id = ?", (user_id,))
         return True
+
+    # =========================================================================
+    # Relational Navigation Methods
+    # =========================================================================
+
+    @classmethod
+    def get_job_postings(cls, user_id: int) -> List[Dict[str, Any]]:
+        """
+        [Relation (1:N)]: Returns all job postings published by this user.
+        """
+        from models.job_posting import JobPosting
+        return JobPosting.find_by_alumni(user_id)
+
+    @classmethod
+    def get_announcements(cls, user_id: int) -> List[Dict[str, Any]]:
+        """
+        [Relation (1:N)]: Returns all announcements published by this user.
+        """
+        query = "SELECT * FROM announcements WHERE author_id = ? ORDER BY id DESC"
+        rows = Database.fetch_all(query, (int(user_id),))
+        from models.announcement import Announcement
+        return [Announcement._format_row(r) for r in rows if r]
+
+    @classmethod
+    def get_profile(cls, user_id: int) -> Optional[Dict[str, Any]]:
+        """
+        [Relation (1:1)]: Returns the extended profile and academic/career details.
+        """
+        query = """
+            SELECT p.*, a.graduation_year, a.current_company, a.current_title, a.industry, a.is_mentor_available,
+                   d.department_name, d.faculty_name
+            FROM profiles p
+            LEFT JOIN alumni_details a ON p.id = a.profile_id
+            LEFT JOIN departments d ON a.department_id = d.id
+            WHERE p.user_id = ?
+        """
+        return Database.fetch_one(query, (int(user_id),))

@@ -112,3 +112,14 @@ class Announcement:
             return False
         Database.execute("DELETE FROM announcements WHERE id = ?", (announcement_id,))
         return True
+
+    @classmethod
+    def get_author(cls, announcement_id: int) -> Optional[Dict[str, Any]]:
+        """
+        [Relation (N:1)]: Returns the author User record if author_id is linked.
+        """
+        row = Database.fetch_one("SELECT author_id FROM announcements WHERE id = ?", (int(announcement_id),))
+        if not row or not row.get("author_id"):
+            return None
+        from models.user import User
+        return User.find_by_id(row["author_id"])
