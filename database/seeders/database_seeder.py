@@ -11,7 +11,8 @@ sys.path.insert(0, BASE_DIR)
 
 from database.factories.user_factory import UserFactory
 from database.factories.announcement_factory import AnnouncementFactory
-from database.factories.event_factory import EventFactory, JobPostFactory
+from database.factories.event_factory import EventFactory
+from database.factories.job_posting_factory import JobPostingFactory, JobPostFactory
 from models.user import User
 from models.announcement import Announcement
 
@@ -97,11 +98,13 @@ class DatabaseSeeder:
         for e in events:
             print(f"  [+] Event created: {e['title']} ({e['location']})")
 
-        # 5. Generate Job Posts via JobPostFactory
-        print(f"\n[5/5] Generating {job_count} Job Posts via JobPostFactory...")
-        jobs = JobPostFactory.create_batch(count=job_count, db_conn=db_conn)
+        # 5. Generate Job Postings via JobPostingFactory
+        print(f"\n[5/5] Generating {job_count} Job Postings via JobPostingFactory...")
+        jobs = JobPostingFactory.create_batch(count=job_count, db_conn=db_conn)
         for j in jobs:
-            print(f"  [+] Job created: {j['title']} @ {j['company_name']}")
+            level = j.get('experience_level', 'mid').upper()
+            salary = j.get('salary_range') or 'Maaş Belirtilmedi'
+            print(f"  [+] Job created: [{level}] {j['title']} @ {j['company_name']} ({salary})")
 
         print("\n========================================================")
         print("[SUCCESS] DATABASE SEEDING COMPLETED SUCCESSFULLY!")
