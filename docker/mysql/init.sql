@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS event_attendees (
     CONSTRAINT fk_attendees_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 9. Job Posts
+-- 9. Job Posts / Job Postings
 CREATE TABLE IF NOT EXISTS job_posts (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     alumni_id BIGINT UNSIGNED NOT NULL,
@@ -118,6 +118,29 @@ CREATE TABLE IF NOT EXISTS job_posts (
     application_url VARCHAR(512) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_jobs_alumni FOREIGN KEY (alumni_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 9.1 Job Postings (Comprehensive Specification per ddd.md)
+CREATE TABLE IF NOT EXISTS job_postings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    alumni_id BIGINT UNSIGNED NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    company_name VARCHAR(191) NOT NULL,
+    location VARCHAR(191) NULL,
+    employment_type ENUM('full_time', 'part_time', 'internship', 'contract', 'remote') NOT NULL DEFAULT 'full_time',
+    experience_level ENUM('entry', 'mid', 'senior', 'lead', 'executive') NOT NULL DEFAULT 'entry',
+    description LONGTEXT NOT NULL,
+    requirements TEXT NULL,
+    salary_range VARCHAR(100) NULL,
+    application_url VARCHAR(512) NULL,
+    status ENUM('active', 'expired', 'closed', 'draft') NOT NULL DEFAULT 'active',
+    expires_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_job_postings_alumni FOREIGN KEY (alumni_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_job_postings_alumni (alumni_id),
+    INDEX idx_job_postings_status_date (status, created_at),
+    INDEX idx_job_postings_type_location (employment_type, location)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 10. Mentorship Requests
