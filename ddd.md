@@ -42,7 +42,7 @@ erDiagram
     USERS ||--o{ ANNOUNCEMENTS : "publishes (1:N)"
     USERS ||--o{ EVENTS : "organizes (1:N)"
     USERS ||--o{ EVENT_ATTENDEES : "registers (1:N)"
-    USERS ||--o{ JOB_POSTS : "posts (1:N)"
+    USERS ||--o{ JOB_POSTINGS : "posts (1:N)"
     USERS ||--o{ MENTORSHIP_REQUESTS : "initiates/receives (1:N)"
     
     PROFILES ||--o| ALUMNI_DETAILS : "extends as alumni (1:0..1)"
@@ -132,16 +132,21 @@ erDiagram
         timestamp created_at
     }
 
-    JOB_POSTS {
+    JOB_POSTINGS {
         bigint id PK
         bigint alumni_id FK
         string title
         string company_name
         string location
-        string employment_type "full_time | part_time | internship"
+        string employment_type "full_time | part_time | internship | contract"
+        string experience_level "entry | mid | senior | lead"
         text description
+        string salary_range
         string application_url
+        string status "active | expired | closed | draft"
+        datetime expires_at
         timestamp created_at
+        timestamp updated_at
     }
 
     MENTORSHIP_REQUESTS {
@@ -221,6 +226,35 @@ Directly correlates with the `Announcement` model and management controllers cre
 | `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | Publication timestamp |
 | `updated_at` | `TIMESTAMP` | `ON UPDATE CURRENT_TIMESTAMP` | Last edit timestamp |
 
+### 4.5. `job_postings` / `job_posts` (Career & Employment Opportunities)
+Directly powers the **Job & Internship Board** where alumni, corporate recruiters, and coordinators publish verified career positions for university students and fellow graduates.
+
+> [!NOTE]
+> In physical migrations and SQLite/MySQL seeders, the table is identified as `job_posts` (aliased logically as `job_postings` across DDD and API documentation).
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `BIGINT UNSIGNED` | `AUTO_INCREMENT, PRIMARY KEY` | Unique job posting record identifier |
+| `alumni_id` | `BIGINT UNSIGNED` | `NOT NULL, FK -> users(id) ON DELETE CASCADE` | Poster user ID (alumni/recruiter account) |
+| `title` | `VARCHAR(255)` | `NOT NULL` | Job position title (e.g., *Senior Backend Engineer*) |
+| `company_name` | `VARCHAR(191)` | `NOT NULL` | Hiring company or enterprise name |
+| `location` | `VARCHAR(191)` | `NULL` | Office city/country or work mode (*e.g., "İstanbul (Hybrid / Remote)"*) |
+| `employment_type`| `ENUM(...)` | `NOT NULL, DEFAULT 'full_time'` | `'full_time', 'part_time', 'internship', 'contract', 'remote'` |
+| `experience_level`| `ENUM(...)` | `DEFAULT 'entry'` | `'entry', 'mid', 'senior', 'lead', 'executive'` |
+| `description` | `LONGTEXT` | `NOT NULL` | Role responsibilities, company culture, and overview |
+| `requirements` | `TEXT` | `NULL` | Technical skills, degree requirements, or prerequisites |
+| `salary_range` | `VARCHAR(100)` | `NULL` | Compensation bracket / salary range (optional) |
+| `application_url`| `VARCHAR(512)` | `NULL` | External ATS link or mailto application handler |
+| `status` | `ENUM(...)` | `DEFAULT 'active'` | Lifecycle status: `'active', 'expired', 'closed', 'draft'` |
+| `expires_at` | `DATETIME` | `NULL` | Scheduled automatic expiration timestamp |
+| `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | Initial job publication timestamp |
+| `updated_at` | `TIMESTAMP` | `ON UPDATE CURRENT_TIMESTAMP` | Timestamp of last modification |
+
+#### Relational Rules & Referential Integrity:
+1. **User Association (`alumni_id`):** Linked to `users(id)`. If the publisher's user record is deleted, foreign key cascade (`ON DELETE CASCADE`) automatically purges related job postings to preserve 3NF integrity.
+2. **Access Control & RBAC:** Posting privileges are restricted to users with `role = 'alumni'`, `'coordinator'`, or `'admin'`. Students have read and apply permissions.
+3. **Lifecycle Management:** Queries filter by `status = 'active'` and `(expires_at IS NULL OR expires_at > NOW())` to ensure only open opportunities are surfaced to applicants.
+
 ---
 
 ## ⚡ 5. Indexing & Query Performance Strategy
@@ -233,7 +267,9 @@ To ensure sub-millisecond query execution under high concurrency, indexes are de
 | `users` | `idx_users_role_status`| `BTREE` | `role, status` | Filtering active alumni vs active students |
 | `alumni_details`| `idx_alumni_search` | `COMPOSITE` | `department_id, graduation_year, industry` | Fast directory filter for mentorship matches |
 | `announcements` | `idx_announcements_cat_date`| `COMPOSITE`| `status, category, created_at` | Feed pagination and category filtering |
-| `job_posts` | `idx_jobs_created` | `BTREE` | `created_at DESC` | Latest job openings sorting |
+| `job_posts` | `idx_job_posts_alumni` | `BTREE` | `alumni_id` | Fast lookup of postings published by a specific user |
+| `job_posts` | `idx_job_posts_status_date`| `COMPOSITE` | `status, created_at DESC` | High-throughput feed sorting for active postings |
+| `job_posts` | `idx_job_posts_type_location`| `COMPOSITE` | `employment_type, location` | Faceted search and job catalog filtering |
 
 ---
 
