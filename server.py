@@ -164,129 +164,149 @@ class SimpleHandler(BaseHTTPRequestHandler):
             self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}))
 
     def do_POST(self):
-        # Dispatch through MVC Router:
-        # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
-        # Route: POST /api/users -> ApiUserController.store(data)
-        clean_path = self.path.split('?')[0]
-        route_match = router.dispatch("POST", clean_path)
-        if route_match:
-            handler, params = route_match
-            data, err = self._read_body()
-            if err and self.path.startswith('/api/'):
-                self._send(400, 'application/json', json.dumps({
-                    "error": "BadRequest",
-                    "message": err
-                }, ensure_ascii=False, indent=2))
-                return
-
-            result = handler(params, data or {})
-            # View Layer returns HTML string directly
-            if isinstance(result, str):
-                self._send(200, 'text/html', result)
-                return
-            elif isinstance(result, tuple) and len(result) == 2:
-                status, res = result
-                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                return
-            elif isinstance(result, dict):
-                if "redirect" in result:
-                    self.send_response(302)
-                    self.send_header('Location', result['redirect'])
-                    self.send_header('Connection', 'close')
-                    self.end_headers()
+        try:
+            # Dispatch through MVC Router:
+            # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
+            # Route: POST /api/users -> ApiUserController.store(data)
+            clean_path = self.path.split('?')[0]
+            route_match = router.dispatch("POST", clean_path)
+            if route_match:
+                handler, params = route_match
+                data, err = self._read_body()
+                if err and self.path.startswith('/api/'):
+                    self._send(400, 'application/json', json.dumps({
+                        "error": "BadRequest",
+                        "message": err
+                    }, ensure_ascii=False, indent=2))
                     return
-                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                return
 
-        self._send(404, 'application/json', json.dumps({
-            "error": "NotFound",
-            "message": "Endpoint bulunamadı"
-        }, ensure_ascii=False, indent=2))
+                result = handler(params, data or {})
+                # View Layer returns HTML string directly
+                if isinstance(result, str):
+                    self._send(200, 'text/html', result)
+                    return
+                elif isinstance(result, tuple) and len(result) == 2:
+                    status, res = result
+                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                    return
+                elif isinstance(result, dict):
+                    if "redirect" in result:
+                        self.send_response(302)
+                        self.send_header('Location', result['redirect'])
+                        self.send_header('Connection', 'close')
+                        self.end_headers()
+                        return
+                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                    return
+
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı"
+            }, ensure_ascii=False, indent=2))
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
 
     def do_PUT(self):
-        # Dispatch through MVC Router
-        clean_path = self.path.split('?')[0]
-        route_match = router.dispatch("PUT", clean_path)
-        if route_match:
-            handler, params = route_match
-            data, err = self._read_body()
-            if err and self.path.startswith('/api/'):
-                self._send(400, 'application/json', json.dumps({
-                    "error": "BadRequest",
-                    "message": err
-                }, ensure_ascii=False, indent=2))
-                return
+        try:
+            # Dispatch through MVC Router
+            clean_path = self.path.split('?')[0]
+            route_match = router.dispatch("PUT", clean_path)
+            if route_match:
+                handler, params = route_match
+                data, err = self._read_body()
+                if err and self.path.startswith('/api/'):
+                    self._send(400, 'application/json', json.dumps({
+                        "error": "BadRequest",
+                        "message": err
+                    }, ensure_ascii=False, indent=2))
+                    return
 
-            result = handler(params, data or {})
-            if isinstance(result, str):
-                self._send(200, 'text/html', result)
-                return
-            elif isinstance(result, tuple) and len(result) == 2:
-                status, res = result
-                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                return
-            elif isinstance(result, dict):
-                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                return
+                result = handler(params, data or {})
+                if isinstance(result, str):
+                    self._send(200, 'text/html', result)
+                    return
+                elif isinstance(result, tuple) and len(result) == 2:
+                    status, res = result
+                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                    return
+                elif isinstance(result, dict):
+                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                    return
 
-        self._send(404, 'application/json', json.dumps({
-            "error": "NotFound",
-            "message": "Endpoint bulunamadı. Kullanım: PUT /api/users/{id} veya PUT /users/{id}"
-        }, ensure_ascii=False, indent=2))
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: PUT /api/users/{id} veya PUT /users/{id}"
+            }, ensure_ascii=False, indent=2))
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
 
     def do_PATCH(self):
-        # Dispatch through MVC Router
-        clean_path = self.path.split('?')[0]
-        route_match = router.dispatch("PATCH", clean_path)
-        if route_match:
-            handler, params = route_match
-            data, err = self._read_body()
-            if err and self.path.startswith('/api/'):
-                self._send(400, 'application/json', json.dumps({
-                    "error": "BadRequest",
-                    "message": err
-                }, ensure_ascii=False, indent=2))
-                return
+        try:
+            # Dispatch through MVC Router
+            clean_path = self.path.split('?')[0]
+            route_match = router.dispatch("PATCH", clean_path)
+            if route_match:
+                handler, params = route_match
+                data, err = self._read_body()
+                if err and self.path.startswith('/api/'):
+                    self._send(400, 'application/json', json.dumps({
+                        "error": "BadRequest",
+                        "message": err
+                    }, ensure_ascii=False, indent=2))
+                    return
 
-            result = handler(params, data or {})
-            if isinstance(result, str):
-                self._send(200, 'text/html', result)
-                return
-            elif isinstance(result, tuple) and len(result) == 2:
-                status, res = result
-                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                return
-            elif isinstance(result, dict):
-                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                return
+                result = handler(params, data or {})
+                if isinstance(result, str):
+                    self._send(200, 'text/html', result)
+                    return
+                elif isinstance(result, tuple) and len(result) == 2:
+                    status, res = result
+                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                    return
+                elif isinstance(result, dict):
+                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                    return
 
-        self._send(404, 'application/json', json.dumps({
-            "error": "NotFound",
-            "message": "Endpoint bulunamadı. Kullanım: PATCH /api/users/{id} veya PATCH /users/{id}"
-        }, ensure_ascii=False, indent=2))
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: PATCH /api/users/{id} veya PATCH /users/{id}"
+            }, ensure_ascii=False, indent=2))
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
 
     def do_DELETE(self):
-        # Dispatch through MVC Router
-        clean_path = self.path.split('?')[0]
-        route_match = router.dispatch("DELETE", clean_path)
-        if route_match:
-            handler, params = route_match
-            result = handler(params)
-            if isinstance(result, str):
-                self._send(200, 'text/html', result)
-                return
-            elif isinstance(result, tuple) and len(result) == 2:
-                status, res = result
-                self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                return
-            elif isinstance(result, dict):
-                self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                return
+        try:
+            # Dispatch through MVC Router
+            clean_path = self.path.split('?')[0]
+            route_match = router.dispatch("DELETE", clean_path)
+            if route_match:
+                handler, params = route_match
+                result = handler(params)
+                if isinstance(result, str):
+                    self._send(200, 'text/html', result)
+                    return
+                elif isinstance(result, tuple) and len(result) == 2:
+                    status, res = result
+                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
+                    return
+                elif isinstance(result, dict):
+                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
+                    return
 
-        self._send(404, 'application/json', json.dumps({
-            "error": "NotFound",
-            "message": "Endpoint bulunamadı. Kullanım: DELETE /api/users/{id} veya DELETE /users/{id}"
-        }, ensure_ascii=False, indent=2))
+            self._send(404, 'application/json', json.dumps({
+                "error": "NotFound",
+                "message": "Endpoint bulunamadı. Kullanım: DELETE /api/users/{id} veya DELETE /users/{id}"
+            }, ensure_ascii=False, indent=2))
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
 
     def do_OPTIONS(self):
         self.send_response(204)

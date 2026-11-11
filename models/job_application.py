@@ -149,6 +149,14 @@ class JobApplication:
         if not applicant_id:
             raise ValueError("applicant_id (aday referansı) alanı zorunludur")
 
+        # Verify job and applicant existence
+        from models.job_posting import JobPosting
+        from models.user import User
+        if not JobPosting.find_by_id(int(job_id)):
+            raise ValueError(f"{job_id} ID'li iş ilanı bulunamadı")
+        if not User.find_by_id(int(applicant_id)):
+            raise ValueError(f"{applicant_id} ID'li kullanıcı (aday) bulunamadı")
+
         # Verify duplicate application
         existing = cls.find_by_job_and_applicant(int(job_id), int(applicant_id))
         if existing:
