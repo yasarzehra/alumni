@@ -12,6 +12,7 @@ from views.view import View
 from routes import get_configured_router
 from middlewares.logger_middleware import LoggerMiddleware
 from middlewares.not_found_guardian_middleware import NotFoundGuardianMiddleware
+from middlewares.server_error_guardian_middleware import ServerErrorGuardianMiddleware
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -168,9 +169,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("GET", self.path, router=router)
             self._send(status_code, ctype, err_body)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}))
+            status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "GET", self.path)
+            self._send(status_code, ctype, err_body)
 
     def do_POST(self):
         try:
@@ -213,9 +213,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("POST", self.path, router=router)
             self._send(status_code, ctype, err_body)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
+            status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "POST", self.path)
+            self._send(status_code, ctype, err_body)
 
     def do_PUT(self):
         try:
@@ -248,9 +247,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("PUT", self.path, router=router)
             self._send(status_code, ctype, err_body)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
+            status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "PUT", self.path)
+            self._send(status_code, ctype, err_body)
 
     def do_PATCH(self):
         try:
@@ -283,9 +281,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("PATCH", self.path, router=router)
             self._send(status_code, ctype, err_body)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
+            status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "PATCH", self.path)
+            self._send(status_code, ctype, err_body)
 
     def do_DELETE(self):
         try:
@@ -310,13 +307,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("DELETE", self.path, router=router)
             self._send(status_code, ctype, err_body)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
+            status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "DELETE", self.path)
+            self._send(status_code, ctype, err_body)
 
     def do_OPTIONS(self):
         self._start_request_timer()
