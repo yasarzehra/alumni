@@ -156,8 +156,21 @@ alumni/
 │       └── CorsMiddleware.php          # Cross-Origin Resource Sharing headers
 ├── index.html                          # Prototype landing page (Temporary Main Page)
 ├── about.html                          # Prototype about page (Temporary About Page)
-├── server.py                           # Python development HTTP server (interactive demo)
-├── main.py                             # Python in-memory RESTful CRUD API & Swagger server
+├── 404.html                            # Generic responsive 404 Error page (404 Guardian)
+├── server.py                           # Development HTTP server with full middleware stack
+├── main.py                             # In-memory RESTful CRUD API & Swagger specification
+├── migrate.py                          # Database migration runner (UP / DOWN)
+├── seed.py                             # Database seeder runner with CLI arguments
+├── postman_invalid_requests_collection.json # Automated test collection for Postman CLI
+├── middlewares/                        # Server Middleware Pipeline
+│   ├── __init__.py                     # Middleware bundle export
+│   ├── logger_middleware.py            # Terminal lifecycle logger & 4xx/5xx file logger
+│   ├── not_found_guardian_middleware.py# 404 Guardian with reason & route suggestions
+│   └── server_error_guardian_middleware.py # 5xx Guardian with incident ID & error log
+├── logs/                               # Runtime error logs (Git-ignored)
+│   └── error.log                       # Persistent error log for 4xx and 5xx incidents
+├── tests/                              # Automated integration tests
+│   └── test_invalid_requests.py        # Python suite for negative and boundary testing
 ├── docker-compose.yml                  # Multi-container orchestration (PHP-FPM, Nginx, MySQL)
 ├── Dockerfile                          # Application runtime container recipe
 ├── .gitignore                          # Git file exclusion rules
@@ -199,22 +212,75 @@ alumni/
 python server.py
 
 # Available Endpoints:
-# - GET    /                  -> Main landing page (index.html)
-# - GET    /about             -> About page (about.html)
-# - GET    /hello             -> Plaintext "hello world!"
-# - GET    /hello/{name}      -> Plaintext "hello, {name}"
-# - GET    /sum/{n1}/{n2}     -> Sum calculation
-# - GET    /api/health        -> JSON health status
-# - GET    /api/swagger       -> Interactive Swagger UI documentation
-# - GET    /api/users         -> List all users (JSON)
-# - POST   /api/users         -> Create new user (JSON)
-# - GET    /api/users/{id}    -> Fetch single user (JSON)
-# - PUT    /api/users/{id}    -> Update full user (JSON)
-# - PATCH  /api/users/{id}    -> Partially update user (JSON)
-# - DELETE /api/users/{id}    -> Remove user (JSON)
+# - GET    /                           -> Main landing page (index.html)
+# - GET    /about                      -> About page (about.html)
+# - GET    /404                        -> Generic 404 Error page (404.html)
+# - GET    /users                      -> Web Alumni Directory (HTML)
+# - GET    /jobs                       -> Web Career Board (HTML)
+# - GET    /applications               -> Web Applications Portal (HTML)
+# - GET    /announcements              -> Web Announcements Board (HTML)
+# - GET    /api/health                 -> JSON health status
+# - GET    /api/swagger                -> Interactive Swagger UI documentation
+# - GET    /api/users                  -> List all users (JSON)
+# - POST   /api/users                  -> Create new user (JSON)
+# - GET    /api/jobs                   -> List all job postings (JSON)
+# - POST   /api/jobs                   -> Publish new job opportunity (JSON)
+# - GET    /api/applications           -> List job applications (JSON)
+# - POST   /api/applications           -> Submit candidate application (JSON)
+# - GET    /api/users/{id}/jobs        -> Nested: Jobs by user
+# - GET    /api/jobs/{id}/applications -> Nested: Applications for job
 ```
 
-### Option B: Docker Containerized Stack (Production Deployment)
+---
+
+## 🛡️ 7. Middleware Architecture & Error Guardians
+
+The server incorporates an enterprise middleware pipeline ensuring observability, resilient error isolation, and developer-friendly debugging:
+
+### 1. Logger Middleware (`LoggerMiddleware`)
+Logs every incoming request and response in real-time to the terminal in standardized format:
+```text
+time 10:20:30  method POST    route /api/users      res. type 201    duration 18ms
+```
+- Tracks microsecond execution duration using `time.perf_counter()`.
+- Captures status codes across all HTTP verbs (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`).
+- Automatically logs all `4xx` and `5xx` errors to `logs/error.log`.
+
+### 2. 404 Guardian Middleware (`NotFoundGuardianMiddleware`)
+Provides structured diagnostics for unregistered routes and invalid endpoints:
+- Returns formatted JSON explaining the **exact root cause (`reason`)** for API calls:
+  ```json
+  {
+    "success": false,
+    "status": 404,
+    "error": "NotFound",
+    "reason": "'/api/unknown' adresi sunucu rotalarında bulunamadı.",
+    "path": "/api/unknown",
+    "method": "GET",
+    "details": {
+      "suggestion": ["/api/swagger", "/api/users", "/api/jobs"]
+    }
+  }
+  ```
+- Renders the generic responsive [`404.html`](404.html) page for web browser requests with quick-navigation pills.
+
+### 3. 5xx Guardian Middleware (`ServerErrorGuardianMiddleware`)
+Isolates uncaught exceptions, preventing server downtime and masking infrastructure leaks:
+- Generates a unique **Incident Correlation ID** (`ERR-XXXXXXXX`) for every 500 error.
+- Full tracebacks and diagnostic information are recorded directly into **`logs/error.log`**.
+- Clients receive a secure, structured error payload with their `incident_id` for administrative support.
+
+### 4. Automated Postman Test Suite
+All negative, boundary, and error handling behaviors are verified through an automated Postman collection:
+```bash
+# Run automated negative tests with Postman CLI
+postman collection run postman_invalid_requests_collection.json
+# Result: 11 Requests, 18 Assertions (100% Passed)
+```
+
+---
+
+## 📦 8. Production Deployment & Containers
 ```bash
 # 1. Clone repository
 git clone https://github.com/yasarzehra/alumni.git
