@@ -137,12 +137,12 @@ erDiagram
     JOB_POSTINGS {
         bigint id PK
         bigint alumni_id FK
-        string title
-        string company_name
-        string location
+        string title "required, max 120"
+        string company_name "required"
+        string location "optional (city/remote)"
         string employment_type "full_time | part_time | internship | contract"
         string experience_level "entry | mid | senior | lead"
-        text description
+        text description "optional"
         string salary_range
         string application_url
         string status "active | expired | closed | draft"
@@ -249,12 +249,12 @@ Directly powers the **Job & Internship Board** where alumni, corporate recruiter
 | :--- | :--- | :--- | :--- |
 | `id` | `BIGINT UNSIGNED` | `AUTO_INCREMENT, PRIMARY KEY` | Unique job posting record identifier |
 | `alumni_id` | `BIGINT UNSIGNED` | `NOT NULL, FK -> users(id) ON DELETE CASCADE` | Poster user ID (alumni/recruiter account) |
-| `title` | `VARCHAR(255)` | `NOT NULL` | Job position title (e.g., *Senior Backend Engineer*) |
-| `company_name` | `VARCHAR(191)` | `NOT NULL` | Hiring company or enterprise name |
-| `location` | `VARCHAR(191)` | `NULL` | Office city/country or work mode (*e.g., "İstanbul (Hybrid / Remote)"*) |
+| `title` | `VARCHAR(120)` | `NOT NULL` | **Required.** Job position title, max **120** characters |
+| `company_name` / `company` | `VARCHAR(191)` | `NOT NULL` | **Required.** Hiring company or enterprise name |
+| `location` / `city` | `VARCHAR(191)` | `NULL` | **Optional.** City/location or work mode (*e.g., "İstanbul", "Remote"*) |
+| `description` | `LONGTEXT` | `NULL` | **Optional.** Role responsibilities, company culture, and overview |
 | `employment_type`| `ENUM(...)` | `NOT NULL, DEFAULT 'full_time'` | `'full_time', 'part_time', 'internship', 'contract', 'remote'` |
 | `experience_level`| `ENUM(...)` | `DEFAULT 'entry'` | `'entry', 'mid', 'senior', 'lead', 'executive'` |
-| `description` | `LONGTEXT` | `NOT NULL` | Role responsibilities, company culture, and overview |
 | `requirements` | `TEXT` | `NULL` | Technical skills, degree requirements, or prerequisites |
 | `salary_range` | `VARCHAR(100)` | `NULL` | Compensation bracket / salary range (optional) |
 | `application_url`| `VARCHAR(512)` | `NULL` | External ATS link or mailto application handler |
@@ -263,10 +263,13 @@ Directly powers the **Job & Internship Board** where alumni, corporate recruiter
 | `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | Initial job publication timestamp |
 | `updated_at` | `TIMESTAMP` | `ON UPDATE CURRENT_TIMESTAMP` | Timestamp of last modification |
 
-#### Relational Rules & Referential Integrity:
-1. **User Association (`alumni_id`):** Linked to `users(id)`. If the publisher's user record is deleted, foreign key cascade (`ON DELETE CASCADE`) automatically purges related job postings to preserve 3NF integrity.
-2. **Access Control & RBAC:** Posting privileges are restricted to users with `role = 'alumni'`, `'coordinator'`, or `'admin'`. Students have read and apply permissions.
-3. **Lifecycle Management:** Queries filter by `status = 'active'` and `(expires_at IS NULL OR expires_at > NOW())` to ensure only open opportunities are surfaced to applicants.
+#### Validation & Business Rules:
+1. **Title Validation:** `title` is **mandatory** (`NOT NULL`) and restricted to a **maximum of 120 characters** (`VARCHAR(120)`).
+2. **Company Validation:** `company_name` (or `company`) is **mandatory** (`NOT NULL`).
+3. **Optional Attributes:** `location` / `city` and `description` are explicitly **optional** (`NULL` allowed).
+4. **User Association (`alumni_id`):** Linked to `users(id)`. If the publisher's user record is deleted, foreign key cascade (`ON DELETE CASCADE`) automatically purges related job postings to preserve 3NF integrity.
+5. **Access Control & RBAC:** Posting privileges are restricted to users with `role = 'alumni'`, `'coordinator'`, or `'admin'`. Students have read and apply permissions.
+6. **Lifecycle Management:** Queries filter by `status = 'active'` and `(expires_at IS NULL OR expires_at > NOW())` to ensure only open opportunities are surfaced to applicants.
 
 ### 4.6. `job_applications` / `applications` (Job Application Lifecycle)
 Connects candidates (`users` with role `student` or `alumni`) to published job opportunities (`job_postings`). Tracks application progress, cover letters, resume attachments, and review states.

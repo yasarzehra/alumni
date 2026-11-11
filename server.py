@@ -10,6 +10,7 @@ from models.job_posting import JobPosting
 from models.job_application import JobApplication
 from views.view import View
 from routes import get_configured_router
+from middlewares.logger_middleware import LoggerMiddleware
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,12 +30,15 @@ def get_html_content(filename):
 
 class SimpleHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
-        try:
-            print(f"[{self.log_date_time_string()}] {self.command} {self.path} - {format % args}", flush=True)
-        except Exception:
-            pass
+        # Default BaseHTTPRequestHandler logging suppressed in favor of LoggerMiddleware
+        pass
+
+    def _start_request_timer(self):
+        if not hasattr(self, '_req_start_time'):
+            self._req_start_time = LoggerMiddleware.start_timer()
 
     def _send(self, status, content_type, data):
+        self._start_request_timer()
         if isinstance(data, str):
             data = data.encode('utf-8')
         self.send_response(status)
@@ -44,6 +48,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.send_header('Connection', 'close')
         self.end_headers()
         self.wfile.write(data)
+        # Trigger Logger Middleware row output
+        LoggerMiddleware.log(self.command, self.path, status, self._req_start_time)
 
     def _read_body(self):
         """Reads body supporting both application/json and application/x-www-form-urlencoded."""
@@ -195,6 +201,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
                         self.send_header('Location', result['redirect'])
                         self.send_header('Connection', 'close')
                         self.end_headers()
+                        LoggerMiddleware.log(self.command, self.path, 302, self._req_start_time)
                         return
                     self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
                     return
@@ -309,11 +316,13 @@ class SimpleHandler(BaseHTTPRequestHandler):
             self._send(500, 'application/json', json.dumps({"error": "InternalServerError", "message": str(e)}, ensure_ascii=False, indent=2))
 
     def do_OPTIONS(self):
+        self._start_request_timer()
         self.send_response(204)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
+        LoggerMiddleware.log(self.command, self.path, 204, self._req_start_time)
 
 
 if __name__ == '__main__':
