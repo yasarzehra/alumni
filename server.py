@@ -20,13 +20,19 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 router = get_configured_router()
 
 
-def get_html_content(filename):
+def get_html_content(filename, replacements=None):
     file_path = os.path.join(BASE_DIR, filename)
     if os.path.exists(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
-            return f.read().encode('utf-8')
+            content = f.read()
+            if replacements:
+                for k, v in replacements.items():
+                    content = content.replace(k, str(v))
+            return content.encode('utf-8')
     if filename == 'index.html':
         return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>Main</title></head><body><h1>Temporary Main Page</h1><p>temporary one main page</p></body></html>"
+    if filename == '404.html':
+        return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>404 Not Found</title></head><body><h1>404 Not Found</h1><p>Sayfa bulunamadi.</p><a href='/'>Ana Sayfa</a></body></html>"
     return b"<!DOCTYPE html><html><head><meta charset='utf-8'><title>About</title></head><body><h1>About Page</h1><p>temporary about page</p></body></html>"
 
 
@@ -140,6 +146,11 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }, ensure_ascii=False, indent=2)
                 self._send(200, 'application/json', health_response)
+                return
+
+            # Generic 404 Route: GET /404 -> 404.html
+            if self.path in ['/404', '/404/']:
+                self._send(404, 'text/html', get_html_content('404.html', {'{{REQUESTED_PATH}}': '404 - Sayfa Bulunamadı'}))
                 return
 
             if self.path == '/favicon.ico':

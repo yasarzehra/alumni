@@ -8,6 +8,7 @@ Distinguishes between:
 """
 from typing import Dict, Any, List, Optional
 import json
+import os
 
 
 class NotFoundGuardianMiddleware:
@@ -108,9 +109,17 @@ class NotFoundGuardianMiddleware:
             }
             body = json.dumps(response_payload, ensure_ascii=False, indent=2)
         else:
+            # Check for generic 404.html template in project root
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            template_path = os.path.join(base_dir, "404.html")
             content_type = "text/html"
-            suggestions_html = "".join([f"<li><a href='{s}'>{s}</a></li>" for s in diagnosis.get("suggestions", [])])
-            body = f"""<!DOCTYPE html>
+            if os.path.exists(template_path):
+                with open(template_path, "r", encoding="utf-8") as f:
+                    template_str = f.read()
+                    body = template_str.replace("{{REQUESTED_PATH}}", f"{method.upper()} {path}")
+            else:
+                suggestions_html = "".join([f"<li><a href='{s}'>{s}</a></li>" for s in diagnosis.get("suggestions", [])])
+                body = f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8">
