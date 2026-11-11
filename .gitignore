@@ -32,6 +32,15 @@
 !src/**
 !views/
 !views/**
+!middlewares/
+!middlewares/**
+!tests/
+!tests/**
+!postman_invalid_requests_collection.json
+
+# Local log files
+logs/
+*.log
 
 # Python cache & local db files
 __pycache__/

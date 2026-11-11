@@ -1,0 +1,375 @@
+{
+  "info": {
+    "_postman_id": "a4d3f28e-5b12-4c91-b3b4-e3c6a49b9901",
+    "name": "Alumni API - Invalid Requests & Error Handling Suite",
+    "description": "Collection of invalid requests testing 400 Bad Request and 404 Not Found error handling across User, Job Posting, and Application endpoints with automated assertions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GET Non-existent User (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test('Error type is NotFound', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('NotFound');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/users/999999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "users", "999999"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. POST Create User Missing Required Fields (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test('Error message mentions required name and email', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('BadRequest');",
+              "    pm.expect(json.message).to.include('name ve email');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"role\": \"student\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "users"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. PUT Update Non-existent User (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test('Error type is NotFound', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('NotFound');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Non Existent User\",\n  \"email\": \"nonexistent@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/users/999999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "users", "999999"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. GET Non-existent Job Posting (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test('Error type is NotFound', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('NotFound');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/jobs/999999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "jobs", "999999"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. POST Create Job Missing Required Fields (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test('Error message mentions missing required fields', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('BadRequest');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"location\": \"Remote\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/jobs",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "jobs"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. GET Non-existent Application (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test('Error type is NotFound', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('NotFound');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/applications/999999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "applications", "999999"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. POST Application with Non-existent Foreign Keys (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test('Error explains job not found', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.eql('BadRequest');",
+              "    pm.expect(json.message).to.include('bulunamadı');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"job_id\": 99999,\n  \"applicant_id\": 99999\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/applications",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "applications"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "8. GET Nested Route on Non-existent User (/api/users/999999/jobs) (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/users/999999/jobs",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "users", "999999", "jobs"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "9. GET Nested Route on Non-existent Job (/api/jobs/999999/applications) (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/jobs/999999/applications",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "jobs", "999999", "applications"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10. DELETE Non-existent Application (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/applications/999999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "applications", "999999"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11. GET Undefined Endpoint Route (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/undefined_endpoint_path",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "undefined_endpoint_path"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
