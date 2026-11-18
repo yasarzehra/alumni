@@ -2,6 +2,9 @@
 
 1453'ten günümüze uzanan asırlık birikimiyle **İstanbul Üniversitesi** mezunlarını, öğrencilerini, akademisyenlerini ve iş dünyasını birbirine bağlayan kurumsal web ve API platformu.
 
+> 📚 **Hızlı Dokümantasyon Bağlantıları (Quick Documentation Anchors):**  
+> [🎨 **Kurumsal Marka Rehberi (`brand.md`)**](brand.md) &nbsp;|&nbsp; [📐 **Tasarım Sistemi Spesifikasyonu (`DESIGN.md`)**](DESIGN.md) &nbsp;|&nbsp; [🗄️ **Veritabanı Mimarisi (`ddd.md`)**](ddd.md) &nbsp;|&nbsp; [⚡ **Swagger API Dokümantasyonu**](/api/swagger)
+
 ---
 
 ## 📌 1. Proje Özeti & Misyon
@@ -10,7 +13,9 @@
 
 Platform; Hukuk, Tıp (Çapa), İktisat, Siyasal Bilgiler, İletişim, Edebiyat, Fen ve Mühendislik gibi öncü fakültelerin mezunlarını merkezi bir rehberde toplar; staj ve iş imkanları sunar, mentorluk köprüleri kurar.
 
-> 🏛️ **Kurumsal Kimlik & Marka Rehberi:** Üniversitenin resmi renkleri (Bordo & Altın Sarısı), Beyazıt yerleşkesi tasarım dili, tipografi ve UI bileşenleri için **[İÜ Marka Rehberi (brand.md)](brand.md)** belgesini inceleyebilirsiniz.
+> 🏛️ **Kurumsal Kimlik & Tasarım Sistemi Standartları:**
+> - 🎨 **[İÜ Marka Rehberi (brand.md)](brand.md):** Üniversitenin resmi renk paleti (İÜ Bordo `#881337` & Kurumsal Altın `#d97706`), Beyazıt yerleşkesi sembolleri, misyon ve logo kullanım kuralları.
+> - 📐 **[Tasarım Sistemi Spesifikasyonu (DESIGN.md)](DESIGN.md):** Refero Styles (MasterClass, Syllabus, Genway) ve VoltAgent standartlarında Tri-Font tipografi mimarisi (`Cinzel`, `Plus Jakarta Sans`, `JetBrains Mono`), CSS değişkenleri ve arayüz bileşenleri.
 
 ### Temel Yetenekler & Özellikler:
 - **Doğrulanmış İÜ Mezun Profilleri:** Fakülte, bölüm, mezuniyet yılı, sektör, unvan ve LinkedIn entegrasyonu.
@@ -298,9 +303,12 @@ docker compose up --build
 
 ## 🔗 9. Key References & Documentation Anchors
 
-* 🎨 **[Brand & Design Guide](brand.md):** Kurumsal kimlik, misyon ve renk kılavuzu.
-* 📐 **[DESIGN.md Specification](DESIGN.md):** Refero Styles & VoltAgent standardında AI-agent uyumlu tasarım sistemi ve token belgeleri.
+<a id="brand-md"></a><a id="branch-md"></a>
+* 🎨 **[Brand & Design Guide (brand.md)](brand.md):** Kurumsal kimlik, misyon ve renk kılavuzu.
+<a id="design-md"></a>
+* 📐 **[DESIGN.md Specification (DESIGN.md)](DESIGN.md):** Refero Styles & VoltAgent standardında AI-agent uyumlu tasarım sistemi ve token belgeleri.
+<a id="ddd-md"></a>
 * 🗄️ **[Data Design Documentation (ddd.md)](ddd.md):** Entity-Relationship Diagrams (ERD), full 3NF normalization analysis, and indexing strategy.
-* 🚀 **[Server Entrypoint](server.py):** Python threaded server with Logger and 404/5xx Guardians.
-* 🛡️ **[404 Error Page](404.html):** Responsive client-facing 404 Guardian error template.
-* 📖 **[Swagger API Specification](main.py):** OpenAPI JSON spec and Swagger UI dashboard generator.
+* 🚀 **[Server Entrypoint (server.py)](server.py):** Python threaded server with Logger and 404/5xx Guardians.
+* 🛡️ **[404 Error Page (404.html)](404.html):** Responsive client-facing 404 Guardian error template.
+* 📖 **[Swagger API Specification (main.py)](main.py):** OpenAPI JSON spec and Swagger UI dashboard generator.
