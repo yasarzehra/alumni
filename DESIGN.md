@@ -43,6 +43,14 @@ The interface achieves **"Historic Academic Monumentality fused with Modern Prod
   --color-accent-glow:     rgba(245, 158, 11, 0.28);
 
   /* =========================================================================
+     2.1. BOTANICAL SEAL GREEN & GOLD (Brand Logo & Heritage Seal)
+     ========================================================================= */
+  --logo-green-deep:       #065f46; /* Deep Emerald Seal Base */
+  --logo-green-vibrant:    #047857; /* Botanical Forest Green Highlight */
+  --logo-yellow-border:    #fbbf24; /* Radiant Solar Gold 2px Border */
+  --logo-seal-glow:        rgba(251, 191, 36, 0.35);
+
+  /* =========================================================================
      3. CANVASES & SURFACES (MasterClass Obsidian & Carbon Dark-Stage Architecture)
      ========================================================================= */
   --canvas-bg:             #080c16; /* Beyazıt Midnight (Root HTML background) */
@@ -119,9 +127,10 @@ Following **Refero's modular component scale**:
 ## 🧩 5. UI Patterns & Component Specifications
 
 ### 5.1. Institutional Strip & Navigation (Syllabus Architecture)
-* **Top Header:** 32px height, deep gradient `#4c0519` $\rightarrow$ `#881337` $\rightarrow$ `#b45309`, text `0.78rem` bold gold caps with letter-spacing `+0.8px`.
+* **Top Header:** 32px height, deep gradient `#4c0519` $\rightarrow$ `#881337` $\rightarrow$ `#b45309`, text `0.82rem` bold gold caps with letter-spacing `+1.2px` in `Cinzel` serif.
 * **Sticky Glass Navbar:** Background `rgba(8, 12, 22, 0.88)` with `backdrop-filter: blur(16px)`.
-* **Brand Seal:** 44x44px rounded squircle, border `2px solid var(--color-accent-light)`, housing the graduation cap / Beyazıt emblem (`🏛️`).
+* **Brand Seal (Green & Yellow/Gold System):** 44x44px rounded squircle, background `linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%)`, border `2px solid #fbbf24`, housing the Beyazıt emblem (`🏛️`), with radiant dual glow `box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25)`.
+* **Navbar Primary CTA:** Direct action link **`İlanları İncele →`** (updated from *Fırsatları İncele* for institutional precision).
 
 ### 5.2. Action Buttons (MasterClass & Genway Synthesis)
 * **Primary CTA (İÜ Burgundy):**
@@ -129,6 +138,7 @@ Following **Refero's modular component scale**:
   - Border: `1px solid rgba(251, 191, 36, 0.35)`
   - Shadow: `0 4px 16px rgba(136, 19, 55, 0.35)`
   - Hover: `transform: translateY(-2px)`, border glow to `--color-accent-light`.
+  - Phrasing: **`İlanları İncele →`**, **`💼 Mezun İlanlarına Göz At`**, **`+ İlan Ver`**.
 * **Secondary CTA (Heritage Gold):**
   - Background: `linear-gradient(135deg, #d97706, #b45309)`
   - Color: `#ffffff`, Shadow: `0 4px 14px var(--color-accent-glow)`
@@ -158,6 +168,13 @@ Following **Refero's modular component scale**:
   - `GET` $\rightarrow$ Gold (`#fbbf24`)
   - `POST` $\rightarrow$ Rose/Burgundy (`#f43f5e`)
   - `STATUS 200/201` $\rightarrow$ Mint Emerald (`#34d399`)
+
+### 5.6. Beyazıt Archway Heritage Plaque (Tarihi Beyazıt Kitabesi & Canlı İlim Işığı)
+* Dual-capsule monumental crest positioned at the apex of the Hero display:
+  - **Outer Frame:** Linear gradient border `90deg` from transparent $\rightarrow$ Gold (`#fbbf24`) $\rightarrow$ Emerald (`#10b981`) $\rightarrow$ Gold $\rightarrow$ transparent, radius `9999px`.
+  - **Inner Shield:** Midnight glass `rgba(8, 12, 22, 0.94)` with `backdrop-filter: blur(14px)`.
+  - **1453 Badge:** Botanical green tag `linear-gradient(135deg, #047857, #065f46)` housing the pulsating `heritage-beacon` (2-second breathing green-gold glow) and numeric year `1453`.
+  - **Monumental Inscription:** "BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI • GELECEĞE KÖK SALAN MİRAS" in inscriptional `Cinzel` serif with flanking `⚜️` fleur-de-lis / laurel ornaments.
 
 ---
 

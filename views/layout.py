@@ -129,14 +129,15 @@ class Layout:
         .brand-seal {{
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, var(--iu-burgundy), #4c0519);
-            border: 2px solid var(--iu-gold-light);
+            background: linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%);
+            border: 2px solid #fbbf24;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.4rem;
-            box-shadow: 0 4px 16px var(--iu-gold-glow);
+            box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25);
+            transition: all 0.3s ease;
         }}
 
         .brand-text {{
