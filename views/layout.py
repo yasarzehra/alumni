@@ -127,8 +127,8 @@ class Layout:
         }}
 
         .brand-seal:hover {{
-            border-color: #f1d581;
             transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
         }}
 
         .brand-text {{
@@ -470,8 +470,8 @@ class Layout:
 
         .form-control:focus {{
             outline: none;
-            border-color: var(--iu-gold);
-            box-shadow: 0 0 12px var(--iu-gold-glow);
+            border-color: rgba(136, 19, 55, 0.6);
+            box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.15);
         }}
 
         textarea.form-control {{
