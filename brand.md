@@ -72,13 +72,17 @@ Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bo
 
 ## 🏛️ 4. Arayüz ve Görsel Dil (UI/UX)
 
-* **Tarihi Beyazıt Kitabesi & Canlı İlim Işığı (Heritage Crest):**  
-  Ana manşetin üzerinde yer alan "1453'ten Geleceğe: Beyazıt'ın Asırlık Bilgi Işığı" ifadesi; klasik düz bir hap rozet yerine, iki kademeli mimari kitabe olarak sunulur:
-  - Sol blok: Zümrüt yeşili zemin üzerine parlayan altın çerçeveli `[ 1453 ]` mühür tag'i ve canlı nabız gibi atan altın-zümrüt `heritage-beacon` ışığı.
-  - Sağ blok: İki yanında `⚜️` altın zambak/defne motifleri, `Cinzel` inscriptional serif yazı stili ve yatay altın-zümrüt degradeli cam yüzey.
-* **Aksiyon Butonları (Call to Action - CTA):**  
-  Platform genelinde pasif ve jenerik ifadeler yerine eyleme dönük kurumsal standartlar kullanılır:
-  - Birincil İnceleme: **`İlanları İncele →`** (eski: *Fırsatları İncele*)
+* **Açık Mimari Beyazıt Kitabesi (Yuvarlak Baloncuksuz / Open Frieze Architecture):**  
+  Ana manşetin (`H1`) üzerinde yer alan tarihi miras ifadesi, yapay yuvarlak baloncuk veya kapsül içine hapsedilmeden; Beyazıt Tarihi Kapısı'nın taş frizlerine uygun **açık çizgisel mimari kitabe** olarak yerleştirilir:
+  - Üst hat: İki yana zarifçe süzülen altın çizgiler (`inscription-hairline`), merkezde zümrüt ışık noktacıklarıyla korunan parıltılı **`1453`** yılı.
+  - Alt hat: İki yanında `⚜️` altın zambak/defne motifleri ve `Cinzel` inscriptional serif yazı karakteriyle:  
+    **`⚜️ Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras ⚜️`**
+  - Alt taban: İnce altın ışık hüzmesiyle doğrudan manşete açılır; baloncuk veya hap zemin kullanılmaz.
+* **Rafine Aksiyon Butonu — `İlanları İncele` (`.btn-nav-cta`):**  
+  Platform genelinde pasif ve jenerik ifadeler yerine, kurumsal bordoyu altın yansımalar ve mikro-etkileşimlerle taçlandıran özel buton mimarisi kullanılır:
+  - Zemin: `linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%)`
+  - Çerçeve & Işıma: `1px solid rgba(251, 191, 36, 0.55)` ve iç kontur `inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+  - Ok Çipi (`.btn-arrow-chip`): Butonun sağında ayrı bir yarı saydam altın kare içinde yer alan ve hover durumunda sağa doğru süzülen `→` oku.
   - Doğrudan Başvuru: **`💼 Mezun İlanlarına Göz At`** / **`📝 Platformdan Başvur`**
   - Üye Keşfi: **`👥 Mezunlarımızı Keşfet`**
 * **Fakülte Rozetleri:** Hukuk, Tıp, İktisat, İletişim, Edebiyat, Fen, Mühendislik gibi fakültelere özel mikro etiketler.

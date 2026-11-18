@@ -211,73 +211,131 @@
             position: relative;
         }
 
-        /* Tarihi Beyazıt Kitabesi & Canlı İlim Işığı */
-        .iu-heritage-crest {
+        /* Açık Mimari Kitabe (Yuvarlak Baloncuksuz / Architectural Open Inscription) */
+        .hero-inscription {
+            max-width: 860px;
+            margin: 0 auto 34px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .inscription-top-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .inscription-hairline {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.45));
+        }
+
+        .inscription-hairline.right {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.45), transparent);
+        }
+
+        .inscription-year {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #fbbf24;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+        }
+
+        .inscription-beacon {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            display: inline-block;
+        }
+
+        .inscription-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fef3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-align: center;
+            flex-wrap: wrap;
+            line-height: 1.5;
+        }
+
+        .inscription-title .fleur {
+            color: #fbbf24;
+            font-size: 0.95rem;
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.5));
+        }
+
+        .inscription-bottom-bar {
+            width: 140px;
+            height: 2px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+        }
+
+        /* Özel Rafine Buton: İlanları İncele */
+        .btn-nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px 9px 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.90rem;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            border: 1px solid rgba(251, 191, 36, 0.55);
+            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn-nav-cta:hover {
+            background: linear-gradient(135deg, #be123c 0%, #9f1239 55%, #700926 100%);
+            transform: translateY(-2px);
+            border-color: #fbbf24;
+            box-shadow: 0 8px 24px rgba(136, 19, 55, 0.55), 0 0 16px rgba(251, 191, 36, 0.35);
+            color: #ffffff;
+        }
+
+        .btn-nav-cta .btn-arrow-chip {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            margin: 0 auto 28px;
-            padding: 2px;
-            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.7) 20%, rgba(16, 185, 129, 0.8) 50%, rgba(251, 191, 36, 0.7) 80%, transparent);
-            border-radius: 9999px;
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25), 0 0 12px rgba(16, 185, 129, 0.2);
-        }
-
-        .iu-heritage-inner {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(8, 12, 22, 0.94);
-            backdrop-filter: blur(14px);
-            padding: 7px 22px 7px 12px;
-            border-radius: 9999px;
-        }
-
-        .heritage-tag {
-            background: linear-gradient(135deg, #047857, #065f46);
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(251, 191, 36, 0.2);
             color: #fef08a;
-            border: 1px solid #fbbf24;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.82rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-        }
-
-        .heritage-beacon {
-            width: 7px;
-            height: 7px;
-            background: #fbbf24;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #fbbf24;
-            animation: pulseBeacon 2s infinite ease-in-out;
-        }
-
-        @keyframes pulseBeacon {
-            0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 4px #fbbf24; }
-            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #34d399, 0 0 20px #fbbf24; }
-        }
-
-        .heritage-text {
-            font-family: 'Cinzel', serif;
-            font-size: 0.86rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, #fef3c7, #fbbf24 60%, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .heritage-ornament {
-            color: #fbbf24;
             font-size: 0.85rem;
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+
+        .btn-nav-cta:hover .btn-arrow-chip {
+            transform: translateX(3px);
+            background: rgba(251, 191, 36, 0.35);
+            color: #ffffff;
         }
 
         .iu-emblem-badge {
@@ -650,24 +708,30 @@
             </ul>
             <div class="nav-actions">
                 <a href="/api/swagger" class="btn btn-ghost" title="OpenAPI / Swagger Spesifikasyonu">⚡ API Docs</a>
-                <a href="/jobs" class="btn btn-burgundy">İlanları İncele →</a>
+                <a href="/jobs" class="btn-nav-cta">İlanları İncele <span class="btn-arrow-chip">&rarr;</span></a>
             </div>
         </div>
     </nav>
 
     <!-- Kahraman (Hero) Alanı -->
     <header class="hero">
-        <!-- Tarihi Beyazıt Kitabesi & Canlı İlim Işığı -->
-        <div class="iu-heritage-crest">
-            <div class="iu-heritage-inner">
-                <span class="heritage-tag">
-                    <span class="heritage-beacon"></span>
-                    <span>1453</span>
+        <!-- Açık Mimari Kitabe (Yuvarlak Baloncuksuz) -->
+        <div class="hero-inscription">
+            <div class="inscription-top-line">
+                <span class="inscription-hairline"></span>
+                <span class="inscription-year">
+                    <span class="inscription-beacon"></span>
+                    1453
+                    <span class="inscription-beacon"></span>
                 </span>
-                <span class="heritage-ornament">⚜️</span>
-                <span class="heritage-text">Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras</span>
-                <span class="heritage-ornament">⚜️</span>
+                <span class="inscription-hairline right"></span>
             </div>
+            <div class="inscription-title">
+                <span class="fleur">⚜️</span>
+                <span>Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras</span>
+                <span class="fleur">⚜️</span>
+            </div>
+            <div class="inscription-bottom-bar"></div>
         </div>
         <h1>İstanbul Üniversitesi Geleceğini <span class="gradient-iu">Mezunlarıyla İnşa Ediyor</span></h1>
         <p>

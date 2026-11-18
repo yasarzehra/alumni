@@ -162,6 +162,54 @@
             border-color: var(--iu-gold-light);
         }
 
+        /* Rafine İlanları İncele Butonu */
+        .btn-nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 16px 9px 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.90rem;
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            border: 1px solid rgba(251, 191, 36, 0.55);
+            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn-nav-cta:hover {
+            background: linear-gradient(135deg, #be123c 0%, #9f1239 55%, #700926 100%);
+            transform: translateY(-2px);
+            border-color: #fbbf24;
+            box-shadow: 0 8px 24px rgba(136, 19, 55, 0.55), 0 0 16px rgba(251, 191, 36, 0.35);
+            color: #ffffff;
+        }
+
+        .btn-nav-cta .btn-arrow-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(251, 191, 36, 0.2);
+            color: #fef08a;
+            font-size: 0.85rem;
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+
+        .btn-nav-cta:hover .btn-arrow-chip {
+            transform: translateX(3px);
+            background: rgba(251, 191, 36, 0.35);
+            color: #ffffff;
+        }
+
         .btn-ghost {
             background: rgba(255, 255, 255, 0.04);
             color: #f8fafc;
@@ -382,7 +430,7 @@
             </ul>
             <div class="nav-actions">
                 <a href="/api/swagger" class="btn btn-ghost">⚡ API Docs</a>
-                <a href="/jobs" class="btn btn-burgundy">İlanları İncele →</a>
+                <a href="/jobs" class="btn-nav-cta">İlanları İncele <span class="btn-arrow-chip">&rarr;</span></a>
             </div>
         </div>
     </nav>

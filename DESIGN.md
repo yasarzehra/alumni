@@ -133,11 +133,11 @@ Following **Refero's modular component scale**:
 * **Navbar Primary CTA:** Direct action link **`İlanları İncele →`** (updated from *Fırsatları İncele* for institutional precision).
 
 ### 5.2. Action Buttons (MasterClass & Genway Synthesis)
-* **Primary CTA (İÜ Burgundy):**
-  - Background: `linear-gradient(135deg, #881337, #9f1239)`
-  - Border: `1px solid rgba(251, 191, 36, 0.35)`
-  - Shadow: `0 4px 16px rgba(136, 19, 55, 0.35)`
-  - Hover: `transform: translateY(-2px)`, border glow to `--color-accent-light`.
+* **Refined Primary CTA — `İlanları İncele` (`.btn-nav-cta`):**
+  - Background: `linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%)`
+  - Border: `1px solid rgba(251, 191, 36, 0.55)` with internal glow `inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+  - Shadow: `0 4px 16px rgba(136, 19, 55, 0.45)`
+  - Interactive Arrow Chip (`.btn-arrow-chip`): Translucent gold housing for `→` with `translateX(3px)` translation on hover.
   - Phrasing: **`İlanları İncele →`**, **`💼 Mezun İlanlarına Göz At`**, **`+ İlan Ver`**.
 * **Secondary CTA (Heritage Gold):**
   - Background: `linear-gradient(135deg, #d97706, #b45309)`
@@ -169,12 +169,12 @@ Following **Refero's modular component scale**:
   - `POST` $\rightarrow$ Rose/Burgundy (`#f43f5e`)
   - `STATUS 200/201` $\rightarrow$ Mint Emerald (`#34d399`)
 
-### 5.6. Beyazıt Archway Heritage Plaque (Tarihi Beyazıt Kitabesi & Canlı İlim Işığı)
-* Dual-capsule monumental crest positioned at the apex of the Hero display:
-  - **Outer Frame:** Linear gradient border `90deg` from transparent $\rightarrow$ Gold (`#fbbf24`) $\rightarrow$ Emerald (`#10b981`) $\rightarrow$ Gold $\rightarrow$ transparent, radius `9999px`.
-  - **Inner Shield:** Midnight glass `rgba(8, 12, 22, 0.94)` with `backdrop-filter: blur(14px)`.
-  - **1453 Badge:** Botanical green tag `linear-gradient(135deg, #047857, #065f46)` housing the pulsating `heritage-beacon` (2-second breathing green-gold glow) and numeric year `1453`.
-  - **Monumental Inscription:** "BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI • GELECEĞE KÖK SALAN MİRAS" in inscriptional `Cinzel` serif with flanking `⚜️` fleur-de-lis / laurel ornaments.
+### 5.6. Beyazıt Archway Open Inscription (Açık Mimari Kitabe — Baloncuksuz)
+* Flat, open-air architectural inscriptional header (no enclosed rounded bubble, pill or balloon):
+  - **Top Hairline Bar:** Two flanking golden hairlines (`inscription-hairline`) tapering to transparent on the sides.
+  - **1453 Center Marker:** Gold inscriptional date flanked by emerald micro-beacons with `letter-spacing: 3px`.
+  - **Monumental Inscription:** "BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI • GELECEĞE KÖK SALAN MİRAS" in `Cinzel` serif with flanking `⚜️` fleur-de-lis ornaments.
+  - **Tapered Gold Ground Line:** A 140px centered accent beam (`inscription-bottom-bar`) connecting down to the H1 display title.
 
 ---
 
