@@ -1,9 +1,11 @@
 """
 JobView - HTML View Layer for Job Postings
 Renders responsive web views for career opportunities, employment board, and relational author listings.
+Now completely unified with Istanbul University Tri-Font & Dark Institutional Theme via Layout.
 """
 from typing import List, Dict, Any, Optional
 import html
+from views.layout import Layout
 
 
 class JobView:
@@ -13,219 +15,318 @@ class JobView:
     def render_index(jobs: List[Dict[str, Any]], count: int, error: Optional[str] = None, success: Optional[str] = None, filter_user: Optional[Dict[str, Any]] = None) -> str:
         alert_html = ""
         if error:
-            alert_html += f'<div style="background:#fee2e2;color:#991b1b;padding:14px;border-radius:8px;margin-bottom:20px;">{html.escape(error)}</div>'
+            alert_html += f'<div class="alert alert-danger"><span>⚠</span><span>{html.escape(error)}</span></div>'
         if success:
-            alert_html += f'<div style="background:#dcfce7;color:#166534;padding:14px;border-radius:8px;margin-bottom:20px;">{html.escape(success)}</div>'
+            alert_html += f'<div class="alert alert-success"><span>✓</span><span>{html.escape(success)}</span></div>'
 
-        subtitle = "Kariyer ve Staj Fırsatları Yönetim Paneli"
+        subtitle = "İstanbul Üniversitesi mezunlarının çalıştığı ve yönettiği kurumlardan kariyer fırsatları."
         if filter_user:
-            subtitle = f"<strong>{html.escape(filter_user['name'])}</strong> kullanıcısına ait iş ilanları"
+            subtitle = f"<strong>{html.escape(filter_user.get('name', 'Kullanıcı'))}</strong> tarafından yayınlanan iş & staj ilanları."
+
+        # Stats calculation
+        full_time_cnt = sum(1 for j in jobs if j.get('employment_type') == 'full_time')
+        intern_cnt = sum(1 for j in jobs if j.get('employment_type') == 'internship')
 
         rows_html = ""
         for j in jobs:
-            author_info = j.get("author") or {}
-            author_name = author_info.get("name") or "Alumni Üyesi"
-            emp_badge = "#2563eb" if j.get("employment_type") == "full_time" else "#059669"
+            j_id = j.get('id')
+            title = html.escape(str(j.get('title') or 'Pozisyon Belirtilmedi'))
+            company = html.escape(str(j.get('company_name') or 'Kurum Belirtilmedi'))
+            location = html.escape(str(j.get('location') or 'İstanbul (Hibrit)'))
+            emp_type = j.get('employment_type', 'full_time')
             
+            # Badge selection
+            if emp_type == 'internship':
+                badge_cls = 'badge-gold'
+                emp_label = '🎓 Staj'
+            elif emp_type == 'full_time':
+                badge_cls = 'badge-green'
+                emp_label = '💼 Tam Zamanlı'
+            elif emp_type == 'part_time':
+                badge_cls = 'badge-blue'
+                emp_label = '⏱️ Yarı Zamanlı'
+            else:
+                badge_cls = 'badge-purple'
+                emp_label = '📝 Proje Bazlı'
+
+            author_info = j.get("author") or {}
+            author_name = html.escape(str(author_info.get("name") or "İÜ Mezunu"))
+            author_id = j.get("alumni_id")
+
             rows_html += f"""
             <tr>
-                <td style="padding: 14px; border-bottom: 1px solid #e2e8f0;"><strong>#{j['id']}</strong></td>
-                <td style="padding: 14px; border-bottom: 1px solid #e2e8f0;">
-                    <a href="/jobs/{j['id']}" style="color: #0f172a; text-decoration: none; font-weight: 600; font-size: 1rem;">
-                        {html.escape(j['title'])}
+                <td class="mono" style="font-weight: 700; color: var(--iu-gold-light);">#{j_id}</td>
+                <td>
+                    <a href="/jobs/{j_id}" style="color: #ffffff; text-decoration: none; font-weight: 700; font-size: 1rem; display: block;">
+                        {title}
                     </a>
-                    <div style="font-size: 0.85rem; color: #64748b; margin-top: 2px;">
-                        🏢 {html.escape(j['company_name'])} &bull; 📍 {html.escape(j.get('location') or 'Remote')}
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 3px;">
+                        🏢 <strong style="color: #e2e8f0;">{company}</strong> &bull; 📍 {location}
                     </div>
                 </td>
-                <td style="padding: 14px; border-bottom: 1px solid #e2e8f0;">
-                    <span style="background: #eff6ff; color: {emp_badge}; padding: 4px 10px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">
-                        {html.escape(j.get('employment_type', 'full_time').replace('_', ' ').title())}
-                    </span>
+                <td>
+                    <span class="badge {badge_cls}">{emp_label}</span>
                 </td>
-                <td style="padding: 14px; border-bottom: 1px solid #e2e8f0;">
-                    <a href="/users/{j.get('alumni_id')}" style="color: #4338ca; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
-                        👤 {html.escape(author_name)}
+                <td>
+                    <a href="/users/{author_id}" style="color: var(--iu-gold-light); text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                        👤 {author_name}
                     </a>
+                    <div style="font-size: 0.78rem; color: var(--text-muted);">Doğrulanmış İÜ Mezunu</div>
                 </td>
-                <td style="padding: 14px; border-bottom: 1px solid #e2e8f0; text-align: right; white-space: nowrap;">
-                    <a href="/jobs/{j['id']}" style="padding: 6px 12px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-size: 0.82rem; margin-right: 4px; display: inline-block;">Görüntüle</a>
-                    <a href="/jobs/{j['id']}/edit" style="padding: 6px 12px; background: #f59e0b; color: white; text-decoration: none; border-radius: 6px; font-size: 0.82rem; margin-right: 4px; display: inline-block;">Düzenle</a>
-                    <form action="/jobs/{j['id']}/delete" method="POST" style="display: inline-block; margin: 0;" onsubmit="return confirm('İş ilanı #{j['id']} silinsin mi?');">
-                        <button type="submit" style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; font-size: 0.82rem; cursor: pointer;">Sil</button>
+                <td style="text-align: right; white-space: nowrap;">
+                    <a href="/jobs/{j_id}" class="btn btn-sm btn-ghost" title="İlan Detayı">👁️ Detay</a>
+                    <a href="/jobs/{j_id}/apply" class="btn btn-sm btn-burgundy" style="margin-left: 4px;" title="İlana Başvur">📝 Başvur</a>
+                    <form action="/jobs/{j_id}/delete" method="POST" style="display: inline-block; margin-left: 4px;" onsubmit="return confirm('İş ilanı #{j_id} ({title}) silinsin mi?');">
+                        <button type="submit" class="btn btn-sm btn-danger" title="İlanı Sil">🗑️</button>
                     </form>
                 </td>
             </tr>
             """
 
         if not jobs:
-            rows_html = '<tr><td colspan="5" style="padding:30px; text-align:center; color:#94a3b8;">Henüz kayıtlı iş ilanı bulunmamaktadır.</td></tr>'
+            rows_html = '<tr><td colspan="5" style="padding:40px; text-align:center; color:var(--text-muted);">Henüz yayınlanmış bir iş veya staj ilanı bulunmamaktadır.</td></tr>'
 
-        return f"""<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kariyer & İş İlanları - Alumni Platform</title>
-    <style>
-        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; padding: 40px 20px; }}
-        .wrapper {{ max-width: 1080px; margin: 0 auto; }}
-        .card {{ background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 32px; border: 1px solid #e2e8f0; margin-bottom: 28px; }}
-        .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }}
-        table {{ width: 100%; border-collapse: collapse; text-align: left; }}
-        .btn {{ padding: 8px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; }}
-        .btn-primary {{ background: #2563eb; color: white; }}
-        .badge {{ padding: 6px 12px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }}
-    </style>
-</head>
-<body>
-    <div class="wrapper">
-        {alert_html}
+        content = f"""
+        <!-- İstatistik Şeridi -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div class="mono" style="font-size: 2rem; font-weight: 800; color: var(--iu-gold-light);">{count}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Aktif Kariyer & Staj İlanı</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div class="mono" style="font-size: 2rem; font-weight: 800; color: var(--success);">{full_time_cnt}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Tam Zamanlı İstihdam</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div class="mono" style="font-size: 2rem; font-weight: 800; color: #fbbf24);">{intern_cnt}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Öğrenci Staj İlanı</div>
+            </div>
+        </div>
+
+        <!-- İlanlar Tablosu -->
         <div class="card">
-            <div class="header">
-                <div>
-                    <h1 style="font-size: 1.6rem; color: #0f172a;">💼 İş & Staj İlanları (Job Board)</h1>
-                    <p style="color: #64748b; font-size: 0.95rem; margin-top: 4px;">{subtitle}</p>
-                </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <span class="badge" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;">● DB: Connected (job_postings)</span>
-                    <span class="badge" style="background:#eff6ff; color:#1d4ed8;">{count} İlan</span>
-                    <a href="/jobs/create" class="btn btn-primary">+ Yeni İlan Ekle (C)</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+                <h2 style="font-family: 'Cinzel', serif; font-size: 1.3rem; color: #ffffff;">Güncel Kariyer Fırsatları</h2>
+                <div style="display: flex; gap: 8px;">
+                    <a href="/api/jobs" class="btn btn-sm btn-ghost" title="REST API JSON">⚡ JSON API</a>
+                    <a href="/jobs/create" class="btn btn-sm btn-burgundy">+ Yeni İlan Ekle</a>
                 </div>
             </div>
 
-            <table>
-                <thead>
-                    <tr style="background: #f8fafc; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">
-                        <th style="padding: 12px 14px;">ID</th>
-                        <th style="padding: 12px 14px;">Pozisyon / Şirket</th>
-                        <th style="padding: 12px 14px;">Çalışma Türü</th>
-                        <th style="padding: 12px 14px;">Yayınlayan Mezun (Relation)</th>
-                        <th style="padding: 12px 14px; text-align: right;">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows_html}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">ID</th>
+                            <th>Pozisyon & Şirket</th>
+                            <th>Çalışma Türü</th>
+                            <th>Yayınlayan Mezun</th>
+                            <th style="text-align: right; width: 220px;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows_html}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        """
 
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <a href="/" style="color: #64748b; text-decoration: none; font-size: 0.9rem;">&larr; Ana Sayfa</a>
-            <a href="/users" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">Kullanıcılar (/users)</a>
-            <a href="/announcements" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">Duyurular (/announcements)</a>
-            <a href="/api/jobs" style="color: #2563eb; text-decoration: none; font-size: 0.9rem;">REST API (/api/jobs)</a>
-            <a href="/api/swagger" style="color: #4338ca; text-decoration: none; font-size: 0.9rem;">Swagger UI</a>
-        </div>
-    </div>
-</body>
-</html>
-"""
+        return Layout.render(
+            title="Kariyer & Staj İlanları",
+            active_nav="jobs",
+            content=content,
+            subtitle=subtitle,
+            actions='<a href="/jobs/create" class="btn btn-burgundy">+ Yeni İlan Yayınla</a>',
+            alert_html=alert_html
+        )
 
     @staticmethod
     def render_show(job: Dict[str, Any]) -> str:
+        j_id = job.get('id')
+        title = html.escape(str(job.get('title') or 'Pozisyon'))
+        company = html.escape(str(job.get('company_name') or 'Şirket'))
+        location = html.escape(str(job.get('location') or 'İstanbul'))
+        emp_type = job.get('employment_type', 'full_time')
+        description = html.escape(str(job.get('description') or ''))
+        requirements = html.escape(str(job.get('requirements') or ''))
+        salary = html.escape(str(job.get('salary_range') or ''))
+        app_url = html.escape(str(job.get('application_url') or ''))
+
         author = job.get("author") or {}
-        author_name = author.get("name") or "Alumni Üyesi"
+        author_name = html.escape(str(author.get("name") or "İÜ Mezunu"))
         author_id = job.get("alumni_id")
 
-        return f"""<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>{html.escape(job['title'])} - Detay</title>
-    <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; padding: 40px 20px; }}
-        .card {{ max-width: 800px; margin: 0 auto; background: white; padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0; }}
-        .meta {{ margin-bottom: 24px; color: #64748b; font-size: 0.95rem; }}
-        .btn {{ padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; }}
-    </style>
-</head>
-<body>
-    <div class="card">
-        <a href="/jobs" style="color: #2563eb; text-decoration: none;">&larr; Tüm İlanlara Dön</a>
-        <h1 style="font-size: 1.8rem; margin: 16px 0 8px 0;">{html.escape(job['title'])}</h1>
-        <div class="meta">
-            🏢 <strong>{html.escape(job['company_name'])}</strong> &bull; 📍 {html.escape(job.get('location') or 'Remote')} &bull; 💼 {html.escape(job.get('employment_type', 'full_time'))}
+        req_section = f"""
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--dark-border);">
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #ffffff; margin-bottom: 8px;">Aranan Nitelikler & Yetkinlikler</h3>
+            <p style="color: #cbd5e1; line-height: 1.6; white-space: pre-line;">{requirements}</p>
         </div>
-        <div style="background: #f1f5f9; padding: 14px; border-radius: 8px; margin-bottom: 24px;">
-            👤 <strong>Yayınlayan Mezun:</strong> <a href="/users/{author_id}" style="color: #2563eb;">{html.escape(author_name)}</a>
-            &bull; <a href="/users/{author_id}/jobs" style="color: #4338ca;">(Bu kullanıcının diğer ilanları)</a>
+        """ if requirements else ""
+
+        salary_section = f"""
+        <div style="background: #090e1a; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--dark-border); margin-top: 20px;">
+            <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Maaş / Yan Haklar</div>
+            <div class="mono" style="font-size: 1.1rem; color: var(--iu-gold-light); font-weight: 700; margin-top: 2px;">{salary}</div>
         </div>
-        <h3 style="margin-bottom: 8px;">İş Tanımı & Sorumluluklar</h3>
-        <p style="line-height: 1.6; margin-bottom: 24px; color: #334155;">{html.escape(job.get('description', ''))}</p>
-        
-        {f'<div style="margin-bottom:20px;"><strong>Aranan Nitelikler:</strong><p style="color:#475569;margin-top:4px;">{html.escape(job["requirements"])}</p></div>' if job.get("requirements") else ''}
-        {f'<div style="margin-bottom:20px;"><strong>Maaş Aralığı:</strong> {html.escape(job["salary_range"])}</div>' if job.get("salary_range") else ''}
-        {f'<div style="margin-bottom:24px;"><a href="{html.escape(job["application_url"])}" target="_blank" class="btn" style="background:#2563eb;color:white;">Başvuru Yap &rarr;</a></div>' if job.get("application_url") else ''}
-        
-        <div style="border-top: 1px solid #f1f5f9; padding-top: 16px; display: flex; gap: 10px;">
-            <a href="/jobs/{job['id']}/edit" class="btn" style="background: #f59e0b; color: white;">Düzenle (U)</a>
-            <a href="/jobs" class="btn" style="background: #e2e8f0; color: #334155;">Geri</a>
+        """ if salary else ""
+
+        apply_btn = f"""
+        <a href="{app_url}" target="_blank" class="btn btn-gold" style="font-size: 1rem; padding: 12px 24px;">
+            Şirket Sitesinden Başvur &rarr;
+        </a>
+        """ if app_url else ""
+
+        content = f"""
+        <div class="card" style="max-width: 820px; margin: 0 auto; border-top: 4px solid var(--iu-burgundy);">
+            <!-- İlan Üst Başlığı -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--dark-border); flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        <span class="mono" style="color: var(--iu-gold-light); font-weight: 700;">#{j_id}</span>
+                        <span class="badge badge-burgundy">{html.escape(emp_type.replace('_', ' ').title())}</span>
+                    </div>
+                    <h2 style="font-family: 'Cinzel', serif; font-size: 1.8rem; color: #ffffff;">{title}</h2>
+                    <div style="font-size: 1.05rem; color: var(--iu-gold-light); font-weight: 600; margin-top: 4px;">
+                        🏢 {company} &bull; 📍 {location}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="/jobs/{j_id}/apply" class="btn btn-burgundy">📝 Platformdan Başvur</a>
+                    {apply_btn}
+                </div>
+            </div>
+
+            <!-- Yayınlayan Mezun Kartı -->
+            <div style="background: #090e1a; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--dark-border); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.6rem;">🎓</span>
+                    <div>
+                        <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">İlanı Yayınlayan Mezun</div>
+                        <a href="/users/{author_id}" style="color: #ffffff; font-weight: 700; text-decoration: none;">{author_name}</a>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="/users/{author_id}/jobs" class="btn btn-sm btn-ghost">Tüm İlanları</a>
+                    <a href="/jobs/{j_id}/applications" class="btn btn-sm btn-ghost">Aday Başvuruları ({j_id})</a>
+                </div>
+            </div>
+
+            <!-- İş Tanımı -->
+            <div>
+                <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #ffffff; margin-bottom: 8px;">Pozisyon Tanımı & Görevler</h3>
+                <p style="color: #cbd5e1; line-height: 1.7; white-space: pre-line; font-size: 1rem;">{description}</p>
+            </div>
+
+            {req_section}
+            {salary_section}
+
+            <!-- Alt Aksiyonlar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--dark-border); flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; gap: 8px;">
+                    <a href="/jobs/{j_id}/edit" class="btn btn-gold">✏️ İlanı Düzenle</a>
+                    <form action="/jobs/{j_id}/delete" method="POST" style="display: inline;" onsubmit="return confirm('Bu ilan silinecektir. Emin misiniz?');">
+                        <button type="submit" class="btn btn-danger">🗑️ İlanı Kaldır</button>
+                    </form>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="/api/jobs/{j_id}" class="btn btn-ghost">⚡ API JSON</a>
+                    <a href="/jobs" class="btn btn-ghost">&larr; İlan Listesine Dön</a>
+                </div>
+            </div>
         </div>
-    </div>
-</body>
-</html>
-"""
+        """
+
+        return Layout.render(
+            title=f"{title} — {company}",
+            active_nav="jobs",
+            content=content,
+            subtitle="İstanbul Üniversitesi Mezun Kariyer Portalı İş Detayı.",
+            actions='<a href="/jobs" class="btn btn-ghost">&larr; Tüm İlanlara Dön</a>'
+        )
 
     @staticmethod
     def render_create() -> str:
-        return """<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Yeni İş İlanı Ekle</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; padding: 40px 20px; }
-        .card { max-width: 650px; margin: 0 auto; background: white; padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
-        .btn-submit { background: #2563eb; color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <a href="/jobs" style="color: #2563eb; text-decoration: none;">&larr; İlan Listesi</a>
-        <h1 style="font-size: 1.5rem; margin: 16px 0 20px 0;">+ Yeni İş İlanı Ekle [Create (C)]</h1>
-        <form action="/jobs" method="POST">
-            <div class="form-group">
-                <label for="title">İş / Pozisyon Başlığı *</label>
-                <input type="text" id="title" name="title" placeholder="Örn: Senior Frontend Developer" required>
+        content = """
+        <div class="card" style="max-width: 680px; margin: 0 auto; border-top: 4px solid var(--iu-burgundy);">
+            <div style="margin-bottom: 24px;">
+                <span class="badge badge-burgundy" style="margin-bottom: 10px;">Yeni Kariyer & Staj İlanı</span>
+                <h2 style="font-family: 'Cinzel', serif; font-size: 1.5rem; color: #ffffff;">İlan Bilgilerini Tanımlayın</h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">
+                    İstanbul Üniversitesi mezunlarına ve öğrencilerine ulaşacak kariyer fırsatını yayınlayın.
+                </p>
             </div>
-            <div class="form-group">
-                <label for="company_name">Şirket Adı *</label>
-                <input type="text" id="company_name" name="company_name" placeholder="Örn: Trendyol" required>
-            </div>
-            <div class="form-group">
-                <label for="location">Lokasyon</label>
-                <input type="text" id="location" name="location" placeholder="Örn: İstanbul (Hybrid / Remote)">
-            </div>
-            <div class="form-group">
-                <label for="employment_type">İstihdam Türü</label>
-                <select id="employment_type" name="employment_type">
-                    <option value="full_time">Tam Zamanlı (Full Time)</option>
-                    <option value="part_time">Yarı Zamanlı (Part Time)</option>
-                    <option value="internship">Staj (Internship)</option>
-                    <option value="contract">Sözleşmeli / Proje Bazlı</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="description">İş Tanımı *</label>
-                <textarea id="description" name="description" rows="4" placeholder="Görev ve sorumluluklar..." required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="application_url">Başvuru Linki</label>
-                <input type="url" id="application_url" name="application_url" placeholder="https://careers.company.com/apply">
-            </div>
-            <button type="submit" class="btn-submit">+ İlanı Yayınla</button>
-        </form>
-    </div>
-</body>
-</html>
-"""
+
+            <form action="/jobs" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="title">Pozisyon / Unvan *</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="Örn: Kıdemli Yazılım Mühendisi / Hukuk Stajyeri" required autofocus>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="company_name">Şirket / Kurum Adı *</label>
+                        <input type="text" id="company_name" name="company_name" class="form-control" placeholder="Örn: Garanti BBVA / TÜBİTAK" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="location">Lokasyon</label>
+                        <input type="text" id="location" name="location" class="form-control" placeholder="Örn: İstanbul (Hibrit / Maslak)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="employment_type">İstihdam Türü</label>
+                    <select id="employment_type" name="employment_type" class="form-control">
+                        <option value="full_time">Tam Zamanlı (Full-Time)</option>
+                        <option value="part_time">Yarı Zamanlı (Part-Time)</option>
+                        <option value="internship">Staj (Öğrenci / Yeni Mezun)</option>
+                        <option value="contract">Sözleşmeli / Proje Bazlı</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">İş Tanımı & Sorumluluklar *</label>
+                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Pozisyonun kapsamı, ekip yapısı ve beklentiler..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="requirements">Aranan Nitelikler (Opsiyonel)</label>
+                    <textarea id="requirements" name="requirements" class="form-control" rows="3" placeholder="Gerekli deneyim, yabancı dil, mezuniyet fakültesi..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="application_url">Harici Başvuru URL'si (Opsiyonel)</label>
+                    <input type="url" id="application_url" name="application_url" class="form-control" placeholder="https://careers.company.com/apply/123">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-burgundy" style="flex: 1;">🚀 İlanı Yayınla</button>
+                    <a href="/jobs" class="btn btn-ghost">İptal</a>
+                </div>
+            </form>
+        </div>
+        """
+
+        return Layout.render(
+            title="Yeni İlan Yayınla",
+            active_nav="jobs",
+            content=content,
+            subtitle="İÜ Mezun ve Öğrenci Kariyer Ağına yeni iş/staj ilanı ekleyin.",
+            actions='<a href="/jobs" class="btn btn-ghost">&larr; İlan Listesine Dön</a>'
+        )
 
     @staticmethod
     def render_error_404(msg: str) -> str:
-        return f"""<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:50px;">
-        <h2>404 - Sayfa Bulunamadı</h2><p>{html.escape(msg)}</p><a href="/jobs">İlan Listesine Dön</a></body></html>"""
+        content = f"""
+        <div class="card" style="max-width: 520px; margin: 40px auto; text-align: center; border-top: 4px solid var(--danger);">
+            <div class="mono" style="font-size: 4rem; font-weight: 800; color: var(--danger); line-height: 1;">404</div>
+            <h2 style="font-family: 'Cinzel', serif; font-size: 1.6rem; color: #ffffff; margin: 16px 0 10px;">İş İlanı Bulunamadı</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px;">{html.escape(msg)}</p>
+            <a href="/jobs" class="btn btn-burgundy">&larr; Tüm İlanlara Dön</a>
+        </div>
+        """
+        return Layout.render(
+            title="İlan Bulunamadı",
+            active_nav="jobs",
+            content=content
+        )

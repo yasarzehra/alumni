@@ -52,7 +52,8 @@ class ApplicationController:
         """
         job = JobPosting.find_by_id(job_id)
         if not job:
-            return "İş ilanı bulunamadı"
+            from views.job_view import JobView
+            return JobView.render_error_404(f"#{job_id} numaralı iş ilanı bulunamadı.")
         return ApplicationView.render_apply_form(job=job)
 
     @staticmethod
