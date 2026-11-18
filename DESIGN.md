@@ -76,20 +76,26 @@ The interface achieves **"Historic Academic Monumentality fused with Modern Prod
 
 ---
 
-## 🔤 3. Typography & Hierarchy (Sohne / Roobert / Geist Alignment)
+## 🔤 3. Typography & Hierarchy (Tri-Font Architecture)
 
-Typography balances scholarly weight with clean engineering readability:
+Instead of relying on a single repetitive font, the platform adopts a curated **Tri-Font Architecture** reflecting historic university prestige, modern interface ergonomics, and engineering precision:
 
-| Role | Font Family | Size | Weight | Line Height | Tracking | Reference |
+1. **Editorial & Monumental Serif:** `'Cinzel', serif`  
+   *Inspiration: Roman inscriptional monumentality, the historic Beyazıt Archway (1453), diplomas, faculty heraldry.*
+2. **Interface & Product Sans:** `'Plus Jakarta Sans', sans-serif`  
+   *Inspiration: Refero modern SaaS standards, legible micro-copy, dense form fields, crisp button labels.*
+3. **Observability & Data Mono:** `'JetBrains Mono', monospace`  
+   *Inspiration: Developer APIs, live metrics, terminal logs, matriculation student/alumni IDs.*
+
+| Role | Font Family | Size | Weight | Line Height | Tracking | Purpose & Semantic Usage |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Hero Display** | `'Plus Jakarta Sans', sans-serif` | `3.4rem (54px)` | `800 (ExtraBold)` | `1.15` | `-1.2px` | MasterClass Hero Title |
-| **Section H1** | `'Plus Jakarta Sans', sans-serif` | `2.4rem (38px)` | `800` | `1.2` | `-0.8px` | Syllabus Section Header |
-| **Module H2** | `'Plus Jakarta Sans', sans-serif` | `1.8rem (28px)` | `700 (Bold)` | `1.3` | `-0.4px` | Genway Bento Card |
-| **Card H3** | `'Plus Jakarta Sans', sans-serif` | `1.3rem (20px)` | `700` | `1.4` | `-0.2px` | Standard Directory Card |
-| **Body Large** | `'Plus Jakarta Sans', sans-serif` | `1.15rem (18px)`| `400 / 500` | `1.6` | `0` | Lead Article Paragraph |
-| **Body Regular** | `'Plus Jakarta Sans', sans-serif` | `0.95rem (15px)`| `400` | `1.6` | `0` | Job & Applicant Details |
-| **Badges & Labels**| `'Plus Jakarta Sans', sans-serif` | `0.82rem (13px)`| `700` | `1.4` | `+0.8px (Caps)`| Syllabus Pill Badging |
-| **Code & Metrics** | `'JetBrains Mono', monospace` | `0.85rem (13.5px)`| `500 / 600` | `1.5` | `0` | Live Terminal & API Keys |
+| **Hero Display (H1)** | `'Cinzel', serif` | `3.4rem (54px)` | `700 / 800` | `1.18` | `-0.5px` | "İstanbul Üniversitesi Mezunlar Ağı", Tarihi Kapı Manşeti |
+| **Section Title (H2)**| `'Cinzel', serif` | `2.2rem (35px)` | `700 (Bold)` | `1.25` | `+0.2px` | "Platform Hizmetleri", "Fakültelerimiz" |
+| **Module Title (H3)** | `'Plus Jakarta Sans', sans-serif` | `1.3rem (20px)` | `700` | `1.4` | `-0.2px` | Bento kart başlıkları (Kariyer, Rehber, Duyurular) |
+| **Lead Subtitle** | `'Plus Jakarta Sans', sans-serif` | `1.18rem (19px)`| `400 / 500` | `1.6` | `0` | Hero açıklama paragrafı |
+| **Body Regular** | `'Plus Jakarta Sans', sans-serif` | `0.95rem (15px)`| `400 / 500` | `1.6` | `0` | İlan detayları, kullanıcı biyografileri, tablo satırları |
+| **Badges & Labels**| `'Plus Jakarta Sans', sans-serif` | `0.80rem (12.8px)`| `700` | `1.4` | `+1.0px (Caps)`| Fakülte etiketleri, "1453'ten Geleceğe" kurumsal şerit |
+| **Code & Metrics** | `'JetBrains Mono', monospace` | `0.90rem (14px)` | `600 / 700` | `1.5` | `0` | "1453", "13+ Mezun", live terminal log satırları |
 
 ---
 
