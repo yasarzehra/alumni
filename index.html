@@ -9,16 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* İstanbul Üniversitesi Kurumsal Renkleri */
+            /* İstanbul Üniversitesi Kurumsal Renkleri (Akademik & Ağırbaşlı) */
             --iu-burgundy: #881337;          /* İÜ Bordo */
             --iu-burgundy-hover: #9f1239;
             --iu-burgundy-dark: #4c0519;
-            --iu-gold: #d97706;              /* İÜ Kurumsal Altın Sarısı */
-            --iu-gold-light: #fbbf24;        /* Parlak Altın */
-            --iu-gold-glow: rgba(245, 158, 11, 0.28);
+            --iu-gold: #c59b27;              /* Ağırbaşlı Antik Altın */
+            --iu-gold-light: #d4af37;        /* Mat Varak Altın */
+            --iu-gold-glow: rgba(0, 0, 0, 0.25);
             --bg-body: #080c16;              /* Beyazıt Gece Mavisi Zemin */
-            --dark-card: #111827;            /* Yüzey Kartı */
-            --dark-border: #1f293d;
+            --dark-card: #0f172a;            /* Yüzey Kartı */
+            --dark-border: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --success: #10b981;
@@ -38,23 +38,9 @@
             line-height: 1.6;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.22) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(197, 155, 39, 0.08) 0%, transparent 45%),
                 radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
-        }
-
-        /* Kurumsal Üst Bant */
-        .iu-top-strip {
-            background: linear-gradient(90deg, #4c0519, #881337 50%, #b45309);
-            color: #fef3c7;
-            font-family: 'Cinzel', serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-align: center;
-            padding: 7px 16px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
         }
 
         /* Navigation Bar */
@@ -63,9 +49,9 @@
             top: 0;
             z-index: 100;
             backdrop-filter: blur(16px);
-            background: rgba(8, 12, 22, 0.88);
-            border-bottom: 1px solid rgba(31, 41, 61, 0.8);
-            padding: 16px 24px;
+            background: rgba(8, 12, 22, 0.92);
+            border-bottom: 1px solid rgba(30, 41, 59, 0.8);
+            padding: 14px 24px;
         }
 
         .nav-container {
@@ -87,21 +73,20 @@
         .brand-seal {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%);
-            border: 2px solid #fbbf24;
+            background: linear-gradient(145deg, #064e3b 0%, #022c22 100%);
+            border: 1.5px solid #d4af37;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25);
-            transition: all 0.3s ease;
+            font-size: 1.35rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            transition: all 0.2s ease;
         }
 
         .brand-seal:hover {
-            transform: scale(1.06);
-            border-color: #fef08a;
-            box-shadow: 0 6px 22px rgba(251, 191, 36, 0.5), 0 0 14px rgba(16, 185, 129, 0.4);
+            border-color: #f1d581;
+            transform: translateY(-1px);
         }
 
         .brand-text {
@@ -115,14 +100,24 @@
             font-size: 1.15rem;
             letter-spacing: 0.5px;
             color: #ffffff;
+            line-height: 1.2;
         }
 
         .brand-sub {
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--iu-gold-light);
+            letter-spacing: 1.2px;
+            color: #d4af37;
             font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .brand-meta {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            margin-top: 1px;
         }
 
         .nav-links {
@@ -165,29 +160,30 @@
         }
 
         .btn-burgundy {
-            background: linear-gradient(135deg, var(--iu-burgundy), #9f1239);
+            background: linear-gradient(135deg, #881337, #6b0c2a);
             color: #ffffff;
-            border: 1px solid rgba(251, 191, 36, 0.35);
-            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .btn-burgundy:hover {
-            background: linear-gradient(135deg, #9f1239, #be123c);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 22px rgba(136, 19, 55, 0.5);
-            border-color: var(--iu-gold-light);
+            background: linear-gradient(135deg, #9f1239, #881337);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            border-color: #d4af37;
         }
 
         .btn-gold {
-            background: linear-gradient(135deg, #d97706, #b45309);
+            background: linear-gradient(135deg, #c59b27, #a17c18);
             color: #ffffff;
-            box-shadow: 0 4px 14px var(--iu-gold-glow);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(212, 175, 55, 0.45);
         }
 
         .btn-gold:hover {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #d4af37, #b88f20);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
         }
 
         .btn-ghost {
@@ -211,14 +207,13 @@
             position: relative;
         }
 
-        /* Açık Mimari Kitabe (Yuvarlak Baloncuksuz / Architectural Open Inscription) */
+        /* Açık Mimari Kitabe (Yuvarlak Baloncuksuz / Dignified Academic Inscription) */
         .hero-inscription {
-            max-width: 860px;
-            margin: 0 auto 34px;
+            max-width: 820px;
+            margin: 0 auto 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
         }
 
         .inscription-top-line {
@@ -233,89 +228,73 @@
         .inscription-hairline {
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.45));
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35));
         }
 
         .inscription-hairline.right {
-            background: linear-gradient(90deg, rgba(251, 191, 36, 0.45), transparent);
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.35), transparent);
         }
 
         .inscription-year {
             font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            font-weight: 800;
+            font-size: 0.92rem;
+            font-weight: 700;
             letter-spacing: 3px;
-            color: #fbbf24;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
-        }
-
-        .inscription-beacon {
-            width: 6px;
-            height: 6px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #10b981;
-            display: inline-block;
+            color: #d4af37;
         }
 
         .inscription-title {
             font-family: 'Cinzel', serif;
-            font-size: 0.92rem;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 1.8px;
             text-transform: uppercase;
-            color: #fef3c7;
+            color: #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             text-align: center;
             flex-wrap: wrap;
             line-height: 1.5;
         }
 
         .inscription-title .fleur {
-            color: #fbbf24;
-            font-size: 0.95rem;
-            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.5));
+            color: #d4af37;
+            font-size: 0.85rem;
         }
 
         .inscription-bottom-bar {
-            width: 140px;
-            height: 2px;
+            width: 80px;
+            height: 1px;
             margin-top: 10px;
-            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+            background: rgba(212, 175, 55, 0.35);
         }
 
-        /* Özel Rafine Buton: İlanları İncele */
+        /* Rafine İlan Butonu (Yüksek Güven / Academic Trust) */
         .btn-nav-cta {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 9px 16px 9px 20px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%);
+            padding: 9px 18px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #881337 0%, #6b0c2a 100%);
             color: #ffffff;
-            font-weight: 700;
-            font-size: 0.90rem;
+            font-weight: 600;
+            font-size: 0.88rem;
             letter-spacing: 0.2px;
             text-decoration: none;
-            border: 1px solid rgba(251, 191, 36, 0.55);
-            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .btn-nav-cta:hover {
-            background: linear-gradient(135deg, #be123c 0%, #9f1239 55%, #700926 100%);
-            transform: translateY(-2px);
-            border-color: #fbbf24;
-            box-shadow: 0 8px 24px rgba(136, 19, 55, 0.55), 0 0 16px rgba(251, 191, 36, 0.35);
+            background: linear-gradient(135deg, #9f1239 0%, #7a0e30 100%);
+            border-color: #d4af37;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
             color: #ffffff;
         }
 
@@ -323,35 +302,19 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            background: rgba(251, 191, 36, 0.2);
-            color: #fef08a;
-            font-size: 0.85rem;
-            transition: transform 0.25s ease, background 0.25s ease;
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
         }
 
         .btn-nav-cta:hover .btn-arrow-chip {
             transform: translateX(3px);
-            background: rgba(251, 191, 36, 0.35);
+            background: rgba(212, 175, 55, 0.25);
             color: #ffffff;
-        }
-
-        .iu-emblem-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(136, 19, 55, 0.25);
-            color: #fef08a;
-            border: 1px solid rgba(217, 119, 6, 0.45);
-            padding: 8px 20px;
-            border-radius: 9999px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 10px var(--iu-gold-glow);
         }
 
         .hero h1 {
@@ -367,7 +330,7 @@
         }
 
         .gradient-iu {
-            background: linear-gradient(135deg, #fef08a 0%, #fbbf24 40%, #f43f5e 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 45%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -408,20 +371,17 @@
         }
 
         .stat-card:hover {
-            border-color: var(--iu-gold);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(217, 119, 6, 0.15);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
 
         .stat-value {
-            font-size: 2.3rem;
-            font-weight: 800;
+            font-size: 2.2rem;
+            font-weight: 700;
             color: #ffffff;
             margin-bottom: 6px;
             font-family: 'JetBrains Mono', monospace;
-            background: linear-gradient(135deg, #ffffff, #fbbf24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         .stat-label {
@@ -684,11 +644,6 @@
 </head>
 <body>
 
-    <!-- İstanbul Üniversitesi Kurumsal Şerit -->
-    <div class="iu-top-strip">
-        🏛️ İstanbul Üniversitesi • Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453
-    </div>
-
     <!-- Üst Navigasyon -->
     <nav>
         <div class="nav-container">
@@ -697,6 +652,7 @@
                 <div class="brand-text">
                     <span class="brand-title">İstanbul Üniversitesi</span>
                     <span class="brand-sub">Mezun Bilgi & Kariyer Ağı</span>
+                    <span class="brand-meta">Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453</span>
                 </div>
             </a>
             <ul class="nav-links">
@@ -719,11 +675,7 @@
         <div class="hero-inscription">
             <div class="inscription-top-line">
                 <span class="inscription-hairline"></span>
-                <span class="inscription-year">
-                    <span class="inscription-beacon"></span>
-                    1453
-                    <span class="inscription-beacon"></span>
-                </span>
+                <span class="inscription-year">1453</span>
                 <span class="inscription-hairline right"></span>
             </div>
             <div class="inscription-title">

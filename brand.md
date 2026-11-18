@@ -20,14 +20,14 @@ Bu belge, **İstanbul Üniversitesi (İÜ) Mezun ve Kariyer Ağı Platformu** i�
 
 Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bordo (İÜ Bordo)** ve **Altın Sarısı / Varak Sarısı (İÜ Altın)** etrafında şekillendirilmiştir. Arka plan ve kartlarda ise modern koyu lacivert/derin gece tonları ile altın yansımalar harmanlanmıştır.
 
-### Ana Kurumsal Renkler (Primary Palette)
+### Ana Kurumsal Renkler (Primary Palette - Yüksek Güven & Akademik Prestij)
 | Görünüm | Renk Adı | Hex Kodu | Kullanım Alanı ve Anlamı |
 | :---: | :--- | :--- | :--- |
-| 🍷 | **İÜ Bordo (Imperial Burgundy)** | `#7f1d1d` / `#991b1b` / `#881337` | Üniversitenin resmi kurumsal rengi, ana marka vurguları, birincil butonlar (`btn-burgundy`). |
-| 🌿 | **Akademik Zümrüt Yeşili (Botanical Seal Green)** | `#065f46` / `#047857` | Logo ve mühür zemininde asırlık Beyazıt çınarlarını, köklü gelişimi ve canlılığı simgeler. |
-| 👑 | **İÜ Altın Sarısı (Heritage Gold)** | `#f59e0b` / `#d97706` | Başarı, mezuniyet diploması simgesi, rozetler, yıldızlar ve altın detaylar. |
-| ✨ | **Parlak Varak & Güneş Sarısı (Solar Gold Glow)** | `#fbbf24` / `#fef08a` | Logo çerçevesi, mühür parıltısı, aktif sekme vurgusu ve manşet degradeleri. |
+| 🍷 | **İÜ Bordo (Imperial Burgundy)** | `#7f1d1d` / `#881337` | Üniversitenin resmi kurumsal rengi, ana marka vurguları, birincil butonlar (`btn-burgundy`). |
+| 🌿 | **Mat Akademik Zümrüt (Botanical Seal Green)** | `#064e3b` / `#022c22` | Logo ve mühür zemininde asırlık Beyazıt çınarlarını, köklü gelişimi ve ağırbaşlılığı simgeler. |
+| 👑 | **Antik İÜ Altını (Antique Prestige Gold)** | `#c59b27` / `#d4af37` | Yüksek güven veren mat altın varak, rozetler, mühür kenarlığı ve akademik detaylar (neon ışıltılardan arındırılmış). |
 | 🏛️ | **Derin Gece / Beyazıt Mavisi** | `#080c16` / `#111827` | Sayfa ve kart zeminleri; kurumsal ağırlığı ve modernliği pekiştirir. |
+| 🔘 | **Kurumsal Bilgi Grisi (Institutional Meta)** | `#94a3b8` / `#64748b` | Rektörlük ve koordinatörlük alt bilgileri, tarihler ve yardımcı metinler. |
 
 ### Semantik Durum Renkleri
 | Görünüm | Durum | Hex Kodu | Kullanım Alanı |
@@ -43,12 +43,12 @@ Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bo
 :root {
     --iu-burgundy: #881337;          /* İÜ Bordo */
     --iu-burgundy-hover: #9f1239;    /* İÜ Bordo Hover */
-    --iu-gold: #d97706;              /* İÜ Kurumsal Altın */
-    --iu-gold-light: #fbbf24;        /* Parlak Varak & Güneş Sarısı */
-    --iu-gold-glow: rgba(245, 158, 11, 0.28);
-    --logo-green-start: #065f46;     /* Mühür Zümrüt Yeşili Başlangıç */
-    --logo-green-end: #047857;       /* Mühür Zümrüt Yeşili Bitiş */
-    --logo-yellow-border: #fbbf24;   /* Mühür Altın Sarısı Çerçeve */
+    --iu-gold: #c59b27;              /* İÜ Ağırbaşlı Altın */
+    --iu-gold-light: #d4af37;        /* Antik İpek Altın Varak */
+    --iu-gold-glow: rgba(212, 175, 55, 0.20); /* Bahis sitesi parıltısından uzak mat ışıltı */
+    --logo-green-start: #064e3b;     /* Mühür Derin Zümrüt Başlangıç */
+    --logo-green-end: #022c22;       /* Mühür Koyu Botanik Bitiş */
+    --logo-gold-border: #d4af37;     /* Mühür 1.5px Antik Altın Çerçeve */
     --bg-body: #080c16;              /* Beyazıt Gece Mavisi Zemin */
     --card-surface: #111827;         /* Yüzey Kartı */
     --card-border: #1f293d;          /* Kart Çerçevesi */
@@ -70,30 +70,36 @@ Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bo
 
 ---
 
-## 🏛️ 4. Arayüz ve Görsel Dil (UI/UX)
+## 🏛️ 4. Arayüz ve Görsel Dil (UI/UX - Yüksek Güven & Saygınlık)
 
-* **Açık Mimari Beyazıt Kitabesi (Yuvarlak Baloncuksuz / Open Frieze Architecture):**  
-  Ana manşetin (`H1`) üzerinde yer alan tarihi miras ifadesi, yapay yuvarlak baloncuk veya kapsül içine hapsedilmeden; Beyazıt Tarihi Kapısı'nın taş frizlerine uygun **açık çizgisel mimari kitabe** olarak yerleştirilir:
-  - Üst hat: İki yana zarifçe süzülen altın çizgiler (`inscription-hairline`), merkezde zümrüt ışık noktacıklarıyla korunan parıltılı **`1453`** yılı.
-  - Alt hat: İki yanında `⚜️` altın zambak/defne motifleri ve `Cinzel` inscriptional serif yazı karakteriyle:  
+* **Kurumsal Meta Hiyerarşisi (`.brand-meta`):**
+  Önceki versiyonlarda en tepede yer alan ve bahis/kampanya sitelerini andıran bağımsız üst bant (`.iu-top-strip`) tamamen kaldırılarak arayüz sadeleştirilmiştir. Bunun yerine kurumsal aidiyet:
+  - **`🏛️ İstanbul Üniversitesi`** (`.brand-title`, `Cinzel`, 1.15rem, beyaz)
+  - **`MEZUN BİLGİ & KARİYER AĞI`** (`.brand-sub`, antik altın `#d4af37`, 0.74rem)
+  - **`Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453`** (`.brand-meta`, kurumsal gri `#94a3b8`, 0.68rem, zarif ve okunaklı)
+  olarak logonun hemen yanındaki marka bloğunda tek ve yüksek güvenli bir hiyerarşide konumlandırılmıştır.
+* **Açık Mimari Beyazıt Kitabesi (Ağırbaşlı / Mat Stil):**  
+  Ana manşetin (`H1`) üzerinde yer alan tarihi miras ifadesi, yapay baloncuk veya neon ışık animasyonlarından arındırılarak Beyazıt Tarihi Kapısı'nın taş frizlerine uygun **açık çizgisel mimari kitabe** olarak yerleştirilir:
+  - Üst hat: İki yana zarifçe süzülen ince çizgiler (`inscription-hairline`), merkezde asil antik altın ile yazılmış **`1453`** yılı.
+  - Alt hat: İki yanında `⚜️` motifleri ve `Cinzel` inscriptional serif yazı karakteriyle:  
     **`⚜️ Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras ⚜️`**
-  - Alt taban: İnce altın ışık hüzmesiyle doğrudan manşete açılır; baloncuk veya hap zemin kullanılmaz.
+  - Güven Veren Doku: Yanıp sönen casino beacon ışıkları veya göz yoran neon sarı degradeler yerine mat antik altın ve gümüşi beyaz tipografi hakimdir.
 * **Rafine Aksiyon Butonu — `İlanları İncele` (`.btn-nav-cta`):**  
-  Platform genelinde pasif ve jenerik ifadeler yerine, kurumsal bordoyu altın yansımalar ve mikro-etkileşimlerle taçlandıran özel buton mimarisi kullanılır:
-  - Zemin: `linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%)`
-  - Çerçeve & Işıma: `1px solid rgba(251, 191, 36, 0.55)` ve iç kontur `inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+  Platform genelinde pasif ve jenerik ifadeler yerine, kurumsal bordoyu antik altın yansımalar ve mikro-etkileşimlerle taçlandıran özel buton mimarisi kullanılır:
+  - Zemin: `linear-gradient(135deg, #881337 0%, #700d2b 55%, #4c0519 100%)`
+  - Çerçeve: `1px solid rgba(212, 175, 55, 0.45)`
   - Ok Çipi (`.btn-arrow-chip`): Butonun sağında ayrı bir yarı saydam altın kare içinde yer alan ve hover durumunda sağa doğru süzülen `→` oku.
   - Doğrudan Başvuru: **`💼 Mezun İlanlarına Göz At`** / **`📝 Platformdan Başvur`**
   - Üye Keşfi: **`👥 Mezunlarımızı Keşfet`**
 * **Fakülte Rozetleri:** Hukuk, Tıp, İktisat, İletişim, Edebiyat, Fen, Mühendislik gibi fakültelere özel mikro etiketler.
-* **Köşe Yuvarlaklığı & Gölge:** Kurumsal ciddiyeti modernizmle birleştiren `12px` - `18px` kart eğriliği ve altın ışıltılı derin gölgeler.
+* **Köşe Yuvarlaklığı & Gölge:** Kurumsal ciddiyeti modernizmle birleştiren `12px` - `18px` kart eğriliği ve doğal derin gölgeler.
 
 ---
 
-## 🏷️ 5. Logo & Mühür (Yeşil & Sarı / Altın Sistemi)
+## 🏷️ 5. Logo & Mühür (Mat Yeşil & Antik Altın Sistemi)
 
 * **Marka Mührü (Brand Seal):**  
-  Üniversitenin tarihi Beyazıt kapısı meşale ve köklülüğünü yansıtmak üzere **Zümrüt Yeşili zemin (`#065f46` $\rightarrow$ `#047857`)** üzerine **Parlak Varak Sarısı (`#fbbf24`)** 2px çerçeve ile donatılmıştır. Çevresinde güneş sarısı ve zümrüt ışığı yayar (`box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35)`).
+  Üniversitenin tarihi Beyazıt kapısı meşale ve köklülüğünü yansıtmak üzere **Mat Zümrüt Yeşili zemin (`linear-gradient(145deg, #064e3b 0%, #022c22 100%)`)** üzerine **1.5px Antik Altın (`#d4af37`)** çerçeve ile donatılmıştır. Bahis sitesi izlenimi veren aşırı neon haleler kaldırılmış, doğal derin gölge (`box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35)`) ile akademiye yaraşır bir ağırlık verilmiştir.
 * **Sembol:** İstanbul Üniversitesi Meşalesi & Tarihi Taç Motifi (`🏛️` / `🎓`).
 * **Kurumsal İsim:** **İstanbul Üniversitesi Mezun Bilgi ve Kariyer Ağı** (*IU Alumni*).
 * **Resmi Slogan:** *"1453'ten Geleceğe: Mezunlarımızın Işığında Birlikte İleriye."*

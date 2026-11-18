@@ -34,21 +34,21 @@ The interface achieves **"Historic Academic Monumentality fused with Modern Prod
   --color-brand-glow:      rgba(136, 19, 55, 0.35);
 
   /* =========================================================================
-     2. HERITAGE ACCENTS (Derived from MasterClass Warm Accent & Syllabus Butter)
+     2. HERITAGE ACCENTS (High-Trust Academic Palette, Zero Neon / Casino Glow)
      ========================================================================= */
   --color-accent-antique:  #b45309; /* Deep Antique Bronze (Border highlights) */
-  --color-accent-gold:     #d97706; /* Heritage Graduation Gold */
-  --color-accent-light:    #fbbf24; /* Radiant Gilding, Star Badges, Active Links */
+  --color-accent-gold:     #c59b27; /* Dignified Heritage Gold */
+  --color-accent-light:    #d4af37; /* Matte Antique Silk Gold (Badges, Active Links) */
   --color-accent-butter:   #fef3c7; /* Soft Cream Gold for Tag Fills & Callouts */
-  --color-accent-glow:     rgba(245, 158, 11, 0.28);
+  --color-accent-glow:     rgba(212, 175, 55, 0.20); /* Subdued institutional aura */
 
   /* =========================================================================
      2.1. BOTANICAL SEAL GREEN & GOLD (Brand Logo & Heritage Seal)
      ========================================================================= */
-  --logo-green-deep:       #065f46; /* Deep Emerald Seal Base */
-  --logo-green-vibrant:    #047857; /* Botanical Forest Green Highlight */
-  --logo-yellow-border:    #fbbf24; /* Radiant Solar Gold 2px Border */
-  --logo-seal-glow:        rgba(251, 191, 36, 0.35);
+  --logo-green-deep:       #064e3b; /* Deep Matte Emerald Base */
+  --logo-green-vibrant:    #022c22; /* Deep Botanical Green Shade */
+  --logo-gold-border:      #d4af37; /* 1.5px Antique Gold Rim */
+  --logo-seal-shadow:      rgba(0, 0, 0, 0.35); /* Serene institutional shadow (no neon halos) */
 
   /* =========================================================================
      3. CANVASES & SURFACES (MasterClass Obsidian & Carbon Dark-Stage Architecture)
@@ -126,11 +126,15 @@ Following **Refero's modular component scale**:
 
 ## 🧩 5. UI Patterns & Component Specifications
 
-### 5.1. Institutional Strip & Navigation (Syllabus Architecture)
-* **Top Header:** 32px height, deep gradient `#4c0519` $\rightarrow$ `#881337` $\rightarrow$ `#b45309`, text `0.82rem` bold gold caps with letter-spacing `+1.2px` in `Cinzel` serif.
-* **Sticky Glass Navbar:** Background `rgba(8, 12, 22, 0.88)` with `backdrop-filter: blur(16px)`.
-* **Brand Seal (Green & Yellow/Gold System):** 44x44px rounded squircle, background `linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%)`, border `2px solid #fbbf24`, housing the Beyazıt emblem (`🏛️`), with radiant dual glow `box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25)`.
-* **Navbar Primary CTA:** Direct action link **`İlanları İncele →`** (updated from *Fırsatları İncele* for institutional precision).
+### 5.1. Institutional Brand Architecture & Navigation
+* **Top Header Strip Eliminated:** The isolated `.iu-top-strip` bar was removed to eliminate header fragmentation and avoid the neon promotional banner look common in betting sites.
+* **Integrated Institutional Brand Meta (`.brand-meta`):**
+  - Brand Header: `İstanbul Üniversitesi` (`.brand-title`, `Cinzel`, 1.15rem, `#ffffff`).
+  - Brand Sub: `MEZUN BİLGİ & KARİYER AĞI` (`.brand-sub`, `#d4af37`, 0.74rem).
+  - Brand Meta: `Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453` (`.brand-meta`, `#94a3b8`, 0.68rem) placed neatly right under the brand sub within `.brand-text`.
+* **Sticky Glass Navbar:** Background `rgba(8, 12, 22, 0.92)` with `backdrop-filter: blur(16px)` positioned flush at `top: 0`.
+* **Brand Seal (Botanical Green & Antique Gold System):** 44x44px rounded squircle, background `linear-gradient(145deg, #064e3b 0%, #022c22 100%)`, border `1.5px solid #d4af37`, housing the Beyazıt emblem (`🏛️`), with calm shadow `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35)` (zero neon blur).
+* **Navbar Primary CTA:** Direct action link **`İlanları İncele →`** with antique gold border.
 
 ### 5.2. Action Buttons (MasterClass & Genway Synthesis)
 * **Refined Primary CTA — `İlanları İncele` (`.btn-nav-cta`):**
@@ -169,10 +173,10 @@ Following **Refero's modular component scale**:
   - `POST` $\rightarrow$ Rose/Burgundy (`#f43f5e`)
   - `STATUS 200/201` $\rightarrow$ Mint Emerald (`#34d399`)
 
-### 5.6. Beyazıt Archway Open Inscription (Açık Mimari Kitabe — Baloncuksuz)
+### 5.6. Beyazıt Archway Open Inscription (Açık Mimari Kitabe — Baloncuksuz & Yüksek Güven)
 * Flat, open-air architectural inscriptional header (no enclosed rounded bubble, pill or balloon):
-  - **Top Hairline Bar:** Two flanking golden hairlines (`inscription-hairline`) tapering to transparent on the sides.
-  - **1453 Center Marker:** Gold inscriptional date flanked by emerald micro-beacons with `letter-spacing: 3px`.
+  - **Top Hairline Bar:** Two flanking antique gold hairlines (`inscription-hairline`) tapering to transparent on the sides.
+  - **1453 Center Marker:** Solid dignified antique gold inscriptional date (`#d4af37`) with `letter-spacing: 3px`, free from flashing casino beacon animations.
   - **Monumental Inscription:** "BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI • GELECEĞE KÖK SALAN MİRAS" in `Cinzel` serif with flanking `⚜️` fleur-de-lis ornaments.
   - **Tapered Gold Ground Line:** A 140px centered accent beam (`inscription-bottom-bar`) connecting down to the H1 display title.
 

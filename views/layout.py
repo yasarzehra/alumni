@@ -52,9 +52,9 @@ class Layout:
             --iu-burgundy: #881337;
             --iu-burgundy-hover: #9f1239;
             --iu-burgundy-dark: #4c0519;
-            --iu-gold: #d97706;
-            --iu-gold-light: #fbbf24;
-            --iu-gold-glow: rgba(245, 158, 11, 0.28);
+            --iu-gold: #c59b27;
+            --iu-gold-light: #d4af37;
+            --iu-gold-glow: rgba(212, 175, 55, 0.2);
             --bg-body: #080c16;
             --dark-card: #111827;
             --dark-border: #1f293d;
@@ -85,29 +85,15 @@ class Layout:
             flex-direction: column;
         }}
 
-        /* Kurumsal Üst Bant */
-        .iu-top-strip {{
-            background: linear-gradient(90deg, #4c0519, #881337 50%, #b45309);
-            color: #fef3c7;
-            font-family: 'Cinzel', serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-align: center;
-            padding: 7px 16px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
-        }}
-
         /* Navigation Bar */
         nav {{
             position: sticky;
             top: 0;
             z-index: 100;
             backdrop-filter: blur(16px);
-            background: rgba(8, 12, 22, 0.88);
+            background: rgba(8, 12, 22, 0.92);
             border-bottom: 1px solid rgba(31, 41, 61, 0.8);
-            padding: 16px 24px;
+            padding: 14px 24px;
         }}
 
         .nav-container {{
@@ -129,15 +115,20 @@ class Layout:
         .brand-seal {{
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%);
-            border: 2px solid #fbbf24;
+            background: linear-gradient(145deg, #064e3b 0%, #022c22 100%);
+            border: 1.5px solid #d4af37;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25);
-            transition: all 0.3s ease;
+            font-size: 1.35rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            transition: all 0.2s ease;
+        }}
+
+        .brand-seal:hover {{
+            border-color: #f1d581;
+            transform: translateY(-1px);
         }}
 
         .brand-text {{
@@ -151,14 +142,24 @@ class Layout:
             font-size: 1.15rem;
             letter-spacing: 0.5px;
             color: #ffffff;
+            line-height: 1.2;
         }}
 
         .brand-sub {{
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--iu-gold-light);
+            letter-spacing: 1.2px;
+            color: #d4af37;
             font-weight: 700;
+            margin-top: 2px;
+        }}
+
+        .brand-meta {{
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            margin-top: 1px;
         }}
 
         .nav-links {{
@@ -538,10 +539,6 @@ class Layout:
 </head>
 <body>
 
-    <div class="iu-top-strip">
-        🏛️ İstanbul Üniversitesi • Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453
-    </div>
-
     <nav>
         <div class="nav-container">
             <a href="/" class="brand">
@@ -549,6 +546,7 @@ class Layout:
                 <div class="brand-text">
                     <span class="brand-title">İstanbul Üniversitesi</span>
                     <span class="brand-sub">Mezun Bilgi & Kariyer Ağı</span>
+                    <span class="brand-meta">Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453</span>
                 </div>
             </a>
             <ul class="nav-links">

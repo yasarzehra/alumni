@@ -42,57 +42,23 @@
                 radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
         }
 
-        .iu-top-strip {
-            background: linear-gradient(90deg, #4c0519, #881337 50%, #b45309);
-            color: #fef3c7;
-            font-family: 'Cinzel', serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-align: center;
-            padding: 7px 16px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
-        }
-
-        nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(16px);
-            background: rgba(8, 12, 22, 0.88);
-            border-bottom: 1px solid rgba(31, 41, 61, 0.8);
-            padding: 16px 24px;
-        }
-
-        .nav-container {
-            max-width: 1240px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            text-decoration: none;
-            color: #ffffff;
-        }
-
         .brand-seal {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #065f46 0%, #047857 55%, #022c22 100%);
-            border: 2px solid #fbbf24;
+            background: linear-gradient(145deg, #064e3b 0%, #022c22 100%);
+            border: 1.5px solid #d4af37;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35), 0 0 10px rgba(16, 185, 129, 0.25);
-            transition: all 0.3s ease;
+            font-size: 1.35rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .brand-seal:hover {
+            border-color: #f1d581;
+            transform: translateY(-1px);
         }
 
         .brand-text {
@@ -106,14 +72,24 @@
             font-size: 1.15rem;
             letter-spacing: 0.5px;
             color: #ffffff;
+            line-height: 1.2;
         }
 
         .brand-sub {
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--iu-gold-light);
+            letter-spacing: 1.2px;
+            color: #d4af37;
             font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .brand-meta {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            margin-top: 1px;
         }
 
         .nav-links {
@@ -407,10 +383,6 @@
 </head>
 <body>
 
-    <div class="iu-top-strip">
-        🏛️ İstanbul Üniversitesi • Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453
-    </div>
-
     <nav>
         <div class="nav-container">
             <a href="/" class="brand">
@@ -418,6 +390,7 @@
                 <div class="brand-text">
                     <span class="brand-title">İstanbul Üniversitesi</span>
                     <span class="brand-sub">Mezun Bilgi & Kariyer Ağı</span>
+                    <span class="brand-meta">Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453</span>
                 </div>
             </a>
             <ul class="nav-links">
