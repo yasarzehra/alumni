@@ -3,111 +3,732 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporary Main Page</title>
+    <title>İstanbul Üniversitesi — Mezun Bilgi & Kariyer Ağı Platformu (İÜ Alumni)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* İstanbul Üniversitesi Kurumsal Renkleri */
+            --iu-burgundy: #881337;          /* İÜ Bordo */
+            --iu-burgundy-hover: #9f1239;
+            --iu-burgundy-dark: #4c0519;
+            --iu-gold: #d97706;              /* İÜ Kurumsal Altın Sarısı */
+            --iu-gold-light: #fbbf24;        /* Parlak Altın */
+            --iu-gold-glow: rgba(245, 158, 11, 0.28);
+            --bg-body: #080c16;              /* Beyazıt Gece Mavisi Zemin */
+            --dark-card: #111827;            /* Yüzey Kartı */
+            --dark-border: #1f293d;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            color: #102a43;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.22) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+        }
+
+        /* Kurumsal Üst Bant */
+        .iu-top-strip {
+            background: linear-gradient(90deg, #4c0519, #881337 50%, #b45309);
+            color: #fef3c7;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-align: center;
+            padding: 6px 16px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        /* Navigation Bar */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: rgba(8, 12, 22, 0.88);
+            border-bottom: 1px solid rgba(31, 41, 61, 0.8);
+            padding: 16px 24px;
+        }
+
+        .nav-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: #ffffff;
+        }
+
+        .brand-seal {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--iu-burgundy), #4c0519);
+            border: 2px solid var(--iu-gold-light);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 16px var(--iu-gold-glow);
         }
-        .container {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            max-width: 550px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            font-size: 2rem;
-            color: #1e3a8a;
-            margin-bottom: 12px;
-        }
-        .subtitle {
-            font-size: 1.15rem;
-            color: #627d98;
-            margin-bottom: 28px;
-        }
-        .endpoints {
+
+        .brand-text {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            text-align: left;
         }
-        .endpoint-link {
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+        }
+
+        .brand-sub {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--iu-gold-light);
+            font-weight: 700;
+        }
+
+        .nav-links {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px 18px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            gap: 22px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
             text-decoration: none;
-            color: #2563eb;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--iu-gold-light);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-burgundy {
+            background: linear-gradient(135deg, var(--iu-burgundy), #9f1239);
+            color: #ffffff;
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.35);
+        }
+
+        .btn-burgundy:hover {
+            background: linear-gradient(135deg, #9f1239, #be123c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(136, 19, 55, 0.5);
+            border-color: var(--iu-gold-light);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #ffffff;
+            box-shadow: 0 4px 14px var(--iu-gold-glow);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            color: #f8fafc;
+            border: 1px solid var(--dark-border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--iu-gold);
+            color: var(--iu-gold-light);
+        }
+
+        /* Hero Bölümü */
+        .hero {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 85px 24px 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .iu-emblem-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(136, 19, 55, 0.25);
+            color: #fef08a;
+            border: 1px solid rgba(217, 119, 6, 0.45);
+            padding: 8px 20px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px var(--iu-gold-glow);
+        }
+
+        .hero h1 {
+            font-size: 3.4rem;
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            line-height: 1.18;
+            margin-bottom: 22px;
+            max-width: 950px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gradient-iu {
+            background: linear-gradient(135deg, #fef08a 0%, #fbbf24 40%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* İstatistikler Barı */
+        .stats-grid {
+            max-width: 1100px;
+            margin: 40px auto 70px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 0 24px;
+        }
+
+        .stat-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            border-color: var(--iu-gold);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(217, 119, 6, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #ffffff, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
             font-weight: 500;
+        }
+
+        /* Modüller */
+        .section-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 50px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 46px;
+        }
+
+        .section-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+        }
+
+        .module-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--iu-burgundy), var(--iu-gold));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(217, 119, 6, 0.4);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            background: rgba(136, 19, 55, 0.2);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            color: var(--iu-gold-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+        }
+
+        .module-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .module-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .module-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--iu-gold-light);
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        /* Fakülte Vitrini */
+        .faculty-strip {
+            margin-top: 50px;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .faculty-title {
+            color: var(--iu-gold-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .faculty-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .faculty-pill {
+            background: #1f293d;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            border: 1px solid #334155;
             transition: all 0.2s ease;
         }
-        .endpoint-link:hover {
-            background-color: #eff6ff;
-            border-color: #bfdbfe;
-            transform: translateY(-1px);
+
+        .faculty-pill:hover {
+            border-color: var(--iu-gold);
+            color: var(--iu-gold-light);
+            background: rgba(136, 19, 55, 0.3);
         }
-        .badge {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-            font-size: 0.8rem;
-            padding: 4px 10px;
+
+        /* Geliştirici Kutusu */
+        .dev-box {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            padding: 36px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .terminal-preview {
+            background: #040711;
+            border: 1px solid #1e293b;
             border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+            overflow-x: auto;
+        }
+
+        .term-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .term-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .term-dot.red { background: #ef4444; }
+        .term-dot.yellow { background: #f59e0b; }
+        .term-dot.green { background: #10b981; }
+
+        .term-line {
+            color: #94a3b8;
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+
+        .term-gold { color: #fbbf24; }
+        .term-burgundy { color: #f43f5e; }
+        .term-success { color: #34d399; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--dark-border);
+            padding: 44px 24px;
+            margin-top: 70px;
+            background: #050811;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-seal {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin: 18px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--iu-gold-light);
+        }
+
+        /* Mobil Uyum */
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 2.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dev-box { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .hero-actions { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Temporary Main Page</h1>
-        <p class="subtitle">temporary one main page</p>
 
-        <div class="endpoints">
-            <a href="/about" class="endpoint-link">
-                <span>About Sayfası</span>
-                <span class="badge">/about</span>
+    <!-- İstanbul Üniversitesi Kurumsal Şerit -->
+    <div class="iu-top-strip">
+        🏛️ İstanbul Üniversitesi • Rektörlük Mezunlar Koordinatörlüğü • Kuruluş 1453
+    </div>
+
+    <!-- Üst Navigasyon -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <div class="brand-seal">🏛️</div>
+                <div class="brand-text">
+                    <span class="brand-title">İstanbul Üniversitesi</span>
+                    <span class="brand-sub">Mezun Bilgi & Kariyer Ağı</span>
+                </div>
             </a>
-            <a href="/ok" class="endpoint-link">
-                <span>OK Yanıtı</span>
-                <span class="badge">/ok</span>
+            <ul class="nav-links">
+                <li><a href="/jobs" class="nav-link">İş & Staj İlanları</a></li>
+                <li><a href="/users" class="nav-link">Mezun Rehberi</a></li>
+                <li><a href="/applications" class="nav-link">Başvuru Paneli</a></li>
+                <li><a href="/announcements" class="nav-link">Duyurular</a></li>
+                <li><a href="/about" class="nav-link">Tarihçe & Hakkımızda</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="/api/swagger" class="btn btn-ghost" title="OpenAPI / Swagger Spesifikasyonu">⚡ API Docs</a>
+                <a href="/jobs" class="btn btn-burgundy">Fırsatları İncele →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Kahraman (Hero) Alanı -->
+    <header class="hero">
+        <div class="iu-emblem-badge">
+            <span>👑</span> 1453'TEN GELECEĞE: BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI
+        </div>
+        <h1>İstanbul Üniversitesi Geleceğini <span class="gradient-iu">Mezunlarıyla İnşa Ediyor</span></h1>
+        <p>
+            Hukuk'tan Tıp'a, İktisat'tan Mühendisliğe yarım milyonu aşkın İstanbul Üniversiteliyi buluşturan; resmi kariyer, mentorluk ve mezun dayanışma platformu.
+        </p>
+        <div class="hero-actions">
+            <a href="/jobs" class="btn btn-burgundy" style="padding: 14px 28px; font-size: 1.05rem;">💼 Mezun İlanlarına Göz At</a>
+            <a href="/users" class="btn btn-ghost" style="padding: 14px 28px; font-size: 1.05rem;">👥 Mezunlarımızı Keşfet</a>
+        </div>
+    </header>
+
+    <!-- Metrik Barı -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">13+</div>
+            <div class="stat-label">Doğrulanmış İÜ Mezunu & Öğrenci</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">12+</div>
+            <div class="stat-label">Aktif Kariyer & Staj İlanı</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">8+</div>
+            <div class="stat-label">Rektörlük & Fakülte Duyurusu</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">1453</div>
+            <div class="stat-label">Tarihi Köklü Miras Yılı</div>
+        </div>
+    </section>
+
+    <!-- Ana Platform Modülleri -->
+    <main class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">İÜ Mezun Platformu Hizmetleri</h2>
+            <p class="section-subtitle">
+                Öğrencilerimize staj, mezunlarımıza kariyer ve mentorluk: Beyazıt ruhunu dijitalde yaşatan temel bileşenler.
+            </p>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Modül 1: İş & Staj İlanları -->
+            <a href="/jobs" class="module-card">
+                <div>
+                    <div class="module-icon">💼</div>
+                    <h3>Kariyer & Staj İlanları</h3>
+                    <p>İÜ mezunlarının çalıştığı ve yönettiği kurumsal firmalardan öğrencilere ve genç mezunlara özel iş fırsatları.</p>
+                </div>
+                <div class="module-action">İlanları İncele &rarr;</div>
             </a>
-            <a href="/hello" class="endpoint-link">
-                <span>Hello World</span>
-                <span class="badge">/hello</span>
+
+            <!-- Modül 2: Mezun & Öğrenci Rehberi -->
+            <a href="/users" class="module-card">
+                <div>
+                    <div class="module-icon">👥</div>
+                    <h3>Mezun & Öğrenci Rehberi</h3>
+                    <p>Fakülte, bölüm, mezuniyet yılı ve sektöre göre filtrelenebilir kullanıcı profilleri ve profesyonel iletişim kanalları.</p>
+                </div>
+                <div class="module-action">Mezunları Listele &rarr;</div>
             </a>
-            <a href="/hello/zehra" class="endpoint-link">
-                <span>Hello Zehra</span>
-                <span class="badge">/hello/zehra</span>
+
+            <!-- Modül 3: Başvuru Yönetimi -->
+            <a href="/applications" class="module-card">
+                <div>
+                    <div class="module-icon">📝</div>
+                    <h3>Başvuru & Takip Paneli</h3>
+                    <p>Kariyer ilanlarına yapılan başvuruların, özgeçmişlerin ve durumların anlık olarak izlendiği merkezi yönetim konsolu.</p>
+                </div>
+                <div class="module-action">Başvuruları Yönet &rarr;</div>
             </a>
-            <a href="/sum/5/9" class="endpoint-link">
-                <span>Toplam (5 + 9)</span>
-                <span class="badge">/sum/5/9</span>
-            </a>
-            <a href="/api/health" class="endpoint-link">
-                <span>Sağlık Durumu (Health)</span>
-                <span class="badge">/api/health</span>
-            </a>
-            <a href="/api/swagger" class="endpoint-link">
-                <span>Swagger UI Dokümantasyon</span>
-                <span class="badge">/api/swagger</span>
+
+            <!-- Modül 4: Rektörlük & Fakülte Duyuruları -->
+            <a href="/announcements" class="module-card">
+                <div>
+                    <div class="module-icon">📢</div>
+                    <h3>Haberler & Duyurular</h3>
+                    <p>Üniversite etkinlikleri, mezunlar günü buluşmaları, akademik seminerler ve kariyer zirveleri.</p>
+                </div>
+                <div class="module-action">Duyuruları Oku &rarr;</div>
             </a>
         </div>
-    </div>
+
+        <!-- Fakülteler Şeridi -->
+        <div class="faculty-strip">
+            <div class="faculty-title">🏛️ Öne Çıkan İstanbul Üniversitesi Fakülteleri</div>
+            <div class="faculty-tags">
+                <span class="faculty-pill">⚖️ Hukuk Fakültesi</span>
+                <span class="faculty-pill">🩺 İstanbul Tıp Fakültesi (Çapa)</span>
+                <span class="faculty-pill">📈 İktisat Fakültesi</span>
+                <span class="faculty-pill">🏛️ Siyasal Bilgiler Fakültesi</span>
+                <span class="faculty-pill">📰 İletişim Fakültesi</span>
+                <span class="faculty-pill">📚 Edebiyat Fakültesi</span>
+                <span class="faculty-pill">🔬 Fen Fakültesi</span>
+                <span class="faculty-pill">💻 Bilgisayar & Bilişim</span>
+            </div>
+        </div>
+
+        <!-- Geliştirici & API Konsolu -->
+        <div class="dev-box">
+            <div>
+                <span class="iu-emblem-badge" style="margin-bottom: 12px; font-size: 0.78rem;">
+                    RESTful API & Server Guardians
+                </span>
+                <h3 style="font-size: 1.8rem; margin: 10px 0 14px; font-weight: 800;">Güçlü & Güvenilir Altyapı</h3>
+                <p style="color: var(--text-muted); margin-bottom: 22px;">
+                    MVC mimarisi, OpenAPI / Swagger belgeleri, 404 & 5xx Guardian hata yakalama sistemleri ve milisaniyelik Logger middleware entegrasyonu.
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="/api/swagger" class="btn btn-gold">📖 Swagger UI Arayüzü</a>
+                    <a href="/api/health" class="btn btn-ghost">🩺 Sistem Sağlığı (Health)</a>
+                </div>
+            </div>
+
+            <div class="terminal-preview">
+                <div class="term-header">
+                    <span class="term-dot red"></span>
+                    <span class="term-dot yellow"></span>
+                    <span class="term-dot green"></span>
+                    <span style="color: #64748b; margin-left: 8px; font-size: 0.75rem;">iu-alumni-server — logger-stream</span>
+                </div>
+                <div class="term-line"><span class="term-gold">GET</span>  /api/health            <span class="term-success">200 OK</span> (0ms)</div>
+                <div class="term-line"><span class="term-gold">GET</span>  /api/jobs              <span class="term-success">200 OK</span> (2ms)</div>
+                <div class="term-line"><span class="term-burgundy">POST</span> /api/applications      <span class="term-success">201 Created</span> (3ms)</div>
+                <div class="term-line"><span class="term-gold">GET</span>  /api/users/1/jobs      <span class="term-success">200 OK</span> (1ms)</div>
+                <div class="term-line" style="color: #fbbf24;">[404 GUARDIAN] Hatalı rota tespiti ve alternatif önerisi aktif</div>
+                <div class="term-line" style="color: #34d399;">[5xx GUARDIAN] Olay kodu (Incident ID) ve error.log devrede</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Alt Bilgi (Footer) -->
+    <footer>
+        <div class="footer-seal">🏛️</div>
+        <p style="font-weight: 700; color: #ffffff; font-size: 1.05rem; margin-bottom: 6px;">
+            İstanbul Üniversitesi Mezunlar Koordinatörlüğü
+        </p>
+        <p style="color: var(--iu-gold-light); font-size: 0.85rem; margin-bottom: 16px;">
+            Beyazıt Yerleşkesi, 34452 Fatih / İstanbul
+        </p>
+        <div class="footer-links">
+            <a href="/">Ana Sayfa</a>
+            <a href="/jobs">İş İlanları</a>
+            <a href="/users">Mezun Rehberi</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/about">Hakkımızda</a>
+            <a href="/api/swagger">API Swagger</a>
+        </div>
+        <p>&copy; 1453 - 2026 İstanbul Üniversitesi. Tüm hakları saklıdır.</p>
+    </footer>
+
 </body>
 </html>

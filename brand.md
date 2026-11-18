@@ -1,93 +1,91 @@
-# 🎓 Alumni Network Platform — Brand & Design Identity Guide
+# 🏛️ İstanbul Üniversitesi Mezun Bilgi Sistemi (İÜ Mezun Ağı) — Kurumsal Marka & Tasarım Rehberi
 
-This document defines the brand values, design language, color palette, typography, visual voice, and UI guidelines for the **Alumni Management & Networking Platform**.
-
----
-
-## 📌 1. Brand Mission & Core Identity
-
-The **Alumni Network Platform** empowers students and university graduates by providing a transparent, verified, and community-driven bridge between academic roots and industry excellence.
-
-### Core Brand Attributes:
-* **Academic Integrity:** Grounded in credibility, verified records, and university prestige.
-* **Modern Velocity:** Clean, fast, modern, and developer-friendly UX/UI.
-* **Empowering Community:** Promoting mutual growth through mentorship, career postings, and reunion networks.
-* **Reliability & Security:** Robust data isolation, persistent containerized volumes, and resilient error guardians.
+Bu belge, **İstanbul Üniversitesi (İÜ) Mezun ve Kariyer Ağı Platformu** için kurumsal kimlik, tarihi marka değerleri, resmi renk paleti (Bordo & Altın Sarısı), tipografi ve modern UI/UX tasarım standartlarını belirler.
 
 ---
 
-## 🎨 2. Visual Color System
+## 📌 1. Marka Kimliği & Misyon (1453'ten Günümüze)
 
-The design system uses a dark-first modern palette inspired by premium developer portals and high-impact SaaS tools, accented with vibrant educational blues and energetic cyans.
+İstanbul Üniversitesi, Türkiye'nin en köklü ve öncü yükseköğretim kurumudur. Bu platform; 1453'ten bu yana yetişen yüzbinlerce mezun ile geleceğin liderleri olan mevcut öğrencileri, akademik kadroyu ve iş dünyasını birbirine bağlar.
 
-### Primary Palette
-| Swatch | Color Name | Hex Code | Purpose & Semantic Usage |
+### Temel Marka Değerleri:
+* **Tarihi Köklülük & Prestij:** Beyazıt Tarihi Kapısı, kurumsal asalet ve akademik liyakat.
+* **Nesiller Arası Köprü:** Kıdemli mezunlar ile üniversiteye yeni adım atan öğrencilerin mentorluk ve staj dayanışması.
+* **Modern Teknolojik Güç:** Tarihi mirası en yeni nesil web standartları, REST API ve kesintisiz mimariyle buluşturma.
+* **Aidiyet & Gurur:** *"Dünyanın En Köklü Üniversitelerinden Birinin Mezunuyum"* gururunu yaşatma.
+
+---
+
+## 🎨 2. Resmi Kurumsal Renk Sistemi
+
+Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bordo (İÜ Bordo)** ve **Altın Sarısı / Varak Sarısı (İÜ Altın)** etrafında şekillendirilmiştir. Arka plan ve kartlarda ise modern koyu lacivert/derin gece tonları ile altın yansımalar harmanlanmıştır.
+
+### Ana Kurumsal Renkler (Primary Palette)
+| Görünüm | Renk Adı | Hex Kodu | Kullanım Alanı ve Anlamı |
 | :---: | :--- | :--- | :--- |
-| 🔵 | **Primary Blue** | `#2563eb` | Main brand identity, primary call-to-action buttons, active navigation states. |
-| 🔷 | **Primary Hover** | `#1d4ed8` | Interactive button hover and pressed states. |
-| 💠 | **Accent Cyan** | `#0ea5e9` | Gradients, badges, links, and highlights. |
-| 🔮 | **Accent Purple** | `#c084fc` | Gradient endpoints for hero text accents and premium cards. |
+| 🍷 | **İÜ Bordo (Imperial Burgundy)** | `#7f1d1d` / `#991b1b` | Üniversitenin resmi kurumsal rengi, ana marka vurguları, birincil butonlar ve logolar. |
+| 👑 | **İÜ Altın Sarısı (Heritage Gold)** | `#f59e0b` / `#d97706` | Başarı, mezuniyet diploması simgesi, rozetler, yıldızlar ve altın detaylar. |
+| ✨ | **Parlak Altın (Gold Glow)** | `#fbbf24` | Buton hover efektleri, gradient geçişleri ve dikkat çekici metinler. |
+| 🏛️ | **Derin Gece / Beyazıt Mavisi** | `#0f172a` | Sayfa ve kart zeminleri; kurumsal ağırlığı ve modernliği pekiştirir. |
 
-### Semantic Status Colors
-| Swatch | Status | Hex Code | Semantic Usage |
+### Semantik Durum Renkleri
+| Görünüm | Durum | Hex Kodu | Kullanım Alanı |
 | :---: | :--- | :--- | :--- |
-| 🟢 | **Success** | `#10b981` | Successful submissions, active status, 200/201 responses. |
-| 🟡 | **Warning** | `#f59e0b` | Pending reviews, draft postings, caution alerts. |
-| 🔴 | **Danger / Error** | `#ef4444` | 400/404/500 Guardian error badges, deletions, rejected records. |
-| ⚪ | **Text Main** | `#f8fafc` | Primary titles, body headings, active text. |
-| 🔘 | **Text Muted** | `#94a3b8` | Subtitles, labels, timestamps, table metadata. |
+| 🟢 | **Başarı (Success)** | `#10b981` | Aktif mezun kaydı, onaylanmış iş başvurusu, 200/201 yanıtları. |
+| 🟡 | **Beklemede (Warning)** | `#f59e0b` | İncelenmeyi bekleyen başvurular, taslak ilanlar. |
+| 🔴 | **Hata / Uyarı (Danger)** | `#dc2626` | 404/500 hata koruyucuları (Guardians), silme ve ret işlemleri. |
+| ⚪ | **Ana Metin (Pure Light)** | `#f8fafc` | Okunabilirliği yüksek birincil başlıklar ve metinler. |
+| 🔘 | **İkincil Metin (Muted Slate)** | `#94a3b8` | Fakülte adları, mezuniyet yılları ve alt bilgiler. |
 
-### Surface & Background Tokens
-| Token | Hex Code | Description |
-| :--- | :--- | :--- |
-| `var(--bg-body)` | `#0b1120` | Root background with subtle ambient radial glow. |
-| `var(--dark-card)` | `#1e293b` | Elevation cards, module containers, modal sheets. |
-| `var(--dark-border)` | `#334155` | Subtle container borders and divider lines. |
-| `var(--card-hover)` | `#475569` | Interactive card border highlight on mouse-over. |
-
----
-
-## 🔤 3. Typography & Font Pairing
-
-The platform leverages modern, high-legibility web typography with clear geometric hierarchy:
-
-1. **Display & Headings:** `Plus Jakarta Sans`
-   * Weights: `700 (Bold)`, `800 (Extra Bold)`
-   * Usage: Hero headlines, module card titles, section headers.
-2. **Body Prose & Interface:** `Plus Jakarta Sans` / System Sans-Serif (`-apple-system`, `BlinkMacSystemFont`)
-   * Weights: `400 (Regular)`, `500 (Medium)`, `600 (Semi-Bold)`
-   * Usage: Body copy, navigation links, form inputs, button labels.
-3. **Monospace & Code Metrics:** `JetBrains Mono` / System Monospace
-   * Weights: `400 (Regular)`, `600 (Semi-Bold)`
-   * Usage: Live terminal logs, API endpoints (`GET /api/users`), JSON schemas, status codes.
+### Zemin ve Yüzey Belirteçleri (CSS Tokens)
+```css
+:root {
+    --iu-burgundy: #881337;          /* İÜ Bordo */
+    --iu-burgundy-hover: #9f1239;    /* İÜ Bordo Hover */
+    --iu-gold: #d97706;              /* İÜ Kurumsal Altın */
+    --iu-gold-light: #fbbf24;        /* Parlak Varak Sarısı */
+    --iu-gold-glow: rgba(245, 158, 11, 0.25);
+    --bg-body: #090d16;              /* Beyazıt Gece Mavisi Zemin */
+    --card-surface: #131c2e;         /* Yüzey Kartı */
+    --card-border: #1e293b;          /* Kart Çerçevesi */
+    --border-accent: #b45309;        /* Altın Çerçeve Vurgusu */
+}
+```
 
 ---
 
-## 📐 4. UI Components & Layout Guidelines
+## 🔤 3. Tipografi Standartları
 
-* **Corner Radius:**
-  * Action Buttons & Badges: `10px` / `9999px (Pill)`
-  * Information Cards & Modules: `16px` – `20px`
-* **Card Elevation & Depth:**
-  * Subtle `1px solid #334155` border with `backdrop-filter: blur(12px)`.
-  * Deep atmospheric shadows: `0 16px 32px rgba(0, 0, 0, 0.4)`.
-* **Motion & Interactivity:**
-  * Hover translation: `transform: translateY(-2px)` on buttons, `-6px` on feature cards.
-  * Cubic-bezier easing: `all 0.3s cubic-bezier(0.4, 0, 0.2, 1)`.
-
----
-
-## 🏷️ 5. Logo & Brand Mark
-
-* **Emblem:** Graduation Cap (`🎓`) set against a rounded gradient badge (`#2563eb` to `#0ea5e9`).
-* **Wordmark:** **Alumni Network** (Geometric bold styling).
-* **Tagline:** *"Üniversite Geleceğini Mezunlarınla İnşa Et" (Build the University Future with Your Alumni).*
+1. **Başlıklar & Manşetler:** `Plus Jakarta Sans` / `Cinzel` (Klasik zarafet için)
+   * Kalınlık: `700 (Bold)`, `800 (Extra Bold)`
+   * Kullanım: "İstanbul Üniversitesi Mezunlar Ağı", bölüm başlıkları, fakülte isimleri.
+2. **Gövde Metinleri & Arayüz:** `Plus Jakarta Sans`
+   * Kalınlık: `400 (Regular)`, `500 (Medium)`, `600 (Semi-Bold)`
+   * Kullanım: Profil açıklamaları, iş ilanı detayları, duyuru metinleri.
+3. **Kod & Metrik Göstergeleri:** `JetBrains Mono`
+   * Kullanım: Öğrenci / Mezun ID numaraları, REST API rotaları, terminal logları.
 
 ---
 
-## 🔗 6. Related Resources & Links
+## 🏛️ 4. Arayüz ve Görsel Dil (UI/UX)
 
-* 🏠 **Main Documentation:** [README.md](README.md)
-* 🗄️ **Data & Domain Architecture:** [ddd.md](ddd.md)
-* 🚀 **Interactive Prototype Homepage:** [`index.html`](index.html)
-* 🛡️ **Error Guardians:** [`404.html`](404.html) &bull; [`middlewares/`](middlewares/)
+* **Tarihi Beyazıt Kapısı Motifi:** Kartların ve kahraman (hero) alanlarının arka planında İstanbul Üniversitesi'nin simgesi olan tarihi kapı ve meşale silüeti.
+* **Fakülte Rozetleri:** Hukuk, Tıp, İktisat, İletişim, Edebiyat, Fen, Mühendislik gibi fakültelere özel renkli mikro etiketler.
+* **Köşe Yuvarlaklığı & Gölge:** Kurumsal ciddiyeti modernizmle birleştiren `12px` - `16px` kart eğriliği ve altın ışıltılı derin gölgeler.
+
+---
+
+## 🏷️ 5. Logo & Slogan
+
+* **Sembol:** İstanbul Üniversitesi Meşalesi & Tarihi Taç Motifi (`🏛️` / `🎓`) + Altın ve Bordo Çerçeve.
+* **Kurumsal İsim:** **İstanbul Üniversitesi Mezun Bilgi ve Kariyer Ağı** (*IU Alumni*).
+* **Resmi Slogan:** *"1453'ten Geleceğe: Mezunlarımızın Işığında Birlikte İleriye."*
+
+---
+
+## 🔗 6. İlgili Belgeler ve Bağlantılar
+
+* 🏠 **Genel Proje Özeti:** [README.md](README.md)
+* 🗄️ **Veritabanı ve İlişki Modeli (ERD):** [ddd.md](ddd.md)
+* 💻 **Ana Sayfa:** [`index.html`](index.html)
+* 🛡️ **Hata Koruyucuları (Guardians):** [`404.html`](404.html) &bull; [`middlewares/`](middlewares/)

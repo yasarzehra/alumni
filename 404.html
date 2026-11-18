@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Sayfa Bulunamadı | Mezun Bilgi Sistemi</title>
+    <title>404 - Sayfa Bulunamadı | İstanbul Üniversitesi Mezun Ağı</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --danger: #ef4444;
-            --bg-start: #0f172a;
-            --bg-end: #1e293b;
-            --card-bg: #1e293b;
+            --iu-burgundy: #881337;
+            --iu-burgundy-dark: #4c0519;
+            --iu-gold: #d97706;
+            --iu-gold-light: #fbbf24;
+            --iu-gold-glow: rgba(245, 158, 11, 0.25);
+            --bg-start: #080c16;
+            --bg-end: #111827;
+            --card-bg: #111827;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
+            --border-color: #1f293d;
         }
         * {
             box-sizing: border-box;
@@ -39,8 +41,9 @@
             border-radius: 20px;
             padding: 48px 40px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.4s ease-out;
+            position: relative;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
@@ -50,13 +53,13 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(136, 19, 55, 0.35);
+            color: #fef08a;
+            border: 1px solid rgba(217, 119, 6, 0.5);
             padding: 6px 16px;
             border-radius: 9999px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             margin-bottom: 24px;
             letter-spacing: 0.5px;
         }
@@ -65,7 +68,7 @@
             font-weight: 900;
             line-height: 1;
             letter-spacing: -2px;
-            background: linear-gradient(to right, #f87171, #ef4444);
+            background: linear-gradient(to right, #fbbf24, #f43f5e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
@@ -80,32 +83,32 @@
             color: var(--text-muted);
             font-size: 1.05rem;
             line-height: 1.6;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
         }
         .requested-path {
-            background: #0f172a;
+            background: #080c16;
             border: 1px solid var(--border-color);
             padding: 10px 16px;
             border-radius: 8px;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            color: #38bdf8;
+            color: var(--iu-gold-light);
             font-size: 0.95rem;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
             word-break: break-all;
         }
         .suggestions {
             text-align: left;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(8, 12, 22, 0.7);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px 24px;
             margin-bottom: 32px;
         }
         .suggestions-title {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--text-muted);
+            color: var(--iu-gold-light);
             font-weight: 700;
             margin-bottom: 12px;
         }
@@ -118,18 +121,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #334155;
+            background: #1f293d;
             color: #f1f5f9;
             text-decoration: none;
             padding: 10px 14px;
             border-radius: 8px;
             font-size: 0.9rem;
             font-weight: 500;
+            border: 1px solid #334155;
             transition: all 0.2s;
         }
         .pill-link:hover {
-            background: var(--primary);
-            color: white;
+            background: var(--iu-burgundy);
+            color: #fef08a;
+            border-color: var(--iu-gold);
             transform: translateY(-1px);
         }
         .primary-actions {
@@ -151,13 +156,14 @@
             transition: all 0.2s;
             border: none;
         }
-        .btn-primary {
-            background: var(--primary);
-            color: white;
+        .btn-burgundy {
+            background: linear-gradient(135deg, var(--iu-burgundy), #9f1239);
+            color: #ffffff;
+            border: 1px solid rgba(251, 191, 36, 0.35);
         }
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        .btn-burgundy:hover {
+            background: linear-gradient(135deg, #9f1239, #be123c);
+            box-shadow: 0 4px 14px rgba(136, 19, 55, 0.4);
         }
         .btn-outline {
             background: transparent;
@@ -165,14 +171,15 @@
             border: 1px solid var(--border-color);
         }
         .btn-outline:hover {
-            background: #334155;
+            background: #1f293d;
+            color: var(--iu-gold-light);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="error-badge">
-            <span>🛡️</span> 404 GUARDIAN
+            <span>🏛️</span> İÜ 404 GUARDIAN
         </div>
         <div class="glitch-code">404</div>
         <h1>Sayfa Bulunamadı</h1>
@@ -185,17 +192,17 @@
         </div>
 
         <div class="suggestions">
-            <div class="suggestions-title">Popüler Bölümler</div>
+            <div class="suggestions-title">İstanbul Üniversitesi Popüler Bölümleri</div>
             <div class="links-grid">
                 <a href="/jobs" class="pill-link">💼 İş İlanları</a>
-                <a href="/users" class="pill-link">👥 Mezunlar</a>
+                <a href="/users" class="pill-link">👥 Mezun Rehberi</a>
                 <a href="/applications" class="pill-link">📝 Başvurular</a>
                 <a href="/announcements" class="pill-link">📢 Duyurular</a>
             </div>
         </div>
 
         <div class="primary-actions">
-            <a href="/" class="btn btn-primary">🏠 Ana Sayfaya Git</a>
+            <a href="/" class="btn btn-burgundy">🏛️ Ana Sayfaya Dön</a>
             <a href="javascript:history.back()" class="btn btn-outline">↩ Geri Dön</a>
         </div>
     </div>

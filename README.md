@@ -1,23 +1,23 @@
-# Alumni Management & Networking Platform
+# 🏛️ İstanbul Üniversitesi Mezun Bilgi & Kariyer Ağı Platformu (İÜ Alumni)
 
-An enterprise-grade, containerized web application built to connect, track, and empower university alumni, current students, and faculty administration.
+1453'ten günümüze uzanan asırlık birikimiyle **İstanbul Üniversitesi** mezunlarını, öğrencilerini, akademisyenlerini ve iş dünyasını birbirine bağlayan kurumsal web ve API platformu.
 
 ---
 
-## 📌 1. Project Overview & Mission
+## 📌 1. Proje Özeti & Misyon
 
-The **Alumni Platform** bridges the communication and professional gap between university graduates and ongoing students. Over time, universities struggle to track where alumni build their careers, while current students lack direct mentorship pathways.
+**İstanbul Üniversitesi Mezunlar Platformu**, yarım milyonu aşkın mezun kitlesi ile geleceğin liderleri olan üniversite öğrencileri arasındaki profesyonel ve akademik bağı kurar.
 
-This platform solves this by offering a centralized directory, career tracking, verification pipelines, and event networking—designed from the ground up for high reliability, modular scalability, and modern web standards.
+Platform; Hukuk, Tıp (Çapa), İktisat, Siyasal Bilgiler, İletişim, Edebiyat, Fen ve Mühendislik gibi öncü fakültelerin mezunlarını merkezi bir rehberde toplar; staj ve iş imkanları sunar, mentorluk köprüleri kurar.
 
-> 🎨 **Brand & Design Identity:** For the complete visual design system, color palette, typography guidelines, and brand values, see the **[Brand Guide (brand.md)](brand.md)**.
+> 🏛️ **Kurumsal Kimlik & Marka Rehberi:** Üniversitenin resmi renkleri (Bordo & Altın Sarısı), Beyazıt yerleşkesi tasarım dili, tipografi ve UI bileşenleri için **[İÜ Marka Rehberi (brand.md)](brand.md)** belgesini inceleyebilirsiniz.
 
-### Key Capabilities
-- **Verified Alumni Profiles:** Comprehensive user profiles recording graduation year, faculty, department, current enterprise, LinkedIn integration, and industry domain.
-- **Student-to-Alumni Mentorship Network:** Direct communication and appointment channels enabling undergraduates to seek career guidance.
-- **Job & Internship Board:** Exclusive job openings posted directly by alumni companies for university talent.
-- **Event & Reunion Management:** Registration, ticketing, and scheduling for faculty webinars, conferences, and reunions.
-- **Role-Based Access Control (RBAC):** Distinct authentication flows and permission sets for Students, Verified Alumni, Department Coordinators, and System Administrators.
+### Temel Yetenekler & Özellikler:
+- **Doğrulanmış İÜ Mezun Profilleri:** Fakülte, bölüm, mezuniyet yılı, sektör, unvan ve LinkedIn entegrasyonu.
+- **Kariyer & Staj İlan Panosu:** İÜ mezunlarının çalıştığı ve yönettiği kurumlardan öğrencilere doğrudan iş ilanları.
+- **Mezun - Öğrenci Mentorluk Ağı:** Deneyimli mezunlar ile kariyer yolculuğunun başındaki öğrenciler arasında doğrudan mentorluk.
+- **Rektörlük & Fakülte Etkinlikleri:** Mezun buluşmaları, akademik seminerler ve kariyer zirveleri.
+- **Rol Tabanlı Yetkilendirme (RBAC):** Öğrenci, Doğrulanmış Mezun, Koordinatör ve Sistem Yöneticisi erişim seviyeleri.
 
 ---
 
