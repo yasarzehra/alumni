@@ -45,15 +45,18 @@ Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bo
     --iu-burgundy-hover: #9f1239;    /* İÜ Bordo Hover */
     --iu-gold: #c59b27;              /* İÜ Ağırbaşlı Altın */
     --iu-gold-light: #d4af37;        /* Antik İpek Altın Varak */
-    --iu-gold-glow: rgba(212, 175, 55, 0.20); /* Bahis sitesi parıltısından uzak mat ışıltı */
+    --iu-gold-glow: rgba(212, 175, 55, 0.20);
     --logo-green-start: #064e3b;     /* Mühür Derin Zümrüt Başlangıç */
     --logo-green-end: #022c22;       /* Mühür Koyu Botanik Bitiş */
     --logo-gold-border: #d4af37;     /* Mühür 1.5px Antik Altın Çerçeve */
-    --bg-body: #080c16;              /* Beyazıt Gece Mavisi Zemin */
+    --bg-body: #0d1525;              /* Beyazıt Gece Mavisi — hafif aydınlatılmış, canlı */
     --card-surface: #111827;         /* Yüzey Kartı */
     --card-border: #1f293d;          /* Kart Çerçevesi */
 }
 ```
+
+**Arka Plan Görsel Katmanı (Hero — Beyazıt Binası):**
+Ana sayfanın hero alanına (`/static/iu_beyazit.jpg`) kurumun Beyazıt kapısı görseli `%7 opaklık` ile arka plana yerleştirilmiştir. Görsel; yazıların okunabilirliğini bozmadan sadece atmosfer ve kurumsal köklülük hissi katmak amacıyla çok hafif bir katman olarak uygulanmıştır. Rengi koyulaştırmak için üzerine koyu radial gradient bindirisi eklenmiştir.
 
 ---
 

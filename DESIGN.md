@@ -51,9 +51,9 @@ The interface achieves **"Historic Academic Monumentality fused with Modern Prod
   --logo-seal-shadow:      rgba(0, 0, 0, 0.35); /* Serene institutional shadow (no neon halos) */
 
   /* =========================================================================
-     3. CANVASES & SURFACES (MasterClass Obsidian & Carbon Dark-Stage Architecture)
+     3. CANVASES & SURFACES — Brightened for visibility & vitality
      ========================================================================= */
-  --canvas-bg:             #080c16; /* Beyazıt Midnight (Root HTML background) */
+  --canvas-bg:             #0d1525; /* Beyazıt Midnight — slightly lifted for a richer, more vivid dark */
   --canvas-surface:        #111827; /* Obsidian Card Layer 1 */
   --canvas-elevated:       #1a2438; /* Elevated Modal & Dropdown Layer 2 */
   --canvas-sunken:         #040711; /* Terminal, Code Blocks & Inset Search */
@@ -188,6 +188,15 @@ Following **Refero's modular component scale**:
   - **1453 Center Marker:** Solid dignified antique gold inscriptional date (`#d4af37`) with `letter-spacing: 3px`, free from flashing casino beacon animations.
   - **Monumental Inscription:** "BEYAZIT'IN ASIRLIK BİLGİ IŞIĞI • GELECEĞE KÖK SALAN MİRAS" in `Cinzel` serif with flanking `⚜️` fleur-de-lis ornaments.
   - **Tapered Gold Ground Line:** A 140px centered accent beam (`inscription-bottom-bar`) connecting down to the H1 display title.
+
+### 5.7. Hero Background — İstanbul Üniversitesi Beyazıt Visual Layer
+* **File:** `static/iu_beyazit.jpg` — served at `/static/iu_beyazit.jpg` via the Python server's static file handler.
+* **Implementation:** A `.hero-bg` div with `position: absolute; inset: 0` inside `.hero-wrapper` carries:
+  - `background-image: url('/static/iu_beyazit.jpg')`
+  - `background-size: cover; background-position: center 30%`
+  - `opacity: 0.07` — barely perceptible; adds institutional atmosphere without compromising text legibility.
+  - `pointer-events: none; z-index: 0` — purely decorative, never interferes with interaction.
+* **Canvas Brightness:** `--canvas-bg` lifted from `#080c16` → `#0d1525` for a richer, more vivid dark stage that lets colors pop without changing the overall midnight tone.
 
 ---
 

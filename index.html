@@ -16,7 +16,7 @@
             --iu-gold: #c59b27;              /* Ağırbaşlı Antik Altın */
             --iu-gold-light: #d4af37;        /* Mat Varak Altın */
             --iu-gold-glow: rgba(0, 0, 0, 0.25);
-            --bg-body: #080c16;              /* Beyazıt Gece Mavisi Zemin */
+            --bg-body: #0d1525;              /* Beyazıt Gece Mavisi Zemin — hafif aydınlatılmış */
             --dark-card: #0f172a;            /* Yüzey Kartı */
             --dark-border: #1e293b;
             --text-main: #f8fafc;
@@ -38,9 +38,22 @@
             line-height: 1.6;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(197, 155, 39, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(197, 155, 39, 0.10) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.7) 0%, transparent 100%);
+        }
+
+        /* Hero arka planı: Beyazıt binası hafif görünür */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('/static/iu_beyazit.jpg');
+            background-size: cover;
+            background-position: center 30%;
+            opacity: 0.07;
+            z-index: 0;
+            border-radius: 0;
+            pointer-events: none;
         }
 
         /* Navigation Bar */
@@ -202,12 +215,18 @@
         }
 
         /* Hero Bölümü */
+        .hero-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
         .hero {
             max-width: 1240px;
             margin: 0 auto;
             padding: 85px 24px 50px;
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
         /* Açık Mimari Kitabe (Yuvarlak Baloncuksuz / Dignified Academic Inscription) */
@@ -670,30 +689,34 @@
     </nav>
 
     <!-- Kahraman (Hero) Alanı -->
-    <header class="hero">
-        <!-- Açık Mimari Kitabe (Yuvarlak Baloncuksuz) -->
-        <div class="hero-inscription">
-            <div class="inscription-top-line">
-                <span class="inscription-hairline"></span>
-                <span class="inscription-year">1453</span>
-                <span class="inscription-hairline right"></span>
+    <div class="hero-wrapper">
+        <!-- Beyazıt binası arka plan görseli (hafif, %7 opaklık) -->
+        <div class="hero-bg"></div>
+        <header class="hero">
+            <!-- Açık Mimari Kitabe (Yuvarlak Baloncuksuz) -->
+            <div class="hero-inscription">
+                <div class="inscription-top-line">
+                    <span class="inscription-hairline"></span>
+                    <span class="inscription-year">1453</span>
+                    <span class="inscription-hairline right"></span>
+                </div>
+                <div class="inscription-title">
+                    <span class="fleur">⚜️</span>
+                    <span>Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras</span>
+                    <span class="fleur">⚜️</span>
+                </div>
+                <div class="inscription-bottom-bar"></div>
             </div>
-            <div class="inscription-title">
-                <span class="fleur">⚜️</span>
-                <span>Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras</span>
-                <span class="fleur">⚜️</span>
+            <h1>İstanbul Üniversitesi Geleceğini <span class="gradient-iu">Mezunlarıyla İnşa Ediyor</span></h1>
+            <p>
+                Hukuk'tan Tıp'a, İktisat'tan Mühendisliğe yarım milyonu aşkın İstanbul Üniversiteliyi buluşturan; resmi kariyer, mentorluk ve mezun dayanışma platformu.
+            </p>
+            <div class="hero-actions">
+                <a href="/jobs" class="btn btn-burgundy" style="padding: 14px 28px; font-size: 1.05rem;">💼 Mezun İlanlarına Göz At</a>
+                <a href="/users" class="btn btn-ghost" style="padding: 14px 28px; font-size: 1.05rem;">👥 Mezunlarımızı Keşfet</a>
             </div>
-            <div class="inscription-bottom-bar"></div>
-        </div>
-        <h1>İstanbul Üniversitesi Geleceğini <span class="gradient-iu">Mezunlarıyla İnşa Ediyor</span></h1>
-        <p>
-            Hukuk'tan Tıp'a, İktisat'tan Mühendisliğe yarım milyonu aşkın İstanbul Üniversiteliyi buluşturan; resmi kariyer, mentorluk ve mezun dayanışma platformu.
-        </p>
-        <div class="hero-actions">
-            <a href="/jobs" class="btn btn-burgundy" style="padding: 14px 28px; font-size: 1.05rem;">💼 Mezun İlanlarına Göz At</a>
-            <a href="/users" class="btn btn-ghost" style="padding: 14px 28px; font-size: 1.05rem;">👥 Mezunlarımızı Keşfet</a>
-        </div>
-    </header>
+        </header>
+    </div>
 
     <!-- Metrik Barı -->
     <section class="stats-grid">

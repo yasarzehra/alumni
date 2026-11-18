@@ -157,6 +157,19 @@ class SimpleHandler(BaseHTTPRequestHandler):
                 self._send(204, 'text/plain', b'')
                 return
 
+            # Static files: /static/<filename>
+            if self.path.startswith('/static/'):
+                static_file = os.path.join(BASE_DIR, self.path.lstrip('/'))
+                if os.path.isfile(static_file):
+                    ext = os.path.splitext(static_file)[1].lower()
+                    mime = {'.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml'}.get(ext, 'application/octet-stream')
+                    with open(static_file, 'rb') as f:
+                        data = f.read()
+                    self._send(200, mime, data)
+                else:
+                    self._send(404, 'text/plain', b'Not found')
+                return
+
             # Dispatch through MVC Router:
             clean_path = self.path.split('?')[0]
             route_match = router.dispatch("GET", clean_path)
