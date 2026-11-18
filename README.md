@@ -10,6 +10,8 @@ The **Alumni Platform** bridges the communication and professional gap between u
 
 This platform solves this by offering a centralized directory, career tracking, verification pipelines, and event networking—designed from the ground up for high reliability, modular scalability, and modern web standards.
 
+> 🎨 **Brand & Design Identity:** For the complete visual design system, color palette, typography guidelines, and brand values, see the **[Brand Guide (brand.md)](brand.md)**.
+
 ### Key Capabilities
 - **Verified Alumni Profiles:** Comprehensive user profiles recording graduation year, faculty, department, current enterprise, LinkedIn integration, and industry domain.
 - **Student-to-Alumni Mentorship Network:** Direct communication and appointment channels enabling undergraduates to seek career guidance.
@@ -174,6 +176,7 @@ alumni/
 ├── docker-compose.yml                  # Multi-container orchestration (PHP-FPM, Nginx, MySQL)
 ├── Dockerfile                          # Application runtime container recipe
 ├── .gitignore                          # Git file exclusion rules
+├── brand.md                            # Brand Guidelines, Color System & Design Tokens
 ├── ddd.md                              # Data Design Documentation (ERD, Schema, Indexing)
 └── README.md                           # Project documentation & architectural blueprints
 ```
@@ -289,3 +292,13 @@ cd alumni
 # 2. Spin up containers (PHP-FPM, Nginx, MySQL)
 docker compose up --build
 ```
+
+---
+
+## 🔗 9. Key References & Documentation Anchors
+
+* 🎨 **[Brand & Design Guide](brand.md):** Color palette, typography, visual hierarchy, and UI guidelines.
+* 🗄️ **[Data Design Documentation (ddd.md)](ddd.md):** Entity-Relationship Diagrams (ERD), full 3NF normalization analysis, and indexing strategy.
+* 🚀 **[Server Entrypoint](server.py):** Python threaded server with Logger and 404/5xx Guardians.
+* 🛡️ **[404 Error Page](404.html):** Responsive client-facing 404 Guardian error template.
+* 📖 **[Swagger API Specification](main.py):** OpenAPI JSON spec and Swagger UI dashboard generator.
