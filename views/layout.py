@@ -211,15 +211,15 @@ class Layout:
         .btn-burgundy {{
             background: linear-gradient(135deg, var(--iu-burgundy), #9f1239);
             color: #ffffff;
-            border: 1px solid rgba(251, 191, 36, 0.35);
-            box-shadow: 0 4px 14px rgba(136, 19, 55, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
         .btn-burgundy:hover {{
             background: linear-gradient(135deg, #9f1239, #be123c);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(136, 19, 55, 0.5);
-            border-color: var(--iu-gold-light);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.4);
         }}
 
         /* Rafine İlan Butonu */
@@ -227,16 +227,16 @@ class Layout:
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 9px 16px 9px 20px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%);
+            padding: 9px 18px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #881337 0%, #6b0c2a 100%);
             color: #ffffff;
-            font-weight: 700;
-            font-size: 0.90rem;
+            font-weight: 600;
+            font-size: 0.88rem;
             letter-spacing: 0.2px;
             text-decoration: none;
-            border: 1px solid rgba(251, 191, 36, 0.55);
-            box-shadow: 0 4px 16px rgba(136, 19, 55, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -244,10 +244,9 @@ class Layout:
         }}
 
         .btn-nav-cta:hover {{
-            background: linear-gradient(135deg, #be123c 0%, #9f1239 55%, #700926 100%);
-            transform: translateY(-2px);
-            border-color: #fbbf24;
-            box-shadow: 0 8px 24px rgba(136, 19, 55, 0.55), 0 0 16px rgba(251, 191, 36, 0.35);
+            background: linear-gradient(135deg, #9f1239 0%, #7a0e30 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.45);
             color: #ffffff;
         }}
 
@@ -255,54 +254,61 @@ class Layout:
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            background: rgba(251, 191, 36, 0.2);
-            color: #fef08a;
-            font-size: 0.85rem;
-            transition: transform 0.25s ease, background 0.25s ease;
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
         }}
 
         .btn-nav-cta:hover .btn-arrow-chip {{
             transform: translateX(3px);
-            background: rgba(251, 191, 36, 0.35);
+            background: rgba(212, 175, 55, 0.25);
             color: #ffffff;
         }}
 
         .btn-gold {{
-            background: linear-gradient(135deg, #d97706, #b45309);
+            background: linear-gradient(135deg, #c59b27, #a17c18);
             color: #ffffff;
-            box-shadow: 0 4px 14px var(--iu-gold-glow);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
         .btn-gold:hover {{
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #d4af37, #b88f20);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.3);
         }}
 
         .btn-ghost {{
             background: rgba(255, 255, 255, 0.04);
             color: #f8fafc;
             border: 1px solid var(--dark-border);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
         .btn-ghost:hover {{
             background: rgba(255, 255, 255, 0.08);
-            border-color: var(--iu-gold);
-            color: var(--iu-gold-light);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
         }}
 
         .btn-danger {{
             background: rgba(239, 68, 68, 0.15);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
         .btn-danger:hover {{
             background: #ef4444;
             color: #ffffff;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 22px rgba(239, 68, 68, 0.35);
         }}
 
         /* Page Layout */

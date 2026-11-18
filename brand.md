@@ -84,10 +84,11 @@ Tasarım sistemi, İstanbul Üniversitesi'nin asırlık resmi renkleri olan **Bo
   - Alt hat: İki yanında `⚜️` motifleri ve `Cinzel` inscriptional serif yazı karakteriyle:  
     **`⚜️ Beyazıt'ın Asırlık Bilgi Işığı • Geleceğe Kök Salan Miras ⚜️`**
   - Güven Veren Doku: Yanıp sönen casino beacon ışıkları veya göz yoran neon sarı degradeler yerine mat antik altın ve gümüşi beyaz tipografi hakimdir.
-* **Rafine Aksiyon Butonu — `İlanları İncele` (`.btn-nav-cta`):**  
-  Platform genelinde pasif ve jenerik ifadeler yerine, kurumsal bordoyu antik altın yansımalar ve mikro-etkileşimlerle taçlandıran özel buton mimarisi kullanılır:
+* **Rafine Aksiyon Butonu — `İlanları İncele` (`.btn-nav-cta`) & Buton Etkileşim Sistemi:**  
+  Platform genelinde pasif ve jenerik ifadeler yerine, kurumsal bordoyu mat detaylar ve mikro-etkileşimlerle taçlandıran özel buton mimarisi kullanılır:
   - Zemin: `linear-gradient(135deg, #881337 0%, #700d2b 55%, #4c0519 100%)`
-  - Çerçeve: `1px solid rgba(212, 175, 55, 0.45)`
+  - Çerçeve: `1px solid rgba(212, 175, 55, 0.45)` (sabit ve asil kontur)
+  - **Hover Disiplini (Sarı Çerçevesiz / Gölgelendirmeli Büyüme):** Butonların üzerine gelindiğinde (`:hover`) çerçevenin sarı renkte parlaması engellenmiştir. Çerçeve sarı parlamak yerine, buton hafifçe yükselip genişler (`transform: translateY(-2px) scale(1.02)`) ve sarı neon haleler yerine tok, derin bir kurumsal gölge (`box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.45)`) ile öne çıkar.
   - Ok Çipi (`.btn-arrow-chip`): Butonun sağında ayrı bir yarı saydam altın kare içinde yer alan ve hover durumunda sağa doğru süzülen `→` oku.
   - Doğrudan Başvuru: **`💼 Mezun İlanlarına Göz At`** / **`📝 Platformdan Başvur`**
   - Üye Keşfi: **`👥 Mezunlarımızı Keşfet`**

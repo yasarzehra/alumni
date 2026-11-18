@@ -136,19 +136,28 @@ Following **Refero's modular component scale**:
 * **Brand Seal (Botanical Green & Antique Gold System):** 44x44px rounded squircle, background `linear-gradient(145deg, #064e3b 0%, #022c22 100%)`, border `1.5px solid #d4af37`, housing the Beyazıt emblem (`🏛️`), with calm shadow `box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35)` (zero neon blur).
 * **Navbar Primary CTA:** Direct action link **`İlanları İncele →`** with antique gold border.
 
-### 5.2. Action Buttons (MasterClass & Genway Synthesis)
+### 5.2. Action Buttons & Hover System (Scale & Shadow Elevation Architecture)
+* **Hover Interaction Directives (Zero Yellow Border Glow / Deep Ambient Shadow):**
+  - **Negative Rule:** Never illuminate or shift button borders to bright yellow/gold (`#fbbf24`, `#d4af37`, etc.) on `:hover`.
+  - **Elevation Mechanism:** On `:hover`, buttons smoothly elevate and scale (`transform: translateY(-2px) scale(1.02)` with `transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)`).
+  - **Shadow Depth:** Depth is communicated via deep atmospheric obsidian shadows (`box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6)` plus subtle brand tint) rather than bright border flashes.
 * **Refined Primary CTA — `İlanları İncele` (`.btn-nav-cta`):**
-  - Background: `linear-gradient(135deg, #9f1239 0%, #881337 55%, #58061d 100%)`
-  - Border: `1px solid rgba(251, 191, 36, 0.55)` with internal glow `inset 0 1px 0 rgba(255, 255, 255, 0.2)`
-  - Shadow: `0 4px 16px rgba(136, 19, 55, 0.45)`
+  - Background: `linear-gradient(135deg, #881337 0%, #6b0c2a 100%)`
+  - Border: `1px solid rgba(212, 175, 55, 0.45)` (stable, does not turn yellow on hover)
+  - Hover: `background: linear-gradient(135deg, #9f1239 0%, #7a0e30 100%)`, `transform: translateY(-2px) scale(1.02)`, `box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.45)`.
   - Interactive Arrow Chip (`.btn-arrow-chip`): Translucent gold housing for `→` with `translateX(3px)` translation on hover.
   - Phrasing: **`İlanları İncele →`**, **`💼 Mezun İlanlarına Göz At`**, **`+ İlan Ver`**.
-* **Secondary CTA (Heritage Gold):**
-  - Background: `linear-gradient(135deg, #d97706, #b45309)`
-  - Color: `#ffffff`, Shadow: `0 4px 14px var(--color-accent-glow)`
-* **Ghost Action Button:**
-  - Background: `rgba(255, 255, 255, 0.04)`, border: `1px solid #1f293d`
-  - Hover: Border `#d97706`, color `#fbbf24`.
+* **Primary Burgundy CTA (`.btn-burgundy`):**
+  - Background: `linear-gradient(135deg, #881337, #6b0c2a)`
+  - Border: `1px solid rgba(212, 175, 55, 0.35)` (stable)
+  - Hover: `transform: translateY(-2px) scale(1.02)`, `box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.4)` (no yellow border).
+* **Secondary CTA (Heritage Gold / `.btn-gold`):**
+  - Background: `linear-gradient(135deg, #c59b27, #a17c18)`
+  - Border: `1px solid rgba(212, 175, 55, 0.45)`
+  - Hover: `transform: translateY(-2px) scale(1.02)`, `box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.3)`.
+* **Ghost Action Button (`.btn-ghost`):**
+  - Background: `rgba(255, 255, 255, 0.04)`, border: `1px solid var(--dark-border)`
+  - Hover: `background: rgba(255, 255, 255, 0.08)`, `transform: translateY(-2px) scale(1.02)`, `box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5)`, color `#ffffff` (no yellow border).
 
 ### 5.3. Bento Feature Cards (Refero Style)
 * Background: `#111827`, border: `1px solid #1f293d`, radius: `18px`, padding: `30px 24px`.
