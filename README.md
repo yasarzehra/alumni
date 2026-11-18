@@ -177,6 +177,7 @@ alumni/
 ├── Dockerfile                          # Application runtime container recipe
 ├── .gitignore                          # Git file exclusion rules
 ├── brand.md                            # Brand Guidelines, Color System & Design Tokens
+├── DESIGN.md                           # AI-Agent Design System Specification (Refero / VoltAgent standard)
 ├── ddd.md                              # Data Design Documentation (ERD, Schema, Indexing)
 └── README.md                           # Project documentation & architectural blueprints
 ```
@@ -297,7 +298,8 @@ docker compose up --build
 
 ## 🔗 9. Key References & Documentation Anchors
 
-* 🎨 **[Brand & Design Guide](brand.md):** Color palette, typography, visual hierarchy, and UI guidelines.
+* 🎨 **[Brand & Design Guide](brand.md):** Kurumsal kimlik, misyon ve renk kılavuzu.
+* 📐 **[DESIGN.md Specification](DESIGN.md):** Refero Styles & VoltAgent standardında AI-agent uyumlu tasarım sistemi ve token belgeleri.
 * 🗄️ **[Data Design Documentation (ddd.md)](ddd.md):** Entity-Relationship Diagrams (ERD), full 3NF normalization analysis, and indexing strategy.
 * 🚀 **[Server Entrypoint](server.py):** Python threaded server with Logger and 404/5xx Guardians.
 * 🛡️ **[404 Error Page](404.html):** Responsive client-facing 404 Guardian error template.
