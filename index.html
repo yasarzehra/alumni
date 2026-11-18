@@ -3,111 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporary Main Page</title>
+    <title>Mezun Bilgi & Kariyer Ağı Platformu (Alumni Network)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-glow: rgba(37, 99, 235, 0.25);
+            --secondary: #0f172a;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --bg-body: #0b1120;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            color: #102a43;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(14, 165, 233, 0.12) 0%, transparent 40%);
+        }
+
+        /* Navigation Bar */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: rgba(11, 17, 32, 0.85);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+            padding: 16px 24px;
+        }
+
+        .nav-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 14px var(--primary-glow);
         }
-        .container {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            max-width: 550px;
-            width: 100%;
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            color: #ffffff;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid var(--dark-border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #64748b;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 90px 24px 60px;
             text-align: center;
+            position: relative;
         }
-        h1 {
-            font-size: 2rem;
-            color: #1e3a8a;
+
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 36px;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Stats Bar */
+        .stats-grid {
+            max-width: 1100px;
+            margin: 40px auto 80px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 0 24px;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-4px);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Core Modules Section */
+        .section-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
             margin-bottom: 12px;
         }
-        .subtitle {
-            font-size: 1.15rem;
-            color: #627d98;
-            margin-bottom: 28px;
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 580px;
+            margin: 0 auto;
         }
-        .endpoints {
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+        }
+
+        .module-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 32px 24px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            text-align: left;
-        }
-        .endpoint-link {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
             text-decoration: none;
-            color: #2563eb;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            color: inherit;
         }
-        .endpoint-link:hover {
-            background-color: #eff6ff;
-            border-color: #bfdbfe;
-            transform: translateY(-1px);
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .badge {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-            font-size: 0.8rem;
-            padding: 4px 10px;
+
+        .module-card:hover {
+            transform: translateY(-6px);
+            border-color: #475569;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .module-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .module-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .module-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #60a5fa;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Developer & API Suite */
+        .dev-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .terminal-preview {
+            background: #020617;
+            border: 1px solid #1e293b;
             border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            overflow-x: auto;
+        }
+
+        .term-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .term-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .term-dot.red { background: #ef4444; }
+        .term-dot.yellow { background: #f59e0b; }
+        .term-dot.green { background: #10b981; }
+
+        .term-line {
+            color: #94a3b8;
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+
+        .term-highlight { color: #38bdf8; }
+        .term-success { color: #34d399; }
+        .term-method { color: #fbbf24; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--dark-border);
+            padding: 48px 24px;
+            margin-top: 80px;
+            background: #070d18;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 2.6rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .dev-box { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .hero-actions { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Temporary Main Page</h1>
-        <p class="subtitle">temporary one main page</p>
 
-        <div class="endpoints">
-            <a href="/about" class="endpoint-link">
-                <span>About Sayfası</span>
-                <span class="badge">/about</span>
+    <!-- Top Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="brand">
+                <div class="brand-icon">🎓</div>
+                <span>Alumni Network</span>
             </a>
-            <a href="/ok" class="endpoint-link">
-                <span>OK Yanıtı</span>
-                <span class="badge">/ok</span>
+            <ul class="nav-links">
+                <li><a href="/jobs" class="nav-link">İş & Staj İlanları</a></li>
+                <li><a href="/users" class="nav-link">Mezun Rehberi</a></li>
+                <li><a href="/applications" class="nav-link">Başvurular</a></li>
+                <li><a href="/announcements" class="nav-link">Duyurular</a></li>
+                <li><a href="/about" class="nav-link">Hakkımızda</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="/api/swagger" class="btn btn-ghost" title="Interactive API Spec">⚡ Swagger UI</a>
+                <a href="/jobs" class="btn btn-primary">Fırsatları Keşfet →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="hero">
+        <div class="pill-badge">🚀 Mezun & Öğrenci Kariyer Ekosistemi</div>
+        <h1>Üniversite Geleceğini <span class="gradient-text">Mezunlarınla İnşa Et</span></h1>
+        <p>
+            Binlerce mezun, aktif öğrenci ve üniversite liderlerini tek bir çatı altında toplayan; kariyer, mentorluk ve iş fırsatları platformu.
+        </p>
+        <div class="hero-actions">
+            <a href="/jobs" class="btn btn-primary" style="padding: 14px 28px; font-size: 1.05rem;">💼 İş & Staj İlanlarına Göz At</a>
+            <a href="/users" class="btn btn-ghost" style="padding: 14px 28px; font-size: 1.05rem;">👥 Mezunlarımızı İncele</a>
+        </div>
+    </header>
+
+    <!-- Platform Real-time Metrics -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">13+</div>
+            <div class="stat-label">Kayıtlı Mezun & Öğrenci</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">12+</div>
+            <div class="stat-label">Aktif Kariyer İlanı</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">8+</div>
+            <div class="stat-label">Yayınlanmış Duyuru</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">%100</div>
+            <div class="stat-label">Doğrulanmış Ağ</div>
+        </div>
+    </section>
+
+    <!-- Core Interactive Modules -->
+    <main class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Platform Özellikleri & Modüller</h2>
+            <p class="section-subtitle">
+                Kariyer fırsatlarından mentorluk etkileşimine kadar mezun ekosisteminin tüm ihtiyaçları parmaklarınızın ucunda.
+            </p>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Module 1: Job Board -->
+            <a href="/jobs" class="module-card">
+                <div>
+                    <div class="module-icon">💼</div>
+                    <h3>Kariyer & Staj İlanları</h3>
+                    <p>Mezunlarımızın çalıştığı seçkin şirketlerden doğrudan üniversitelilere özel iş, staj ve proje fırsatları.</p>
+                </div>
+                <div class="module-action">İlanları İncele & Başvur &rarr;</div>
             </a>
-            <a href="/hello" class="endpoint-link">
-                <span>Hello World</span>
-                <span class="badge">/hello</span>
+
+            <!-- Module 2: Alumni Directory -->
+            <a href="/users" class="module-card">
+                <div>
+                    <div class="module-icon">👥</div>
+                    <h3>Mezun & Öğrenci Dizini</h3>
+                    <p>Fakülte, mezuniyet yılı ve sektöre göre filtrelenebilir kullanıcı profilleri, detaylı özgeçmişler ve iletişim.</p>
+                </div>
+                <div class="module-action">Rehberi Görüntüle &rarr;</div>
             </a>
-            <a href="/hello/zehra" class="endpoint-link">
-                <span>Hello Zehra</span>
-                <span class="badge">/hello/zehra</span>
+
+            <!-- Module 3: Applications Hub -->
+            <a href="/applications" class="module-card">
+                <div>
+                    <div class="module-icon">📝</div>
+                    <h3>Başvuru Yönetim Paneli</h3>
+                    <p>Adayların başvurularını anlık takip edebildiği, şirketlerin adayları inceleyebildiği entegre yönetim konsolu.</p>
+                </div>
+                <div class="module-action">Başvuruları Yönet &rarr;</div>
             </a>
-            <a href="/sum/5/9" class="endpoint-link">
-                <span>Toplam (5 + 9)</span>
-                <span class="badge">/sum/5/9</span>
-            </a>
-            <a href="/api/health" class="endpoint-link">
-                <span>Sağlık Durumu (Health)</span>
-                <span class="badge">/api/health</span>
-            </a>
-            <a href="/api/swagger" class="endpoint-link">
-                <span>Swagger UI Dokümantasyon</span>
-                <span class="badge">/api/swagger</span>
+
+            <!-- Module 4: Announcements -->
+            <a href="/announcements" class="module-card">
+                <div>
+                    <div class="module-icon">📢</div>
+                    <h3>Haberler & Duyurular</h3>
+                    <p>Akademik gelişmeler, mezun buluşmaları, seminerler ve kariyer etkinliklerinden anında haberdar olun.</p>
+                </div>
+                <div class="module-action">Duyuruları Oku &rarr;</div>
             </a>
         </div>
-    </div>
+
+        <!-- Developer Suite Preview -->
+        <div class="dev-box">
+            <div>
+                <span class="pill-badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border-color: rgba(14, 165, 233, 0.3);">
+                    RESTful API & Guardians
+                </span>
+                <h3 style="font-size: 1.8rem; margin: 12px 0 16px; font-weight: 800;">Geliştirici & Entegrasyon Araçları</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">
+                    Modern MVC mimarisi, OpenAPI / Swagger spesifikasyonu, 404 & 5xx Guardian hata koruyucuları ve milisaniyelik Logger middleware ile tam donanımlı altyapı.
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="/api/swagger" class="btn btn-primary">📖 Swagger Dokümantasyonu</a>
+                    <a href="/api/health" class="btn btn-ghost">🩺 Health Endpoint</a>
+                </div>
+            </div>
+
+            <!-- Terminal Mockup -->
+            <div class="terminal-preview">
+                <div class="term-header">
+                    <span class="term-dot red"></span>
+                    <span class="term-dot yellow"></span>
+                    <span class="term-dot green"></span>
+                    <span style="color: #64748b; margin-left: 8px; font-size: 0.75rem;">alumni-server — logger-stream</span>
+                </div>
+                <div class="term-line"><span class="term-highlight">GET</span>  /api/health            <span class="term-success">200 OK</span> (0ms)</div>
+                <div class="term-line"><span class="term-highlight">GET</span>  /api/jobs              <span class="term-success">200 OK</span> (2ms)</div>
+                <div class="term-line"><span class="term-method">POST</span> /api/applications      <span class="term-success">201 Created</span> (4ms)</div>
+                <div class="term-line"><span class="term-highlight">GET</span>  /api/users/1/jobs      <span class="term-success">200 OK</span> (1ms)</div>
+                <div class="term-line" style="color: #38bdf8;">[404 GUARDIAN] Catching invalid routes with suggestions</div>
+                <div class="term-line" style="color: #34d399;">[5xx GUARDIAN] Automatic incident tracking enabled</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="/">Ana Sayfa</a>
+            <a href="/jobs">İş İlanları</a>
+            <a href="/users">Mezunlar</a>
+            <a href="/applications">Başvurular</a>
+            <a href="/announcements">Duyurular</a>
+            <a href="/about">Hakkımızda</a>
+            <a href="/api/swagger">API Swagger</a>
+        </div>
+        <p>&copy; 2026 Mezun Bilgi Sistemi (Alumni Network Platform). Tüm hakları saklıdır.</p>
+    </footer>
+
 </body>
 </html>
