@@ -1,7 +1,7 @@
 """
 JobView - HTML View Layer for Job Postings
 Renders responsive web views for career opportunities, employment board, and relational author listings.
-Now completely unified with Istanbul University Tri-Font & Dark Institutional Theme via Layout.
+Redesigned with high-trust Istanbul University Dark Theme, Bento Job Cards, and interactive filters.
 """
 from typing import List, Dict, Any, Optional
 import html
@@ -9,7 +9,7 @@ from views.layout import Layout
 
 
 class JobView:
-    """Renders HTML presentation for Job Posting resources."""
+    """Renders modern HTML presentation for Job Posting resources."""
 
     @staticmethod
     def render_index(jobs: List[Dict[str, Any]], count: int, error: Optional[str] = None, success: Optional[str] = None, filter_user: Optional[Dict[str, Any]] = None) -> str:
@@ -19,26 +19,31 @@ class JobView:
         if success:
             alert_html += f'<div class="alert alert-success"><span>✓</span><span>{html.escape(success)}</span></div>'
 
-        subtitle = "İstanbul Üniversitesi mezunlarının çalıştığı ve yönettiği kurumlardan kariyer fırsatları."
+        subtitle = "İstanbul Üniversitesi mezunlarının çalıştığı ve yönettiği seçkin kurumlardan kariyer & staj fırsatları."
         if filter_user:
             subtitle = f"<strong>{html.escape(filter_user.get('name', 'Kullanıcı'))}</strong> tarafından yayınlanan iş & staj ilanları."
 
-        # Stats calculation
+        # Statistics
         full_time_cnt = sum(1 for j in jobs if j.get('employment_type') == 'full_time')
         intern_cnt = sum(1 for j in jobs if j.get('employment_type') == 'internship')
+        part_time_cnt = sum(1 for j in jobs if j.get('employment_type') == 'part_time')
 
-        rows_html = ""
+        # Generate modern bento job cards
+        cards_html = ""
         for j in jobs:
             j_id = j.get('id')
             title = html.escape(str(j.get('title') or 'Pozisyon Belirtilmedi'))
             company = html.escape(str(j.get('company_name') or 'Kurum Belirtilmedi'))
             location = html.escape(str(j.get('location') or 'İstanbul (Hibrit)'))
             emp_type = j.get('employment_type', 'full_time')
-            
+            raw_desc = str(j.get('description') or '')
+            preview_desc = html.escape((raw_desc[:120] + "...") if len(raw_desc) > 120 else raw_desc)
+            salary = html.escape(str(j.get('salary_range') or ''))
+
             # Badge selection
             if emp_type == 'internship':
                 badge_cls = 'badge-gold'
-                emp_label = '🎓 Staj'
+                emp_label = '🎓 Staj Programı'
             elif emp_type == 'full_time':
                 badge_cls = 'badge-green'
                 emp_label = '💼 Tam Zamanlı'
@@ -53,82 +58,128 @@ class JobView:
             author_name = html.escape(str(author_info.get("name") or "İÜ Mezunu"))
             author_id = j.get("alumni_id")
 
-            rows_html += f"""
-            <tr>
-                <td class="mono" style="font-weight: 700; color: var(--iu-gold-light);">#{j_id}</td>
-                <td>
-                    <a href="/jobs/{j_id}" style="color: #ffffff; text-decoration: none; font-weight: 700; font-size: 1rem; display: block;">
-                        {title}
-                    </a>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 3px;">
-                        🏢 <strong style="color: #e2e8f0;">{company}</strong> &bull; 📍 {location}
+            salary_chip = f'<span style="font-size: 0.78rem; color: #d4af37; font-family: monospace; font-weight: 700; background: rgba(212, 175, 55, 0.12); padding: 3px 8px; border-radius: 6px;">💵 {salary}</span>' if salary else ''
+
+            cards_html += f"""
+            <div class="item-card">
+                <div>
+                    <!-- Header: Company & Badges -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="avatar-box">🏢</div>
+                            <div>
+                                <div style="font-size: 0.82rem; font-weight: 700; color: #d4af37; text-transform: uppercase; letter-spacing: 0.5px;">{company}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                                    <span>📍</span> <span>{location}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="mono" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">#{j_id}</span>
+                            <div style="margin-top: 4px;"><span class="badge {badge_cls}">{emp_label}</span></div>
+                        </div>
                     </div>
-                </td>
-                <td>
-                    <span class="badge {badge_cls}">{emp_label}</span>
-                </td>
-                <td>
-                    <a href="/users/{author_id}" style="color: var(--iu-gold-light); text-decoration: none; font-weight: 600; font-size: 0.9rem;">
-                        👤 {author_name}
-                    </a>
-                    <div style="font-size: 0.78rem; color: var(--text-muted);">Doğrulanmış İÜ Mezunu</div>
-                </td>
-                <td style="text-align: right; white-space: nowrap;">
-                    <a href="/jobs/{j_id}" class="btn btn-sm btn-ghost" title="İlan Detayı">👁️ Detay</a>
-                    <a href="/jobs/{j_id}/apply" class="btn btn-sm btn-burgundy" style="margin-left: 4px;" title="İlana Başvur">📝 Başvur</a>
-                    <form action="/jobs/{j_id}/delete" method="POST" style="display: inline-block; margin-left: 4px;" onsubmit="return confirm('İş ilanı #{j_id} ({title}) silinsin mi?');">
-                        <button type="submit" class="btn btn-sm btn-danger" title="İlanı Sil">🗑️</button>
-                    </form>
-                </td>
-            </tr>
+
+                    <!-- Job Title -->
+                    <h3 style="margin-bottom: 10px; font-size: 1.15rem; line-height: 1.4;">
+                        <a href="/jobs/{j_id}" style="color: #ffffff; text-decoration: none; font-weight: 700; transition: color 0.2s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#ffffff'">
+                            {title}
+                        </a>
+                    </h3>
+
+                    <!-- Description Preview -->
+                    <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px;">
+                        {preview_desc}
+                    </p>
+
+                    <!-- Tags & Salary -->
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px;">
+                        {salary_chip}
+                        <span style="font-size: 0.78rem; color: #94a3b8; background: #090e1a; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--dark-border);">
+                            🏛️ Mezun İlanı
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- Author Information -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--dark-border); margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1rem;">🎓</span>
+                            <div>
+                                <a href="/users/{author_id}" style="color: #f1f5f9; text-decoration: none; font-weight: 600; font-size: 0.85rem;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#f1f5f9'">
+                                    {author_name}
+                                </a>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">Doğrulanmış İÜ Mezunu</div>
+                            </div>
+                        </div>
+                        <a href="/jobs/{j_id}/applications" class="filter-chip" style="font-size: 0.75rem; padding: 4px 10px;">
+                            Adaylar
+                        </a>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <a href="/jobs/{j_id}" class="btn btn-sm btn-ghost" style="flex: 1; justify-content: center;" title="İlan Detayı">👁️ Detay</a>
+                        <a href="/jobs/{j_id}/apply" class="btn btn-sm btn-burgundy" style="flex: 1.2; justify-content: center;" title="İlana Başvur">📝 Başvur</a>
+                        <form action="/jobs/{j_id}/delete" method="POST" style="display: inline-block;" onsubmit="return confirm('İş ilanı #{j_id} ({title}) silinsin mi?');">
+                            <button type="submit" class="btn btn-sm btn-danger" title="İlanı Sil" style="padding: 6px 10px;">🗑️</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
             """
 
         if not jobs:
-            rows_html = '<tr><td colspan="5" style="padding:40px; text-align:center; color:var(--text-muted);">Henüz yayınlanmış bir iş veya staj ilanı bulunmamaktadır.</td></tr>'
+            cards_html = """
+            <div style="grid-column: 1 / -1; padding: 60px 24px; text-align: center; background: var(--dark-card); border: 1px solid var(--dark-border); border-radius: 18px;">
+                <div style="font-size: 3rem; margin-bottom: 12px;">💼</div>
+                <h3 style="font-family: 'Cinzel', serif; font-size: 1.4rem; color: #ffffff; margin-bottom: 8px;">Henüz İlan Yayınlanmadı</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto 20px;">
+                    İlk kariyer veya staj ilanını açarak İstanbul Üniversitesi öğrencileri ve mezunlarıyla buluşun.
+                </p>
+                <a href="/jobs/create" class="btn btn-burgundy">+ İlk İlanı Yayınla</a>
+            </div>
+            """
 
         content = f"""
-        <!-- İstatistik Şeridi -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-            <div class="card" style="padding: 20px; text-align: center;">
-                <div class="mono" style="font-size: 2rem; font-weight: 800; color: var(--iu-gold-light);">{count}</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Aktif Kariyer & Staj İlanı</div>
+        <!-- İstatistik Şeridi (Bento) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 28px;">
+            <div class="card" style="padding: 20px; text-align: center; margin-bottom: 0;">
+                <div class="mono" style="font-size: 2.2rem; font-weight: 800; color: var(--iu-gold-light);">{count}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Aktif Kariyer & Staj İlanı</div>
             </div>
-            <div class="card" style="padding: 20px; text-align: center;">
-                <div class="mono" style="font-size: 2rem; font-weight: 800; color: var(--success);">{full_time_cnt}</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Tam Zamanlı İstihdam</div>
+            <div class="card" style="padding: 20px; text-align: center; margin-bottom: 0;">
+                <div class="mono" style="font-size: 2.2rem; font-weight: 800; color: var(--success);">{full_time_cnt}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Tam Zamanlı İstihdam</div>
             </div>
-            <div class="card" style="padding: 20px; text-align: center;">
-                <div class="mono" style="font-size: 2rem; font-weight: 800; color: #fbbf24);">{intern_cnt}</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Öğrenci Staj İlanı</div>
+            <div class="card" style="padding: 20px; text-align: center; margin-bottom: 0;">
+                <div class="mono" style="font-size: 2.2rem; font-weight: 800; color: #fbbf24;">{intern_cnt}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Öğrenci Staj İlanı</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center; margin-bottom: 0;">
+                <div class="mono" style="font-size: 2.2rem; font-weight: 800; color: #60a5fa;">{part_time_cnt}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Yarı Zamanlı / Proje</div>
             </div>
         </div>
 
-        <!-- İlanlar Tablosu -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
-                <h2 style="font-family: 'Cinzel', serif; font-size: 1.3rem; color: #ffffff;">Güncel Kariyer Fırsatları</h2>
-                <div style="display: flex; gap: 8px;">
-                    <a href="/api/jobs" class="btn btn-sm btn-ghost" title="REST API JSON">⚡ JSON API</a>
-                    <a href="/jobs/create" class="btn btn-sm btn-burgundy">+ Yeni İlan Ekle</a>
-                </div>
+        <!-- Filtre ve Hızlı İşlem Çubuğu -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-chip active">Tüm İlanlar ({count})</span>
+                <span class="filter-chip">💼 Tam Zamanlı ({full_time_cnt})</span>
+                <span class="filter-chip">🎓 Staj ({intern_cnt})</span>
+                <span class="filter-chip">⏱️ Yarı Zamanlı ({part_time_cnt})</span>
             </div>
+            <div style="display: flex; gap: 8px;">
+                <a href="/api/jobs" class="btn btn-sm btn-ghost" title="REST API JSON">⚡ API JSON</a>
+                <a href="/jobs/create" class="btn btn-sm btn-burgundy">+ Yeni İlan Ekle</a>
+            </div>
+        </div>
 
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 70px;">ID</th>
-                            <th>Pozisyon & Şirket</th>
-                            <th>Çalışma Türü</th>
-                            <th>Yayınlayan Mezun</th>
-                            <th style="text-align: right; width: 220px;">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rows_html}
-                    </tbody>
-                </table>
-            </div>
+        <!-- İlan Kartları Izgarası (Bento Grid) -->
+        <div class="item-grid">
+            {cards_html}
         </div>
         """
 
@@ -158,78 +209,94 @@ class JobView:
         author_id = job.get("alumni_id")
 
         req_section = f"""
-        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--dark-border);">
-            <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #ffffff; margin-bottom: 8px;">Aranan Nitelikler & Yetkinlikler</h3>
-            <p style="color: #cbd5e1; line-height: 1.6; white-space: pre-line;">{requirements}</p>
+        <div style="margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--dark-border);">
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.2rem; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>📋</span> Aranan Nitelikler & Yetkinlikler
+            </h3>
+            <div style="color: #cbd5e1; line-height: 1.7; white-space: pre-line; background: #090e1a; padding: 20px; border-radius: 12px; border: 1px solid var(--dark-border);">
+                {requirements}
+            </div>
         </div>
         """ if requirements else ""
 
         salary_section = f"""
-        <div style="background: #090e1a; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--dark-border); margin-top: 20px;">
-            <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Maaş / Yan Haklar</div>
-            <div class="mono" style="font-size: 1.1rem; color: var(--iu-gold-light); font-weight: 700; margin-top: 2px;">{salary}</div>
+        <div style="background: rgba(212, 175, 55, 0.08); padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.25); margin-top: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 0.78rem; text-transform: uppercase; color: #d4af37; font-weight: 700;">Tahmini Ücret / Yan Haklar</div>
+                <div class="mono" style="font-size: 1.15rem; color: #ffffff; font-weight: 700; margin-top: 2px;">{salary}</div>
+            </div>
+            <span style="font-size: 1.6rem;">💼</span>
         </div>
         """ if salary else ""
 
-        apply_btn = f"""
-        <a href="{app_url}" target="_blank" class="btn btn-gold" style="font-size: 1rem; padding: 12px 24px;">
-            Şirket Sitesinden Başvur &rarr;
+        apply_external = f"""
+        <a href="{app_url}" target="_blank" class="btn btn-gold" style="font-size: 0.95rem;">
+            Kurum Sitesinden Başvur &rarr;
         </a>
         """ if app_url else ""
 
         content = f"""
-        <div class="card" style="max-width: 820px; margin: 0 auto; border-top: 4px solid var(--iu-burgundy);">
+        <div class="card" style="max-width: 860px; margin: 0 auto; position: relative;">
+            
             <!-- İlan Üst Başlığı -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--dark-border); flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--dark-border); flex-wrap: wrap; gap: 16px;">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                        <span class="mono" style="color: var(--iu-gold-light); font-weight: 700;">#{j_id}</span>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span class="mono" style="color: #d4af37; font-weight: 800; font-size: 0.95rem;">#{j_id}</span>
                         <span class="badge badge-burgundy">{html.escape(emp_type.replace('_', ' ').title())}</span>
+                        <span class="badge badge-green">✓ Açık Pozisyon</span>
                     </div>
-                    <h2 style="font-family: 'Cinzel', serif; font-size: 1.8rem; color: #ffffff;">{title}</h2>
-                    <div style="font-size: 1.05rem; color: var(--iu-gold-light); font-weight: 600; margin-top: 4px;">
-                        🏢 {company} &bull; 📍 {location}
+                    <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #ffffff; letter-spacing: 0.5px;">{title}</h2>
+                    <div style="font-size: 1.05rem; color: #d4af37; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 6px;">
+                        <span>🏢</span> <strong>{company}</strong> &bull; <span>📍</span> <span>{location}</span>
                     </div>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <a href="/jobs/{j_id}/apply" class="btn btn-burgundy">📝 Platformdan Başvur</a>
-                    {apply_btn}
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="/jobs/{j_id}/apply" class="btn btn-burgundy" style="font-size: 1rem; padding: 12px 24px;">📝 Platformdan Başvur</a>
+                    {apply_external}
                 </div>
             </div>
 
-            <!-- Yayınlayan Mezun Kartı -->
-            <div style="background: #090e1a; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--dark-border); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 1.6rem;">🎓</span>
+            <!-- Yayınlayan Mezun & İlan Bilgi Şeridi -->
+            <div style="background: #090e1a; padding: 18px 22px; border-radius: 14px; border: 1px solid var(--dark-border); margin-bottom: 26px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div class="avatar-box" style="width: 44px; height: 44px; font-size: 1.2rem;">🎓</div>
                     <div>
-                        <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">İlanı Yayınlayan Mezun</div>
-                        <a href="/users/{author_id}" style="color: #ffffff; font-weight: 700; text-decoration: none;">{author_name}</a>
+                        <div style="font-size: 0.76rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">İlanı Yayınlayan Mezun</div>
+                        <a href="/users/{author_id}" style="color: #ffffff; font-weight: 700; text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#ffffff'">
+                            {author_name}
+                        </a>
+                        <span style="font-size: 0.75rem; color: #34d399; margin-left: 6px;">● Doğrulanmış Profil</span>
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <a href="/users/{author_id}/jobs" class="btn btn-sm btn-ghost">Tüm İlanları</a>
-                    <a href="/jobs/{j_id}/applications" class="btn btn-sm btn-ghost">Aday Başvuruları ({j_id})</a>
+                    <a href="/users/{author_id}/jobs" class="filter-chip">Mezunun Diğer İlanları</a>
+                    <a href="/jobs/{j_id}/applications" class="filter-chip">Gelen Başvurular ({j_id})</a>
                 </div>
             </div>
 
-            <!-- İş Tanımı -->
+            <!-- Pozisyon Açıklaması -->
             <div>
-                <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #ffffff; margin-bottom: 8px;">Pozisyon Tanımı & Görevler</h3>
-                <p style="color: #cbd5e1; line-height: 1.7; white-space: pre-line; font-size: 1rem;">{description}</p>
+                <h3 style="font-family: 'Cinzel', serif; font-size: 1.2rem; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span>📌</span> Pozisyon Tanımı & Görevler
+                </h3>
+                <div style="color: #cbd5e1; line-height: 1.8; white-space: pre-line; font-size: 1.02rem;">
+                    {description}
+                </div>
             </div>
 
             {req_section}
             {salary_section}
 
-            <!-- Alt Aksiyonlar -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--dark-border); flex-wrap: wrap; gap: 12px;">
-                <div style="display: flex; gap: 8px;">
+            <!-- Alt Aksiyon Çubuğu -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--dark-border); flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; gap: 10px;">
                     <a href="/jobs/{j_id}/edit" class="btn btn-gold">✏️ İlanı Düzenle</a>
                     <form action="/jobs/{j_id}/delete" method="POST" style="display: inline;" onsubmit="return confirm('Bu ilan silinecektir. Emin misiniz?');">
                         <button type="submit" class="btn btn-danger">🗑️ İlanı Kaldır</button>
                     </form>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex; gap: 10px;">
                     <a href="/api/jobs/{j_id}" class="btn btn-ghost">⚡ API JSON</a>
                     <a href="/jobs" class="btn btn-ghost">&larr; İlan Listesine Dön</a>
                 </div>
@@ -248,12 +315,12 @@ class JobView:
     @staticmethod
     def render_create() -> str:
         content = """
-        <div class="card" style="max-width: 680px; margin: 0 auto; border-top: 4px solid var(--iu-burgundy);">
-            <div style="margin-bottom: 24px;">
-                <span class="badge badge-burgundy" style="margin-bottom: 10px;">Yeni Kariyer & Staj İlanı</span>
-                <h2 style="font-family: 'Cinzel', serif; font-size: 1.5rem; color: #ffffff;">İlan Bilgilerini Tanımlayın</h2>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">
-                    İstanbul Üniversitesi mezunlarına ve öğrencilerine ulaşacak kariyer fırsatını yayınlayın.
+        <div class="card" style="max-width: 720px; margin: 0 auto; position: relative;">
+            <div style="margin-bottom: 26px; border-bottom: 1px solid var(--dark-border); padding-bottom: 18px;">
+                <span class="badge badge-burgundy" style="margin-bottom: 10px;">Kariyer Formu</span>
+                <h2 style="font-family: 'Cinzel', serif; font-size: 1.7rem; color: #ffffff;">Yeni İlan Yayınlayın</h2>
+                <p style="font-size: 0.92rem; color: var(--text-muted); margin-top: 4px;">
+                    İstanbul Üniversitesi mezunlarına ve öğrencilerine ulaşacak kariyer veya staj fırsatını tanımlayın.
                 </p>
             </div>
 
@@ -277,10 +344,10 @@ class JobView:
                 <div class="form-group">
                     <label class="form-label" for="employment_type">İstihdam Türü</label>
                     <select id="employment_type" name="employment_type" class="form-control">
-                        <option value="full_time">Tam Zamanlı (Full-Time)</option>
-                        <option value="part_time">Yarı Zamanlı (Part-Time)</option>
-                        <option value="internship">Staj (Öğrenci / Yeni Mezun)</option>
-                        <option value="contract">Sözleşmeli / Proje Bazlı</option>
+                        <option value="full_time">💼 Tam Zamanlı (Full-Time)</option>
+                        <option value="part_time">⏱️ Yarı Zamanlı (Part-Time)</option>
+                        <option value="internship">🎓 Staj (Öğrenci / Yeni Mezun)</option>
+                        <option value="contract">📝 Sözleşmeli / Proje Bazlı</option>
                     </select>
                 </div>
 
@@ -299,9 +366,9 @@ class JobView:
                     <input type="url" id="application_url" name="application_url" class="form-control" placeholder="https://careers.company.com/apply/123">
                 </div>
 
-                <div style="display: flex; gap: 12px; margin-top: 28px;">
-                    <button type="submit" class="btn btn-burgundy" style="flex: 1;">🚀 İlanı Yayınla</button>
-                    <a href="/jobs" class="btn btn-ghost">İptal</a>
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-burgundy" style="flex: 1; justify-content: center; font-size: 1rem; padding: 12px;">🚀 İlanı Yayınla</button>
+                    <a href="/jobs" class="btn btn-ghost" style="padding: 12px 20px;">İptal</a>
                 </div>
             </form>
         </div>

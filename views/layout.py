@@ -54,10 +54,11 @@ class Layout:
             --iu-burgundy-dark: #4c0519;
             --iu-gold: #c59b27;
             --iu-gold-light: #d4af37;
-            --iu-gold-glow: rgba(212, 175, 55, 0.2);
-            --bg-body: #080c16;
-            --dark-card: #111827;
-            --dark-border: #1f293d;
+            --iu-gold-glow: rgba(0, 0, 0, 0.25);
+            --bg-body: #0d1525;
+            --dark-card: #0f172a;
+            --dark-card-hover: #162036;
+            --dark-border: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --success: #10b981;
@@ -78,9 +79,9 @@ class Layout:
             min-height: 100vh;
             line-height: 1.6;
             background-image: 
-                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.22) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.16) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 100%);
+                radial-gradient(circle at 10% 15%, rgba(136, 19, 55, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(197, 155, 39, 0.10) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.7) 0%, transparent 100%);
             display: flex;
             flex-direction: column;
         }}
@@ -353,6 +354,110 @@ class Layout:
             padding: 28px;
             margin-bottom: 24px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+
+        .card-hover:hover {{
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+            background: var(--dark-card-hover);
+        }}
+
+        /* Modern Filter Bar & Search */
+        .filter-bar {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }}
+
+        .filter-group {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }}
+
+        .filter-chip {{
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--dark-border);
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }}
+
+        .filter-chip:hover, .filter-chip.active {{
+            background: rgba(136, 19, 55, 0.25);
+            color: #ffffff;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+        }}
+
+        /* Bento Grid & Modern Item Cards */
+        .item-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 22px;
+            margin-bottom: 30px;
+        }}
+
+        .item-card {{
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }}
+
+        .item-card::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--iu-burgundy), var(--iu-gold));
+            opacity: 0.3;
+            transition: opacity 0.25s ease;
+        }}
+
+        .item-card:hover {{
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+            background: var(--dark-card-hover);
+        }}
+
+        .item-card:hover::before {{
+            opacity: 1;
+        }}
+
+        .avatar-box {{
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(136, 19, 55, 0.3) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
         }}
 
         /* Table */

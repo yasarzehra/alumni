@@ -10,16 +10,17 @@
     <style>
         :root {
             --iu-burgundy: #881337;
+            --iu-burgundy-hover: #9f1239;
             --iu-burgundy-dark: #4c0519;
-            --iu-gold: #d97706;
-            --iu-gold-light: #fbbf24;
-            --iu-gold-glow: rgba(245, 158, 11, 0.25);
-            --bg-start: #080c16;
-            --bg-end: #111827;
-            --card-bg: #111827;
+            --iu-gold: #c59b27;
+            --iu-gold-light: #d4af37;
+            --iu-gold-glow: rgba(0, 0, 0, 0.25);
+            --bg-start: #0d1525;
+            --bg-end: #090e1a;
+            --card-bg: #0f172a;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #1f293d;
+            --border-color: #1e293b;
         }
         * {
             box-sizing: border-box;
@@ -37,34 +38,45 @@
             padding: 24px;
         }
         .container {
-            max-width: 620px;
+            max-width: 640px;
             width: 100%;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 48px 40px;
+            border-radius: 22px;
+            padding: 50px 42px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
             animation: fadeIn 0.4s ease-out;
             position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--iu-burgundy), var(--iu-gold));
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(14px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .error-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(136, 19, 55, 0.35);
-            color: #fef08a;
-            border: 1px solid rgba(217, 119, 6, 0.5);
-            padding: 6px 16px;
+            background: rgba(136, 19, 55, 0.25);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            padding: 6px 18px;
             border-radius: 9999px;
             font-weight: 700;
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-            letter-spacing: 0.5px;
+            font-size: 0.82rem;
+            margin-bottom: 22px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
         }
         .glitch-code {
             font-family: 'JetBrains Mono', monospace;
@@ -72,7 +84,7 @@
             font-weight: 800;
             line-height: 1;
             letter-spacing: -2px;
-            background: linear-gradient(to right, #fbbf24, #f43f5e);
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 50%, #d4af37 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
@@ -80,43 +92,43 @@
         h1 {
             font-family: 'Cinzel', serif;
             font-size: 1.85rem;
-            font-weight: 700;
+            font-weight: 800;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
-            color: var(--text-main);
+            color: #ffffff;
         }
         .message {
             color: var(--text-muted);
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
         .requested-path {
             background: #080c16;
             border: 1px solid var(--border-color);
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 10px;
             font-family: 'JetBrains Mono', monospace;
-            color: var(--iu-gold-light);
+            color: #d4af37;
             font-size: 0.95rem;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             word-break: break-all;
         }
         .suggestions {
             text-align: left;
             background: rgba(8, 12, 22, 0.7);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px 24px;
+            border-radius: 14px;
+            padding: 22px 24px;
             margin-bottom: 32px;
         }
         .suggestions-title {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--iu-gold-light);
+            color: #d4af37;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .links-grid {
             display: grid;
@@ -127,25 +139,25 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #1f293d;
+            background: #0d1525;
             color: #f1f5f9;
             text-decoration: none;
             padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid #334155;
-            transition: all 0.2s;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .pill-link:hover {
-            background: var(--iu-burgundy);
+            background: rgba(136, 19, 55, 0.3);
             color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
         }
         .primary-actions {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -155,21 +167,23 @@
             gap: 8px;
             padding: 12px 24px;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
         }
         .btn-burgundy {
-            background: linear-gradient(135deg, var(--iu-burgundy), #9f1239);
+            background: linear-gradient(135deg, var(--iu-burgundy), #6b0c2a);
             color: #ffffff;
-            border: 1px solid rgba(251, 191, 36, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
         }
         .btn-burgundy:hover {
-            background: linear-gradient(135deg, #9f1239, #be123c);
-            box-shadow: 0 4px 14px rgba(136, 19, 55, 0.4);
+            background: linear-gradient(135deg, #9f1239, #881337);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(136, 19, 55, 0.4);
         }
         .btn-outline {
             background: transparent;
@@ -177,8 +191,10 @@
             border: 1px solid var(--border-color);
         }
         .btn-outline:hover {
-            background: #1f293d;
-            color: var(--iu-gold-light);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
         }
     </style>
 </head>
@@ -198,12 +214,13 @@
         </div>
 
         <div class="suggestions">
-            <div class="suggestions-title">İstanbul Üniversitesi Popüler Bölümleri</div>
+            <div class="suggestions-title">Popüler Üniversite Platform Bölümleri</div>
             <div class="links-grid">
                 <a href="/jobs" class="pill-link">💼 İş İlanları</a>
                 <a href="/users" class="pill-link">👥 Mezun Rehberi</a>
                 <a href="/applications" class="pill-link">📝 Başvurular</a>
                 <a href="/announcements" class="pill-link">📢 Duyurular</a>
+                <a href="/about" class="pill-link">🏛️ Hakkımızda</a>
             </div>
         </div>
 
