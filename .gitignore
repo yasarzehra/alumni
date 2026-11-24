@@ -40,6 +40,8 @@
 !tests/
 !tests/**
 !postman_invalid_requests_collection.json
+!static/
+!static/**
 
 # Local log files
 logs/
