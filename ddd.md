@@ -185,8 +185,8 @@ Primary identity table housing credentials and role classifications.
 | `id` | `BIGINT UNSIGNED` | `AUTO_INCREMENT, PRIMARY KEY` | Unique identity integer |
 | `email` | `VARCHAR(255)` | `NOT NULL, UNIQUE` | Unique email for login & notification |
 | `password_hash`| `VARCHAR(255)` | `NOT NULL` | Argon2id / Bcrypt hashed credential |
-| `role` | `ENUM(...)` | `DEFAULT 'student', NOT NULL` | `'student', 'alumni', 'coordinator', 'admin'` |
-| `status` | `ENUM(...)` | `DEFAULT 'pending', NOT NULL` | `'active', 'pending', 'suspended'` |
+| `role` | `ENUM(...)` / `VARCHAR(32)` | `DEFAULT 'student', NOT NULL` | `'student', 'alumni', 'coordinator', 'admin'` (API `User.create` defaults to `'alumni'`) |
+| `status` | `ENUM(...)` / `VARCHAR(32)` | `DEFAULT 'active', NOT NULL` | `'active', 'pending', 'suspended'` |
 | `created_at` | `TIMESTAMP` | `DEFAULT CURRENT_TIMESTAMP` | Entity registration timestamp |
 | `updated_at` | `TIMESTAMP` | `ON UPDATE CURRENT_TIMESTAMP` | Last profile/auth update |
 
@@ -292,7 +292,63 @@ Connects candidates (`users` with role `student` or `alumni`) to published job o
 
 ---
 
-## ⚡ 5. Indexing & Query Performance Strategy
+## 🔐 5. Users & Role-Based Access Control (RBAC)
+
+The platform enforces a four-tier **Role-Based Access Control (RBAC)** model via `users.role`, pairing core authentication records with specialized subtype tables (`student_details`, `alumni_details`) and lifecycle states (`users.status`).
+
+### 5.1. Role Definitions & Subtype Mapping
+
+| Role (`users.role`) | Turkish Label | Profile Subtype | Primary Responsibilities & Platform Capabilities |
+| :--- | :--- | :--- | :--- |
+| **`student`** | Öğrenci | `student_details` | Current university enrollees (`student_number`, `current_semester`, `gpa`). Can browse the alumni directory, RSVP to events, apply to jobs/internships (`job_applications`), and request mentorship from verified alumni. |
+| **`alumni`** | Mezun | `alumni_details` | Verified graduates (`graduation_year`, `current_company`, `current_title`, `industry`). Default role assigned by `User.create()`. Can publish job & internship postings (`job_postings`), review applicants for their own postings, and opt in as a mentor (`is_mentor_available`). |
+| **`coordinator`** | Koordinatör | `profiles` (optional `alumni_details`) | University Alumni Office / Rektörlük Mezunlar Koordinatörlüğü staff. Manages institutional `announcements`, organizes campus `events`, moderates job postings, and oversees student–alumni mentorship matching. |
+| **`admin`** | Yönetici | `profiles` | Full system administrator (seeded via `DatabaseSeeder`). Holds unrestricted CRUD across all tables, manages user `status` transitions (`active`/`suspended`), assigns roles, and oversees API/database integrity. |
+
+> [!NOTE]
+> **Implementation Alignment:** At the SQLite DDL level (`002_create_users_table.sql`), `users.role` defaults to `'student'` and `users.status` defaults to `'active'`. At the application model layer (`models/user.py` `User.create()`), newly created directory members default to `role = 'alumni'` and `status = 'active'`.
+
+### 5.2. Role-Based Permissions Matrix
+
+| Resource / Action | `student` | `alumni` | `coordinator` | `admin` |
+| :--- | :---: | :---: | :---: | :---: |
+| **View Public Directory (`GET /users`)** | ✅ | ✅ | ✅ | ✅ |
+| **Update Own Profile (`profiles`)** | ✅ | ✅ | ✅ | ✅ |
+| **Manage Any User / Change Role (`users`)** | ❌ | ❌ | 🟡 Verify Only | ✅ |
+| **Browse & Read Jobs (`GET /jobs`)** | ✅ | ✅ | ✅ | ✅ |
+| **Publish / Edit Own Job Postings (`POST /jobs`)** | ❌ | ✅ | ✅ | ✅ |
+| **Moderate / Delete Any Job Posting** | ❌ | ❌ | ✅ | ✅ |
+| **Submit Job Application (`POST /jobs/{id}/apply`)** | ✅ | ✅ | ❌ | ✅ |
+| **Review Applications for Own Jobs** | ❌ | ✅ | ✅ | ✅ |
+| **Read Announcements (`GET /announcements`)** | ✅ | ✅ | ✅ | ✅ |
+| **Publish / Edit Announcements (`POST /announcements`)**| ❌ | ❌ | ✅ | ✅ |
+| **RSVP to Events (`event_attendees`)** | ✅ | ✅ | ✅ | ✅ |
+| **Create / Manage Events (`events`)** | ❌ | 🟡 Co-host | ✅ | ✅ |
+| **Initiate Mentorship Request** | ✅ | ✅ | ❌ | ✅ |
+| **Accept / Decline Mentorship (`is_mentor_available`)**| ❌ | ✅ | ✅ | ✅ |
+
+### 5.3. Account Status & Role Lifecycle
+
+Accounts transition through `users.status` (`pending` $\rightarrow$ `active` $\rightarrow$ `suspended`) and academic progression (`student` $\rightarrow$ `alumni` upon graduation):
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending : Self-Registration
+    [*] --> active : Admin / Seeder Provisioning
+    pending --> active : Coordinator / Admin Verification
+    active --> suspended : Policy Violation / Deactivation
+    suspended --> active : Admin Reinstatement
+
+    state active {
+        [*] --> student : Enrolled (student_details)
+        student --> alumni : Graduation (alumni_details created)
+        alumni --> coordinator : Appointed to Alumni Office
+    }
+```
+
+---
+
+## ⚡ 6. Indexing & Query Performance Strategy
 
 To ensure sub-millisecond query execution under high concurrency, indexes are defined on frequent search and join predicates:
 
@@ -311,7 +367,7 @@ To ensure sub-millisecond query execution under high concurrency, indexes are de
 
 ---
 
-## 🔄 6. Database Normalization Analysis (3NF Compliance)
+## 🔄 7. Database Normalization Analysis (3NF Compliance)
 
 The schema adheres strictly to **Third Normal Form (3NF)**:
 1. **First Normal Form (1NF):** All attributes are atomic. No multi-valued attributes or repeating groups (e.g., event attendees are split into `event_attendees` junction table).
@@ -320,7 +376,7 @@ The schema adheres strictly to **Third Normal Form (3NF)**:
 
 ---
 
-## 🛡️ 7. Data Persistence & Docker Volume Strategy
+## 🛡️ 8. Data Persistence & Docker Volume Strategy
 
 As proven in **The Forgetting Test**, containerized applications without mounted volumes lose all state upon `docker compose down`.
 
@@ -349,7 +405,7 @@ volumes:
 
 ---
 
-## 🔗 8. Navigation & Cross-References
+## 🔗 9. Navigation & Cross-References
 
 - 🏠 **Main System Overview:** [README.md](README.md)
 - 🚀 **Server Entrypoint:** [`server.py`](server.py)
