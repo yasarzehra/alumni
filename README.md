@@ -5,7 +5,6 @@
 > 📚 **Hızlı Dokümantasyon Bağlantıları (Quick Documentation Anchors):**  
 > [🎨 **Kurumsal Marka Rehberi (`brand.md`)**](brand.md) &nbsp;|&nbsp; [📐 **Tasarım Sistemi Spesifikasyonu (`DESIGN.md`)**](DESIGN.md) &nbsp;|&nbsp; [🗄️ **Veritabanı Mimarisi (`ddd.md`)**](ddd.md) &nbsp;|&nbsp; [⚡ **Swagger API Dokümantasyonu**](/api/swagger)
 
----
 
 ## 📌 1. Proje Özeti & Misyon
 
@@ -24,7 +23,21 @@ Platform; Hukuk, Tıp (Çapa), İktisat, Siyasal Bilgiler, İletişim, Edebiyat,
 - **Rektörlük & Fakülte Etkinlikleri:** Mezun buluşmaları, akademik seminerler ve kariyer zirveleri.
 - **Rol Tabanlı Yetkilendirme (RBAC):** Öğrenci, Doğrulanmış Mezun, Koordinatör ve Sistem Yöneticisi erişim seviyeleri.
 
+## 🔐 Authentication & Authorization
+- **Kayıt (Register):** `POST /api/register` – JSON gövde `{ "email": "...", "password": "..." }`. Şifre PBKDF2 ile hashlenir, yeni kullanıcı `role` = `student`, `status` = `pending` olur.
+- **Giriş (Login):** `POST /api/login` – aynı format. Başarılı oturumda `Set-Cookie: iu_session=...` ile imzalı oturum çerezi gönderilir.
+- **Oturum Yönetimi:** `middlewares/session_middleware.SessionManager` çerezi doğrular, `request.current_user` nesnesi oluşturur.
+- **Rol‑Bazlı Erişim (RBAC):** `middlewares.auth_middleware.AuthMiddleware` `PROTECTED_WEB_RULES` ve `API_RBAC_RULES` içinde tanımlıdır.
+  - `admin` → `/admin/*` ve yönetim API’leri.
+  - `coordinator` → `/coordinator/*` ve ilgili panel.
+  - `alumni` / `student` → ilan oluşturma ve başvuru rotaları.
+- **Çıkış (Logout):** `POST /api/logout` – çerez silinir.
+- **Kod Referansları:**
+  - `middlewares/auth_middleware.py` – erişim kontrol kuralları.
+  - `controllers/auth_controller.py` – oturum oluşturma ve sonlandırma.
+  - `views/layout.py` – navigation’da rol‑tabanlı menü öğeleri.
 ---
+
 
 ## 🛠️ 2. Architectural Choices & Technical Decisions
 
@@ -53,7 +66,6 @@ Platform; Hukuk, Tıp (Çapa), İktisat, Siyasal Bilgiler, İletişim, Edebiyat,
   - Refactoring raw SQL into parameterized, injection-safe prepared statements.
   - Maintaining up-to-date API and deployment documentation.
 
----
 
 ## 🗄️ 3. Data Design & Database Schema
 
@@ -77,7 +89,6 @@ departments (id, faculty_name, department_name, code)
 
 The data layer is engineered to transition from in-memory prototypes to production-grade persistent MySQL/PostgreSQL storage backed by named Docker volumes (solving the transient data loss demonstrated in *The Forgetting Test*). For detailed table constraints and Mermaid ERD visualizer, refer to **[ddd.md](ddd.md)**.
 
----
 
 ## 🏛️ 4. MVC Architecture Overview
 
@@ -109,7 +120,6 @@ Client <----------------------'
 | **View** (`V`) | Manages the presentation layer. Formats and renders output for end users, serving either responsive HTML pages or standardized JSON API responses. | `index.html`, `about.html`, `JsonResponse.php`, Swagger UI template |
 | **Controller** (`C`) | Acts as the orchestrator. Receives HTTP requests (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), validates input, calls Model methods, and returns Views. | `UserController.php`, `AuthController.php`, `SimpleHandler` in `server.py` |
 
----
 
 ## 📂 5. Directory, Folder & File Structure
 
@@ -211,7 +221,6 @@ alumni/
 6. **`docker/` (Containerization Environment)**
    - Defines reproducible isolated runtimes for PHP-FPM, Nginx, and MySQL, ensuring zero configuration discrepancies between development and production.
 
----
 
 ## 🚀 6. Quick Start & Running the Project
 
@@ -240,7 +249,6 @@ python server.py
 # - GET    /api/jobs/{id}/applications -> Nested: Applications for job
 ```
 
----
 
 ## 🛡️ 7. Middleware Architecture & Error Guardians
 
@@ -287,7 +295,6 @@ postman collection run postman_invalid_requests_collection.json
 # Result: 11 Requests, 18 Assertions (100% Passed)
 ```
 
----
 
 ## 📦 8. Production Deployment & Containers
 ```bash
@@ -299,7 +306,6 @@ cd alumni
 docker compose up --build
 ```
 
----
 
 ## 🔗 9. Key References & Documentation Anchors
 
