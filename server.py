@@ -14,6 +14,7 @@ from middlewares.logger_middleware import LoggerMiddleware
 from middlewares.not_found_guardian_middleware import NotFoundGuardianMiddleware
 from middlewares.server_error_guardian_middleware import ServerErrorGuardianMiddleware
 from middlewares.session_middleware import SessionManager
+from middlewares.auth_middleware import AuthMiddleware
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -117,12 +118,18 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             return None, f"İstek gövdesi okunamadı: {str(e)}"
 
-    def _init_session(self):
-        SessionManager.set_current_user(SessionManager.get_session_from_headers(self.headers))
+    def _authorize_request(self) -> bool:
+        """Runs AuthMiddleware; sends block response and returns False if unauthorized/forbidden."""
+        auth_block = AuthMiddleware.check_request(self.command, self.path, self.headers)
+        if auth_block is not None:
+            self._send_result(auth_block)
+            return False
+        return True
 
     def do_GET(self):
         try:
-            self._init_session()
+            if not self._authorize_request():
+                return
             # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
             if self.path in ['/', '', '/main', '/index.html']:
                 self._send(200, 'text/html', get_html_content('index.html'))
@@ -228,7 +235,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            self._init_session()
+            if not self._authorize_request():
+                return
             # Dispatch through MVC Router:
             # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
             # Route: POST /api/users -> ApiUserController.store(data)
@@ -259,6 +267,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         try:
+            if not self._authorize_request():
+                return
             # Dispatch through MVC Router
             clean_path = self.path.split('?')[0]
             route_match = router.dispatch("PUT", clean_path)
@@ -273,16 +283,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     return
 
                 result = handler(params, data or {})
-                if isinstance(result, str):
-                    self._send(200, 'text/html', result)
-                    return
-                elif isinstance(result, tuple) and len(result) == 2:
-                    status, res = result
-                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                    return
-                elif isinstance(result, dict):
-                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                    return
+                self._send_result(result)
+                return
 
             # 404 Guardian Middleware Handling
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("PUT", self.path, router=router)
@@ -290,9 +292,13 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "PUT", self.path)
             self._send(status_code, ctype, err_body)
+        finally:
+            SessionManager.set_current_user(None)
 
     def do_PATCH(self):
         try:
+            if not self._authorize_request():
+                return
             # Dispatch through MVC Router
             clean_path = self.path.split('?')[0]
             route_match = router.dispatch("PATCH", clean_path)
@@ -307,16 +313,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     return
 
                 result = handler(params, data or {})
-                if isinstance(result, str):
-                    self._send(200, 'text/html', result)
-                    return
-                elif isinstance(result, tuple) and len(result) == 2:
-                    status, res = result
-                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                    return
-                elif isinstance(result, dict):
-                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                    return
+                self._send_result(result)
+                return
 
             # 404 Guardian Middleware Handling
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("PATCH", self.path, router=router)
@@ -324,25 +322,21 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "PATCH", self.path)
             self._send(status_code, ctype, err_body)
+        finally:
+            SessionManager.set_current_user(None)
 
     def do_DELETE(self):
         try:
+            if not self._authorize_request():
+                return
             # Dispatch through MVC Router
             clean_path = self.path.split('?')[0]
             route_match = router.dispatch("DELETE", clean_path)
             if route_match:
                 handler, params = route_match
                 result = handler(params)
-                if isinstance(result, str):
-                    self._send(200, 'text/html', result)
-                    return
-                elif isinstance(result, tuple) and len(result) == 2:
-                    status, res = result
-                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                    return
-                elif isinstance(result, dict):
-                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                    return
+                self._send_result(result)
+                return
 
             # 404 Guardian Middleware Handling
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("DELETE", self.path, router=router)
@@ -350,6 +344,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "DELETE", self.path)
             self._send(status_code, ctype, err_body)
+        finally:
+            SessionManager.set_current_user(None)
 
     def do_OPTIONS(self):
         self._start_request_timer()
