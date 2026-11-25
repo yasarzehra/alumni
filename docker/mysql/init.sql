@@ -178,7 +178,35 @@ CREATE TABLE IF NOT EXISTS mentorship_requests (
 INSERT INTO departments (faculty_name, department_name, code) VALUES
 ('Mühendislik Fakültesi', 'Bilgisayar Mühendisliği', 'CENG'),
 ('Mühendislik Fakültesi', 'Elektrik-Elektronik Mühendisliği', 'EEE'),
-('İşletme Fakültesi', 'Yönetim Bilişim Sistemleri', 'MIS')
+('Mühendislik Fakültesi', 'Endüstri Mühendisliği', 'IE'),
+('İşletme Fakültesi', 'Yönetim Bilişim Sistemleri', 'MIS'),
+('İşletme Fakültesi', 'İşletme', 'BUS'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Bilgisayar Bilimleri', 'CS'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Yapay Zeka ve Veri Mühendisliği', 'AIDE'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Siber Güvenlik Mühendisliği', 'CYBER'),
+('Hukuk Fakültesi', 'Hukuk', 'LAW'),
+('İstanbul Tıp Fakültesi', 'Tıp', 'MED'),
+('Diş Hekimliği Fakültesi', 'Diş Hekimliği', 'DENT'),
+('Eczacılık Fakültesi', 'Eczacılık', 'PHARM'),
+('İktisat Fakültesi', 'İktisat', 'ECON'),
+('İktisat Fakültesi', 'Ekonometri', 'ECM'),
+('İktisat Fakültesi', 'Maliye', 'FIN'),
+('İktisat Fakültesi', 'Çalışma Ekonomisi ve Endüstri İlişkileri', 'CEKO'),
+('Siyasal Bilgiler Fakültesi', 'Siyaset Bilimi ve Uluslararası İlişkiler', 'PSIR'),
+('Siyasal Bilgiler Fakültesi', 'Siyaset Bilimi ve Kamu Yönetimi', 'PUBA'),
+('Siyasal Bilgiler Fakültesi', 'İşletme (Siyasal)', 'SBF-BUS'),
+('Edebiyat Fakültesi', 'Psikoloji', 'PSY'),
+('Edebiyat Fakültesi', 'Türk Dili ve Edebiyatı', 'TLL'),
+('Edebiyat Fakültesi', 'Tarih', 'HIST'),
+('Edebiyat Fakültesi', 'İngiliz Dili ve Edebiyatı', 'ELL'),
+('Edebiyat Fakültesi', 'Sosyoloji', 'SOC'),
+('Fen Fakültesi', 'Matematik', 'MATH'),
+('Fen Fakültesi', 'Fizik', 'PHYS'),
+('Fen Fakültesi', 'Moleküler Biyoloji ve Genetik', 'MBG'),
+('İletişim Fakültesi', 'Gazetecilik', 'JOUR'),
+('İletişim Fakültesi', 'Halkla İlişkiler ve Tanıtım', 'PR'),
+('İletişim Fakültesi', 'Radyo, Televizyon ve Sinema', 'RTS'),
+('Mimarlık Fakültesi', 'Mimarlık', 'ARCH')
 ON DUPLICATE KEY UPDATE code = code;
 
 INSERT INTO announcements (title, content, category, author_name, status) VALUES

@@ -1,10 +1,38 @@
 -- Seeder: 001_initial_seed.sql
 -- Seeds departments, default users, and initial announcements
 
-INSERT INTO departments (faculty_name, department_name, code) VALUES
+INSERT OR IGNORE INTO departments (faculty_name, department_name, code) VALUES
 ('Mühendislik Fakültesi', 'Bilgisayar Mühendisliği', 'CENG'),
 ('Mühendislik Fakültesi', 'Elektrik-Elektronik Mühendisliği', 'EEE'),
-('İşletme Fakültesi', 'Yönetim Bilişim Sistemleri', 'MIS');
+('Mühendislik Fakültesi', 'Endüstri Mühendisliği', 'IE'),
+('İşletme Fakültesi', 'Yönetim Bilişim Sistemleri', 'MIS'),
+('İşletme Fakültesi', 'İşletme', 'BUS'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Bilgisayar Bilimleri', 'CS'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Yapay Zeka ve Veri Mühendisliği', 'AIDE'),
+('Bilgisayar ve Bilişim Teknolojileri Fakültesi', 'Siber Güvenlik Mühendisliği', 'CYBER'),
+('Hukuk Fakültesi', 'Hukuk', 'LAW'),
+('İstanbul Tıp Fakültesi', 'Tıp', 'MED'),
+('Diş Hekimliği Fakültesi', 'Diş Hekimliği', 'DENT'),
+('Eczacılık Fakültesi', 'Eczacılık', 'PHARM'),
+('İktisat Fakültesi', 'İktisat', 'ECON'),
+('İktisat Fakültesi', 'Ekonometri', 'ECM'),
+('İktisat Fakültesi', 'Maliye', 'FIN'),
+('İktisat Fakültesi', 'Çalışma Ekonomisi ve Endüstri İlişkileri', 'CEKO'),
+('Siyasal Bilgiler Fakültesi', 'Siyaset Bilimi ve Uluslararası İlişkiler', 'PSIR'),
+('Siyasal Bilgiler Fakültesi', 'Siyaset Bilimi ve Kamu Yönetimi', 'PUBA'),
+('Siyasal Bilgiler Fakültesi', 'İşletme (Siyasal)', 'SBF-BUS'),
+('Edebiyat Fakültesi', 'Psikoloji', 'PSY'),
+('Edebiyat Fakültesi', 'Türk Dili ve Edebiyatı', 'TLL'),
+('Edebiyat Fakültesi', 'Tarih', 'HIST'),
+('Edebiyat Fakültesi', 'İngiliz Dili ve Edebiyatı', 'ELL'),
+('Edebiyat Fakültesi', 'Sosyoloji', 'SOC'),
+('Fen Fakültesi', 'Matematik', 'MATH'),
+('Fen Fakültesi', 'Fizik', 'PHYS'),
+('Fen Fakültesi', 'Moleküler Biyoloji ve Genetik', 'MBG'),
+('İletişim Fakültesi', 'Gazetecilik', 'JOUR'),
+('İletişim Fakültesi', 'Halkla İlişkiler ve Tanıtım', 'PR'),
+('İletişim Fakültesi', 'Radyo, Televizyon ve Sinema', 'RTS'),
+('Mimarlık Fakültesi', 'Mimarlık', 'ARCH');
 
 INSERT INTO users (email, password_hash, role, status) VALUES
 ('zehra@example.com', '$2b$12$e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce', 'admin', 'active'),

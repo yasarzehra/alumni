@@ -414,11 +414,19 @@ class View:
         is_mentor_checked = "checked" if str(fd.get("is_mentor_available") or "").lower() in ("1", "true", "on", "yes") else ""
 
         dept_options = ""
+        grouped_depts: Dict[str, List[Dict[str, Any]]] = {}
         for d in departments:
-            d_id = str(d.get("id"))
-            d_label = html.escape(f"{d.get('faculty_name')} — {d.get('department_name')} ({d.get('code')})")
-            sel = " selected" if d_id == selected_dept else ""
-            dept_options += f'<option value="{d_id}"{sel}>{d_label}</option>\n'
+            fac = str(d.get("faculty_name") or "Diğer")
+            grouped_depts.setdefault(fac, []).append(d)
+
+        for fac_name, fac_depts in grouped_depts.items():
+            dept_options += f'<optgroup label="{html.escape(fac_name)}">\n'
+            for d in fac_depts:
+                d_id = str(d.get("id"))
+                d_label = html.escape(f"{d.get('department_name')} ({d.get('code')})")
+                sel = " selected" if d_id == selected_dept else ""
+                dept_options += f'    <option value="{d_id}"{sel}>{d_label}</option>\n'
+            dept_options += '</optgroup>\n'
 
         student_display = "block" if selected_role == "student" else "none"
         alumni_display = "block" if selected_role == "alumni" else "none"
