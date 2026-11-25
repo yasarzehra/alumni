@@ -28,10 +28,14 @@ def register_web_routes(router: Router) -> Router:
     """Register all Web browser CRUD routes with the View Layer."""
 
     # =========================================================================
-    # 0. AUTHENTICATION & REGISTRATION (/register)
+    # 0. AUTHENTICATION & REGISTRATION (/register, /login, /logout)
     # =========================================================================
     router.get('/register', lambda params, body=None: AuthController.register_form())
     router.post('/register', lambda params, body=None: AuthController.register_submit(body or {}))
+    router.get('/login', lambda params, body=None: AuthController.login_form())
+    router.post('/login', lambda params, body=None: AuthController.login_submit(body or {}))
+    router.get('/logout', lambda params, body=None: AuthController.logout())
+    router.post('/logout', lambda params, body=None: AuthController.logout())
 
     # =========================================================================
     # 1. DIRECT ROUTES (Resource-Level CRUD)

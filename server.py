@@ -13,6 +13,7 @@ from routes import get_configured_router
 from middlewares.logger_middleware import LoggerMiddleware
 from middlewares.not_found_guardian_middleware import NotFoundGuardianMiddleware
 from middlewares.server_error_guardian_middleware import ServerErrorGuardianMiddleware
+from middlewares.session_middleware import SessionManager
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,7 +46,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
         if not hasattr(self, '_req_start_time'):
             self._req_start_time = LoggerMiddleware.start_timer()
 
-    def _send(self, status, content_type, data):
+    def _send(self, status, content_type, data, extra_headers=None):
         self._start_request_timer()
         if isinstance(data, str):
             data = data.encode('utf-8')
@@ -53,11 +54,44 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', f'{content_type}; charset=utf-8')
         self.send_header('Content-Length', str(len(data)))
         self.send_header('Access-Control-Allow-Origin', '*')
+        if extra_headers:
+            for hdr_name, hdr_val in extra_headers:
+                self.send_header(hdr_name, hdr_val)
         self.send_header('Connection', 'close')
         self.end_headers()
         self.wfile.write(data)
         # Trigger Logger Middleware row output
         LoggerMiddleware.log(self.command, self.path, status, self._req_start_time)
+
+    def _send_result(self, result):
+        """Dispatches controller return value supporting HTML, JSON, redirects, and Set-Cookie headers."""
+        if isinstance(result, str):
+            self._send(200, 'text/html', result)
+            return
+        if isinstance(result, tuple) and len(result) == 2:
+            status, data = result
+            self._send(status, 'application/json', json.dumps(data, ensure_ascii=False, indent=2))
+            return
+        if isinstance(result, dict):
+            extra_headers = [('Set-Cookie', c) for c in result.get('cookies', [])]
+            if 'redirect' in result:
+                self._start_request_timer()
+                self.send_response(302)
+                self.send_header('Location', result['redirect'])
+                for hdr_name, hdr_val in extra_headers:
+                    self.send_header(hdr_name, hdr_val)
+                self.send_header('Connection', 'close')
+                self.end_headers()
+                LoggerMiddleware.log(self.command, self.path, 302, self._req_start_time)
+                return
+            if 'html' in result:
+                self._send(result.get('status', 200), 'text/html', result['html'], extra_headers=extra_headers)
+                return
+            if 'json' in result:
+                self._send(result.get('status', 200), 'application/json', json.dumps(result['json'], ensure_ascii=False, indent=2), extra_headers=extra_headers)
+                return
+            self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2), extra_headers=extra_headers)
+            return
 
     def _read_body(self):
         """Reads body supporting both application/json and application/x-www-form-urlencoded."""
@@ -83,8 +117,12 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             return None, f"İstek gövdesi okunamadı: {str(e)}"
 
+    def _init_session(self):
+        SessionManager.set_current_user(SessionManager.get_session_from_headers(self.headers))
+
     def do_GET(self):
         try:
+            self._init_session()
             # 1. Ana Sayfa: GET / -> index.html (Temporary Main Page)
             if self.path in ['/', '', '/main', '/index.html']:
                 self._send(200, 'text/html', get_html_content('index.html'))
@@ -176,18 +214,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
             if route_match:
                 handler, params = route_match
                 result = handler(params)
-                # View Layer returns HTML string directly
-                if isinstance(result, str):
-                    self._send(200, 'text/html', result)
-                    return
-                # ApiUserController returns (status_code, dict)
-                elif isinstance(result, tuple) and len(result) == 2:
-                    status, data = result
-                    self._send(status, 'application/json', json.dumps(data, ensure_ascii=False, indent=2))
-                    return
-                elif isinstance(result, dict):
-                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                    return
+                self._send_result(result)
+                return
 
             # 404 Guardian Middleware Handling
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("GET", self.path, router=router)
@@ -195,9 +223,12 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "GET", self.path)
             self._send(status_code, ctype, err_body)
+        finally:
+            SessionManager.set_current_user(None)
 
     def do_POST(self):
         try:
+            self._init_session()
             # Dispatch through MVC Router:
             # Route: POST /users -> creating (C) -> UserController.store(data) -> View.render_users_index()
             # Route: POST /api/users -> ApiUserController.store(data)
@@ -214,24 +245,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     return
 
                 result = handler(params, data or {})
-                # View Layer returns HTML string directly
-                if isinstance(result, str):
-                    self._send(200, 'text/html', result)
-                    return
-                elif isinstance(result, tuple) and len(result) == 2:
-                    status, res = result
-                    self._send(status, 'application/json', json.dumps(res, ensure_ascii=False, indent=2))
-                    return
-                elif isinstance(result, dict):
-                    if "redirect" in result:
-                        self.send_response(302)
-                        self.send_header('Location', result['redirect'])
-                        self.send_header('Connection', 'close')
-                        self.end_headers()
-                        LoggerMiddleware.log(self.command, self.path, 302, self._req_start_time)
-                        return
-                    self._send(200, 'application/json', json.dumps(result, ensure_ascii=False, indent=2))
-                    return
+                self._send_result(result)
+                return
 
             # 404 Guardian Middleware Handling
             status_code, ctype, err_body = NotFoundGuardianMiddleware.handle("POST", self.path, router=router)
@@ -239,6 +254,8 @@ class SimpleHandler(BaseHTTPRequestHandler):
         except Exception as e:
             status_code, ctype, err_body = ServerErrorGuardianMiddleware.handle(e, "POST", self.path)
             self._send(status_code, ctype, err_body)
+        finally:
+            SessionManager.set_current_user(None)
 
     def do_PUT(self):
         try:

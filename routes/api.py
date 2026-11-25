@@ -31,9 +31,12 @@ def register_api_routes(router: Router) -> Router:
     """Register all RESTful direct and nested API routes on the provided router."""
 
     # =========================================================================
-    # 0. REGISTRATION (/api/register)
+    # 0. AUTHENTICATION (/api/register, /api/login, /api/logout, /api/me)
     # =========================================================================
     router.post('/api/register', lambda params, body=None: AuthController.api_register(body or {}))
+    router.post('/api/login', lambda params, body=None: AuthController.api_login(body or {}))
+    router.post('/api/logout', lambda params, body=None: AuthController.api_logout())
+    router.get('/api/me', lambda params, body=None: AuthController.api_me())
 
     # =========================================================================
     # 1. DIRECT ROUTES (Resource-Level CRUD)

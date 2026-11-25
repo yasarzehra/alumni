@@ -34,6 +34,24 @@ class Layout:
             active_cls = " active" if active_nav == key else ""
             nav_links_html += f'<li><a href="{href}" class="nav-link{active_cls}">{label}</a></li>\n'
 
+        from typing import Optional
+        import html as _html
+        from middlewares.session_middleware import SessionManager
+
+        current_user = SessionManager.get_current_user()
+        if current_user:
+            cu_id = current_user.get("id")
+            cu_name = _html.escape(str(current_user.get("name") or current_user.get("email") or "Üye"))
+            auth_actions_html = f'''
+                <a href="/users/{cu_id}" class="btn btn-ghost" title="Profilim">👤 {cu_name}</a>
+                <a href="/logout" class="btn btn-ghost" title="Oturumu Kapat">🚪 Çıkış</a>
+            '''
+        else:
+            auth_actions_html = '''
+                <a href="/login" class="btn btn-ghost" title="Giriş Yap">🔐 Giriş Yap</a>
+                <a href="/register" class="btn btn-ghost" title="Üyelik Kaydı">📝 Kayıt Ol</a>
+            '''
+
         actions_html = actions if actions else ""
         subtitle_html = f'<p class="page-subtitle">{subtitle}</p>' if subtitle else ""
         alert_section = alert_html if alert_html else ""
@@ -664,7 +682,7 @@ class Layout:
                 {nav_links_html}
             </ul>
             <div class="nav-actions">
-                <a href="/register" class="btn btn-ghost" title="Üyelik Kaydı">📝 Kayıt Ol</a>
+                {auth_actions_html}
                 <a href="/api/swagger" class="btn btn-ghost" title="OpenAPI / Swagger">⚡ API Docs</a>
                 <a href="/jobs/create" class="btn btn-burgundy">+ İlan Ver</a>
             </div>

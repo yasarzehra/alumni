@@ -600,6 +600,58 @@ class View:
         )
 
     @classmethod
+    def render_login(cls, error: Optional[str] = None, success: Optional[str] = None, email: str = "") -> str:
+        """
+        Login View: Renders standalone sign-in page for Alumni, Students, Coordinators, and Admins.
+        Route: GET /login -> AuthController.login_form()
+        """
+        alert_html = cls._render_alert(success=success, error=error)
+        email_val = html.escape(str(email or ""))
+
+        content = f"""
+        <div class="card" style="max-width: 500px; margin: 24px auto; position: relative;">
+            <div style="margin-bottom: 26px; border-bottom: 1px solid var(--dark-border); padding-bottom: 18px; text-align: center;">
+                <div style="font-size: 2.2rem; margin-bottom: 8px;">🏛️</div>
+                <span class="badge badge-burgundy" style="margin-bottom: 10px;">İÜ Mezun & Öğrenci Oturumu</span>
+                <h2 style="font-family: 'Cinzel', serif; font-size: 1.7rem; color: #ffffff;">Giriş Yapın</h2>
+                <p style="font-size: 0.92rem; color: var(--text-muted); margin-top: 4px;">
+                    Kayıtlı e-posta adresiniz ve şifrenizle platforma erişin.
+                </p>
+            </div>
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label class="form-label" for="email">E-Posta Adresi *</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{email_val}" placeholder="ornek@istanbul.edu.tr" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Şifre *</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••" required>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 26px;">
+                    <button type="submit" class="btn btn-burgundy" style="width: 100%; justify-content: center; font-size: 1rem; padding: 13px;">🔐 Giriş Yap</button>
+                </div>
+            </form>
+
+            <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--dark-border); text-align: center; font-size: 0.9rem; color: var(--text-muted);">
+                Henüz hesabınız yok mu?
+                <a href="/register" style="color: #d4af37; font-weight: 700; text-decoration: none; margin-left: 4px;">📝 Hemen Kayıt Olun &rarr;</a>
+            </div>
+        </div>
+        """
+
+        return Layout.render(
+            title="Giriş Yap — İÜ Mezun Ağı",
+            active_nav="home",
+            content=content,
+            subtitle="İstanbul Üniversitesi Mezun Bilgi & Kariyer Ağı üye girişi.",
+            actions='<a href="/register" class="btn btn-ghost">📝 Kayıt Ol</a>',
+            alert_html=alert_html
+        )
+
+    @classmethod
     def render_error_404(cls, message: str = "Aranan kayıt bulunamadı.") -> str:
         """Renders 404 Not Found view."""
         content = f"""

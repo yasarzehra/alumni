@@ -159,6 +159,29 @@ class User:
         except Exception:
             return False
 
+    @classmethod
+    def authenticate(cls, email: str, password: str) -> Dict[str, Any]:
+        """
+        Verifies email and password credentials.
+        Returns the formatted user dict on success, or raises ValueError on failure.
+        """
+        email_clean = str(email or "").strip().lower()
+        pwd = str(password or "")
+        if not email_clean or not pwd:
+            raise ValueError("E-posta ve şifre alanları zorunludur.")
+
+        row = Database.fetch_one(
+            "SELECT id, email, password_hash, role, status FROM users WHERE LOWER(email) = LOWER(?)",
+            (email_clean,),
+        )
+        if not row or not cls.verify_password(pwd, row.get("password_hash") or ""):
+            raise ValueError("E-posta adresi veya şifre hatalı.")
+
+        if row.get("status") == "suspended":
+            raise ValueError("Hesabınız askıya alınmıştır. Mezunlar Koordinatörlüğü ile iletişime geçiniz.")
+
+        return cls.find_by_id(row["id"])
+
     @staticmethod
     def get_departments() -> List[Dict[str, Any]]:
         """Returns all seeded academic departments for registration forms."""
