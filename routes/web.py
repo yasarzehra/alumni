@@ -21,10 +21,17 @@ from controllers.user_controller import UserController
 from controllers.announcement_controller import AnnouncementController
 from controllers.job_controller import JobController
 from controllers.application_controller import ApplicationController
+from controllers.auth_controller import AuthController
 
 
 def register_web_routes(router: Router) -> Router:
     """Register all Web browser CRUD routes with the View Layer."""
+
+    # =========================================================================
+    # 0. AUTHENTICATION & REGISTRATION (/register)
+    # =========================================================================
+    router.get('/register', lambda params, body=None: AuthController.register_form())
+    router.post('/register', lambda params, body=None: AuthController.register_submit(body or {}))
 
     # =========================================================================
     # 1. DIRECT ROUTES (Resource-Level CRUD)

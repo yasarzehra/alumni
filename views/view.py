@@ -382,6 +382,224 @@ class View:
         )
 
     @classmethod
+    def render_register(cls, departments: List[Dict[str, Any]], error: Optional[str] = None, form_data: Optional[Dict[str, Any]] = None) -> str:
+        """
+        Registration View: Renders standalone self-registration page for Students and Alumni.
+        Route: GET /register -> AuthController.register_form()
+        """
+        alert_html = cls._render_alert(error=error)
+        fd = form_data or {}
+
+        selected_role = str(fd.get("role") or "alumni").lower()
+        if selected_role not in ("student", "alumni"):
+            selected_role = "alumni"
+
+        first_name = html.escape(str(fd.get("first_name") or ""))
+        last_name = html.escape(str(fd.get("last_name") or ""))
+        email = html.escape(str(fd.get("email") or ""))
+        phone = html.escape(str(fd.get("phone") or ""))
+        linkedin_url = html.escape(str(fd.get("linkedin_url") or ""))
+        bio = html.escape(str(fd.get("bio") or ""))
+        selected_dept = str(fd.get("department_id") or "")
+
+        # Student fields
+        student_number = html.escape(str(fd.get("student_number") or ""))
+        current_semester = html.escape(str(fd.get("current_semester") or "1"))
+
+        # Alumni fields
+        graduation_year = html.escape(str(fd.get("graduation_year") or "2024"))
+        current_company = html.escape(str(fd.get("current_company") or ""))
+        current_title = html.escape(str(fd.get("current_title") or ""))
+        industry = html.escape(str(fd.get("industry") or ""))
+        is_mentor_checked = "checked" if str(fd.get("is_mentor_available") or "").lower() in ("1", "true", "on", "yes") else ""
+
+        dept_options = ""
+        for d in departments:
+            d_id = str(d.get("id"))
+            d_label = html.escape(f"{d.get('faculty_name')} — {d.get('department_name')} ({d.get('code')})")
+            sel = " selected" if d_id == selected_dept else ""
+            dept_options += f'<option value="{d_id}"{sel}>{d_label}</option>\n'
+
+        student_display = "block" if selected_role == "student" else "none"
+        alumni_display = "block" if selected_role == "alumni" else "none"
+        student_checked = "checked" if selected_role == "student" else ""
+        alumni_checked = "checked" if selected_role == "alumni" else ""
+
+        content = f"""
+        <div class="card" style="max-width: 780px; margin: 0 auto; position: relative;">
+            <div style="margin-bottom: 26px; border-bottom: 1px solid var(--dark-border); padding-bottom: 18px;">
+                <span class="badge badge-burgundy" style="margin-bottom: 10px;">İÜ Mezun & Öğrenci Ağı</span>
+                <h2 style="font-family: 'Cinzel', serif; font-size: 1.75rem; color: #ffffff;">Platforma Kayıt Olun</h2>
+                <p style="font-size: 0.94rem; color: var(--text-muted); margin-top: 4px;">
+                    İstanbul Üniversitesi kariyer fırsatlarına, mentorluk ağına ve mezun topluluğuna katılmak için hesabınızı oluşturun.
+                </p>
+            </div>
+
+            <form action="/register" method="POST" id="registerForm">
+                <!-- Rol Seçimi -->
+                <div class="form-group">
+                    <label class="form-label">Üyelik Rolünüz *</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #090e1a; border: 1px solid var(--dark-border); border-radius: 12px; cursor: pointer;">
+                            <input type="radio" name="role" value="alumni" {alumni_checked} onchange="toggleRoleFields('alumni')" style="accent-color: #881337; width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 700; color: #ffffff;">🏛️ Mezun (Alumni)</div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">İlan yayınlayabilir ve mentorluk yapabilirsiniz</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #090e1a; border: 1px solid var(--dark-border); border-radius: 12px; cursor: pointer;">
+                            <input type="radio" name="role" value="student" {student_checked} onchange="toggleRoleFields('student')" style="accent-color: #881337; width: 18px; height: 18px;">
+                            <div>
+                                <div style="font-weight: 700; color: #ffffff;">🎓 Öğrenci (Student)</div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">Staj/iş ilanlarına ve mentorluğa başvurabilirsiniz</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Ad & Soyad -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="first_name">Ad *</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control" value="{first_name}" placeholder="Örn: Zehra" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="last_name">Soyad *</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control" value="{last_name}" placeholder="Örn: Yaşar" required>
+                    </div>
+                </div>
+
+                <!-- E-posta & Telefon -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="email">E-Posta Adresi *</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{email}" placeholder="ornek@istanbul.edu.tr" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Telefon (Opsiyonel)</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" value="{phone}" placeholder="+90 555 000 00 00">
+                    </div>
+                </div>
+
+                <!-- Şifre & Şifre Tekrarı -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="password">Şifre (En az 6 karakter) *</label>
+                        <input type="password" id="password" name="password" class="form-control" minlength="6" placeholder="••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password_confirm">Şifre Tekrarı *</label>
+                        <input type="password" id="password_confirm" name="password_confirm" class="form-control" minlength="6" placeholder="••••••" required>
+                    </div>
+                </div>
+
+                <!-- Bölüm Seçimi -->
+                <div class="form-group">
+                    <label class="form-label" for="department_id">Fakülte & Bölüm *</label>
+                    <select id="department_id" name="department_id" class="form-control" required>
+                        {dept_options}
+                    </select>
+                </div>
+
+                <!-- Öğrenciye Özel Alanlar -->
+                <div id="student-fields" style="display: {student_display}; background: rgba(9, 14, 26, 0.7); padding: 18px; border-radius: 14px; border: 1px solid var(--dark-border); margin-bottom: 20px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: #d4af37; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        🎓 Öğrenci Akademik Bilgileri
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="student_number">Öğrenci Numarası *</label>
+                            <input type="text" id="student_number" name="student_number" class="form-control" value="{student_number}" placeholder="Örn: 1306200045">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="current_semester">Mevcut Dönem (1-12)</label>
+                            <input type="number" id="current_semester" name="current_semester" class="form-control" min="1" max="12" value="{current_semester}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mezuna Özel Alanlar -->
+                <div id="alumni-fields" style="display: {alumni_display}; background: rgba(9, 14, 26, 0.7); padding: 18px; border-radius: 14px; border: 1px solid var(--dark-border); margin-bottom: 20px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: #d4af37; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        🏛️ Mezuniyet & Kariyer Bilgileri
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label" for="graduation_year">Mezuniyet Yılı *</label>
+                            <input type="number" id="graduation_year" name="graduation_year" class="form-control" min="1950" max="2030" value="{graduation_year}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="industry">Sektör (Opsiyonel)</label>
+                            <input type="text" id="industry" name="industry" class="form-control" value="{industry}" placeholder="Örn: Yazılım, Finans, Hukuk">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label" for="current_company">Mevcut Kurum / Şirket</label>
+                            <input type="text" id="current_company" name="current_company" class="form-control" value="{current_company}" placeholder="Örn: Aselsan / İstanbul Üniversitesi">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="current_title">Pozisyon / Unvan</label>
+                            <input type="text" id="current_title" name="current_title" class="form-control" value="{current_title}" placeholder="Örn: Kıdemli Yazılım Mühendisi">
+                        </div>
+                    </div>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e2e8f0; font-size: 0.9rem;">
+                        <input type="checkbox" name="is_mentor_available" value="1" {is_mentor_checked} style="accent-color: #881337; width: 17px; height: 17px;">
+                        <span>Öğrencilere gönüllü kariyer mentorluğu yapmak istiyorum</span>
+                    </label>
+                </div>
+
+                <!-- LinkedIn & Kısa Özgeçmiş -->
+                <div class="form-group">
+                    <label class="form-label" for="linkedin_url">LinkedIn Profili (Opsiyonel)</label>
+                    <input type="url" id="linkedin_url" name="linkedin_url" class="form-control" value="{linkedin_url}" placeholder="https://www.linkedin.com/in/kullanici">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="bio">Kısa Biyografi / İlgi Alanları (Opsiyonel)</label>
+                    <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Kendinizden ve mesleki hedeflerinizden kısaca bahsedin...">{bio}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <button type="submit" class="btn btn-burgundy" style="flex: 1; justify-content: center; font-size: 1rem; padding: 13px;">✓ Kaydı Tamamla</button>
+                    <a href="/users" class="btn btn-ghost" style="padding: 13px 22px;">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            function toggleRoleFields(role) {{
+                const studentBox = document.getElementById('student-fields');
+                const alumniBox = document.getElementById('alumni-fields');
+                const studentNumInput = document.getElementById('student_number');
+                const gradYearInput = document.getElementById('graduation_year');
+                if (role === 'student') {{
+                    studentBox.style.display = 'block';
+                    alumniBox.style.display = 'none';
+                    if (studentNumInput) studentNumInput.required = true;
+                    if (gradYearInput) gradYearInput.required = false;
+                }} else {{
+                    studentBox.style.display = 'none';
+                    alumniBox.style.display = 'block';
+                    if (studentNumInput) studentNumInput.required = false;
+                    if (gradYearInput) gradYearInput.required = true;
+                }}
+            }}
+            document.addEventListener('DOMContentLoaded', function() {{
+                toggleRoleFields('{selected_role}');
+            }});
+        </script>
+        """
+
+        return Layout.render(
+            title="Kayıt Ol — Mezun & Öğrenci Ağı",
+            active_nav="users",
+            content=content,
+            subtitle="İstanbul Üniversitesi resmi mezun ve öğrenci ağına yeni üyelik kaydı.",
+            actions='<a href="/users" class="btn btn-ghost">&larr; Mezun Rehberine Dön</a>',
+            alert_html=alert_html
+        )
+
+    @classmethod
     def render_error_404(cls, message: str = "Aranan kayıt bulunamadı.") -> str:
         """Renders 404 Not Found view."""
         content = f"""

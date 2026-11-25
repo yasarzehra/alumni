@@ -664,6 +664,7 @@ class Layout:
                 {nav_links_html}
             </ul>
             <div class="nav-actions">
+                <a href="/register" class="btn btn-ghost" title="Üyelik Kaydı">📝 Kayıt Ol</a>
                 <a href="/api/swagger" class="btn btn-ghost" title="OpenAPI / Swagger">⚡ API Docs</a>
                 <a href="/jobs/create" class="btn btn-burgundy">+ İlan Ver</a>
             </div>

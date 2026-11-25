@@ -5,6 +5,10 @@ Replaces ephemeral in-memory storage with ACID-compliant relational persistence.
 """
 from datetime import datetime, timezone
 from typing import List, Dict, Optional, Any
+import hashlib
+import hmac
+import re
+import secrets
 from database.connection import Database
 
 
@@ -132,6 +136,134 @@ class User:
             INSERT INTO profiles (user_id, first_name, last_name, phone, bio, linkedin_url)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (user_id, first_name, last_name, data.get("phone"), data.get("bio"), data.get("linkedin_url")))
+
+        return cls.find_by_id(user_id)
+
+    @staticmethod
+    def hash_password(password: str) -> str:
+        """Hashes a plaintext password with PBKDF2-HMAC-SHA256 and a random salt."""
+        salt = secrets.token_hex(16)
+        iterations = 260000
+        dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), iterations)
+        return f"pbkdf2_sha256${iterations}${salt}${dk.hex()}"
+
+    @staticmethod
+    def verify_password(password: str, stored_hash: str) -> bool:
+        """Verifies a plaintext password against a stored PBKDF2-HMAC-SHA256 hash."""
+        try:
+            algo, iter_str, salt, expected_hex = stored_hash.split("$", 3)
+            if algo != "pbkdf2_sha256":
+                return False
+            dk = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), int(iter_str))
+            return hmac.compare_digest(dk.hex(), expected_hex)
+        except Exception:
+            return False
+
+    @staticmethod
+    def get_departments() -> List[Dict[str, Any]]:
+        """Returns all seeded academic departments for registration forms."""
+        return Database.fetch_all(
+            "SELECT id, faculty_name, department_name, code FROM departments ORDER BY faculty_name, department_name"
+        )
+
+    @classmethod
+    def register(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Full user registration workflow: validates credentials, role, and subtype details
+        (student_details or alumni_details), hashes password, and persists across 3NF tables.
+        """
+        first_name = str(data.get("first_name") or "").strip()
+        last_name = str(data.get("last_name") or "").strip()
+        if not first_name or not last_name:
+            raise ValueError("Ad ve Soyad alanları zorunludur.")
+
+        email_raw = str(data.get("email") or "").strip().lower()
+        if not email_raw or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email_raw):
+            raise ValueError("Geçerli bir e-posta adresi giriniz.")
+        if cls.find_by_email(email_raw):
+            raise ValueError(f"'{email_raw}' e-posta adresi sistemde zaten kayıtlı.")
+
+        password = str(data.get("password") or "")
+        password_confirm = data.get("password_confirm")
+        if len(password) < 6:
+            raise ValueError("Şifre en az 6 karakter uzunluğunda olmalıdır.")
+        if password_confirm is not None and password != str(password_confirm):
+            raise ValueError("Girilen şifreler birbiriyle eşleşmiyor.")
+
+        role = str(data.get("role") or "student").strip().lower()
+        if role not in ("student", "alumni"):
+            raise ValueError("Kayıt rolü yalnızca 'student' (Öğrenci) veya 'alumni' (Mezun) olabilir.")
+
+        dept_raw = data.get("department_id")
+        try:
+            department_id = int(dept_raw) if dept_raw else 1
+        except (TypeError, ValueError):
+            raise ValueError("Geçerli bir bölüm seçiniz.")
+
+        dept_exists = Database.fetch_one("SELECT id FROM departments WHERE id = ?", (department_id,))
+        if not dept_exists:
+            raise ValueError("Seçilen bölüm veritabanında bulunamadı.")
+
+        # Validate subtype fields before any DB insert
+        student_number = ""
+        current_semester = 1
+        graduation_year = 2024
+        if role == "student":
+            student_number = str(data.get("student_number") or "").strip()
+            if not student_number:
+                raise ValueError("Öğrenci kaydı için Öğrenci Numarası zorunludur.")
+            existing_student = Database.fetch_one(
+                "SELECT id FROM student_details WHERE student_number = ?", (student_number,)
+            )
+            if existing_student:
+                raise ValueError(f"'{student_number}' öğrenci numarası zaten kayıtlı.")
+            try:
+                current_semester = int(data.get("current_semester") or 1)
+            except (TypeError, ValueError):
+                current_semester = 1
+            current_semester = max(1, min(12, current_semester))
+        else:
+            try:
+                graduation_year = int(data.get("graduation_year") or 0)
+            except (TypeError, ValueError):
+                raise ValueError("Mezuniyet yılı geçerli bir sayı olmalıdır.")
+            if graduation_year < 1950 or graduation_year > 2030:
+                raise ValueError("Mezuniyet yılı 1950 ile 2030 arasında olmalıdır.")
+
+        pwd_hash = cls.hash_password(password)
+        now = datetime.now(timezone.utc).isoformat()
+        phone = str(data.get("phone") or "").strip() or None
+        bio = str(data.get("bio") or "").strip() or None
+        linkedin_url = str(data.get("linkedin_url") or "").strip() or None
+
+        user_id = Database.insert("""
+            INSERT INTO users (email, password_hash, role, status, created_at)
+            VALUES (?, ?, ?, 'active', ?)
+        """, (email_raw, pwd_hash, role, now))
+
+        profile_id = Database.insert("""
+            INSERT INTO profiles (user_id, first_name, last_name, phone, bio, linkedin_url)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (user_id, first_name, last_name, phone, bio, linkedin_url))
+
+        if role == "student":
+            Database.insert("""
+                INSERT INTO student_details (profile_id, department_id, student_number, current_semester)
+                VALUES (?, ?, ?, ?)
+            """, (profile_id, department_id, student_number, current_semester))
+        else:
+            current_company = str(data.get("current_company") or "").strip() or None
+            current_title = str(data.get("current_title") or "").strip() or None
+            industry = str(data.get("industry") or "").strip() or None
+            mentor_val = data.get("is_mentor_available")
+            is_mentor = 1 if str(mentor_val).lower() in ("1", "true", "on", "yes") else 0
+            Database.insert("""
+                INSERT INTO alumni_details (
+                    profile_id, department_id, graduation_year,
+                    current_company, current_title, industry, is_mentor_available
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (profile_id, department_id, graduation_year, current_company, current_title, industry, is_mentor))
 
         return cls.find_by_id(user_id)
 

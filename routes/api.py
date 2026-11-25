@@ -24,10 +24,16 @@ from controllers.api_user_controller import ApiUserController
 from controllers.api_announcement_controller import ApiAnnouncementController
 from controllers.api_job_controller import ApiJobController
 from controllers.api_application_controller import ApiApplicationController
+from controllers.auth_controller import AuthController
 
 
 def register_api_routes(router: Router) -> Router:
     """Register all RESTful direct and nested API routes on the provided router."""
+
+    # =========================================================================
+    # 0. REGISTRATION (/api/register)
+    # =========================================================================
+    router.post('/api/register', lambda params, body=None: AuthController.api_register(body or {}))
 
     # =========================================================================
     # 1. DIRECT ROUTES (Resource-Level CRUD)
